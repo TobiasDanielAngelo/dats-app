@@ -1,0 +1,21 @@
+.dynamic-text {
+  text-align: center;
+  width: 100%;
+}
+
+.dynamic-text:has(br) {
+  font-size: 0.3rem; /* Tailwind's text-[0.6rem] equivalent */
+}
+
+.swal2-confirm {
+  color: black;
+}
+
+.swal2-confirm:hover {
+  color: white;
+}
+
+.swal2-styled {
+  border: 2px solid;
+  border-color: gray;
+}

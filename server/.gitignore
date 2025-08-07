@@ -1,0 +1,39 @@
+# Python
+*.pyc
+*.pyo
+__pycache__/
+*.pyd
+*.pdm.toml
+
+# Django specific
+*.sqlite3
+db.sqlite3
+*.log
+
+# Virtual environment
+venv/
+env/
+
+# Media
+media/
+staticfiles/
+uploads/
+
+# IDEs & Editors
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Others
+.env
+.env.docker
+.env.local
+.env.prod
+.env.staging
+.env.lan
+.env.rpi
+*.bak
+*.swp
