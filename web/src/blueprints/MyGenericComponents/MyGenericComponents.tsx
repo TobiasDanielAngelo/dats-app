@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
-import { IStore, KeystoneModel } from "../../components/core/_GenericStore";
+import { KeystoneModel } from "./MyGenericStore";
 import { useStore } from "../../components/core/Store";
 import {
   DjangoModelField,
@@ -41,7 +41,8 @@ export const MyGenericComponents = <
   type ModelData = ExtractModelArg<ModelInstance>;
   type NonNullableModelData = NonNullableFields<ModelData>;
 
-  const selectedStore = `${modelNameParts.camelCase}Store`;
+  const selectedStore1 = `${modelNameParts.folder}Store`;
+  const selectedStore2 = `${modelNameParts.camelCase}Store`;
 
   const { Context, useGenericView } = createGenericViewContext();
 
@@ -56,7 +57,7 @@ export const MyGenericComponents = <
         item={item ?? defaultItem}
         fields={allFields}
         objectName={modelNameParts.titleCase}
-        store={store[selectedStore as keyof typeof store] as IStore}
+        store={(store as any)[selectedStore1][selectedStore2]}
         setVisible={setVisible}
       />
     );
@@ -64,7 +65,7 @@ export const MyGenericComponents = <
 
   const FilterComponent = () => {
     const store = useStore();
-    const theStore = store[selectedStore as keyof typeof store] as IStore;
+    const theStore = (store as any)[selectedStore1][selectedStore2];
 
     return (
       <MyGenericFilter
@@ -84,7 +85,7 @@ export const MyGenericComponents = <
   const RowComponent = (props: { item: NonNullableModelData }) => {
     const { item } = props;
     const store = useStore();
-    const theStore = store[selectedStore as keyof typeof store] as IStore;
+    const theStore = (store as any)[selectedStore1][selectedStore2];
 
     return (
       <MyGenericRow
@@ -98,7 +99,7 @@ export const MyGenericComponents = <
 
   const TableComponent = () => {
     const store = useStore();
-    const theStore = store[selectedStore as keyof typeof store] as IStore;
+    const theStore = (store as any)[selectedStore1][selectedStore2];
     const values = useGenericView();
 
     return (
@@ -106,7 +107,7 @@ export const MyGenericComponents = <
         items={theStore.items}
         pageIds={theStore.pageDetails.ids}
         priceFields={theStore.priceFields}
-        renderActions={(i) => <Row item={i} />}
+        renderActions={(i: any) => <Row item={i} />}
         {...values}
       />
     );
@@ -117,7 +118,7 @@ export const MyGenericComponents = <
   }) => {
     const { item } = props;
     const store = useStore();
-    const theStore = store[selectedStore as keyof typeof store] as IStore;
+    const theStore = (store as any)[selectedStore1][selectedStore2];
 
     const shownFields = Array.from(
       new Set(
@@ -145,7 +146,7 @@ export const MyGenericComponents = <
 
   const CollectionComponent = () => {
     const store = useStore();
-    const theStore = store[selectedStore as keyof typeof store] as IStore;
+    const theStore = (store as any)[selectedStore1][selectedStore2];
     const { PageBar } = useGenericView();
     return (
       <SideBySideView
@@ -166,7 +167,7 @@ export const MyGenericComponents = <
 
   const ViewComponent = () => {
     const store = useStore();
-    const theStore = store[selectedStore as keyof typeof store] as IStore;
+    const theStore = (store as any)[selectedStore1][selectedStore2];
     const { isVisible, setVisible } = useVisible();
     const values = useViewValues(
       store.settingStore,

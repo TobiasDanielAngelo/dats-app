@@ -2,13 +2,7 @@ import { MyGenericComponents } from "../../blueprints/MyGenericComponents/MyGene
 import { getPathParts } from "../../constants/helpers";
 import { Sale, SaleFields } from "./SaleStore";
 
-export const {
-  Form: SaleForm,
-  Filter: SaleFilter,
-  Table: SaleTable,
-  Collection: SaleCollection,
-  View: SaleView,
-} = MyGenericComponents(
+export const SaleComponents = MyGenericComponents(
   Sale,
   SaleFields,
   getPathParts(import.meta.url, "Components")

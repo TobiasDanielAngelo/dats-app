@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import { useEffect, useMemo, useState } from "react";
 import { type SetURLSearchParams, useSearchParams } from "react-router-dom";
-import type { Related } from "../../components/core/_GenericStore";
+import type { Related } from "../../constants/interfaces";
 import type { SettingStore } from "../../components/core/SettingStore";
 import { useStore } from "../../components/core/Store";
 import { toTitleCase } from "../../constants/helpers";

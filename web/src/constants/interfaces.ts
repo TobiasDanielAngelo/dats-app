@@ -1,6 +1,11 @@
 import { prop } from "mobx-keystone";
 import type { IconName } from "../blueprints/MyIcon";
-import type { Related } from "../components/core/_GenericStore";
+
+export type Related = {
+  id: number | string;
+  field: string;
+  name: string;
+};
 
 export type CalendarEvent = {
   id: string | number;
@@ -66,8 +71,8 @@ export interface KV<U extends Record<string, any>> {
 export interface ItemDetailsProps<T> {
   item: T;
   shownFields?: string[];
-  header?: (keyof T)[];
-  important?: (keyof T)[];
+  header?: string[];
+  important?: string[];
   prices?: string[];
   showMore?: boolean;
   setShowMore?: StateSetter<boolean>;

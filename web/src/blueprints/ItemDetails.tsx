@@ -24,7 +24,7 @@ export const ItemDetails = observer(
 
     const allItemKeys = [
       ...new Set(Object.keys(itemView).filter((s) => !s.includes("$"))),
-    ] as (keyof T)[];
+    ] as string[];
 
     const sections = [
       { title: "Header", keys: header },

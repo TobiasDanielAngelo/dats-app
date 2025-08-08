@@ -6,7 +6,7 @@ import type {
   PaginatedDetails,
   StateSetter,
 } from "../../constants/interfaces";
-import type { Related } from "../../components/core/_GenericStore";
+import type { Related } from "../../constants/interfaces";
 
 export interface GenericViewProps {
   shownFields: string[];

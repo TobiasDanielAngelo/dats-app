@@ -16,6 +16,7 @@ import {
   PaginatedDetails,
   PaginatedResponse,
   PropsToInterface,
+  Related,
 } from "../../constants/interfaces";
 import { defaultPageDetails } from "../../constants/constants";
 
@@ -75,12 +76,6 @@ export const fetchCSRF = async (baseURL: string) => {
     },
     baseURL
   );
-};
-
-export type Related = {
-  id: number | string;
-  field: string;
-  name: string;
 };
 
 export async function guidedRequest<T>(
@@ -529,6 +524,8 @@ export function MyStore<
       const item = new ModelClass(result.data);
       this.items.push(item);
 
+      this.fetchAll(this.latestParam);
+
       return { details: "", ok: true, data: item };
     });
 
@@ -660,7 +657,11 @@ export function storesToProps<
 
   for (const key in classes) {
     const camelKey = key.charAt(0).toLowerCase() + key.slice(1);
-    result[camelKey] = prop<InstanceType<T[typeof key]>>();
+
+    // Pass a factory to prop() so it's initialized
+    result[camelKey] = prop<InstanceType<T[typeof key]>>(
+      () => new classes[key]({})
+    );
   }
 
   return result as any;

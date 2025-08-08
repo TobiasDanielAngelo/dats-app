@@ -1,6 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
-import "./components/commerce";
 import { LoginView } from "./components/core/LoginView";
 import { MainView } from "./components/core/MainView";
 import { createStore, StoreContext } from "./components/core/Store";
@@ -8,7 +7,7 @@ function App() {
   const store = createStore();
 
   return (
-    <div className="dark:bg-gray-900">
+    <div className="dark:bg-[#242424]">
       <StoreContext.Provider value={store}>
         <BrowserRouter>
           <Routes>

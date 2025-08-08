@@ -3,7 +3,7 @@ import type {
   SpeechRecognition,
   SpeechRecognitionEvent,
 } from "./MySpeechRecognition";
-import { guidedRequest } from "../components/core/_GenericStore";
+import { guidedRequest } from "./MyGenericComponents/MyGenericStore";
 import { BASE_URL } from "../constants/constants";
 
 type Message = {

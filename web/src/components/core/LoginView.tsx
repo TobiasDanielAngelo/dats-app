@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useKeyPress } from "../../constants/hooks";
 import { useStore } from "./Store";
-import { fetchCSRF } from "./_GenericStore";
+import { fetchCSRF } from "../../blueprints/MyGenericComponents/MyGenericStore";
 import { BASE_URL } from "../../constants/constants";
 
 export const LoginView = observer(() => {

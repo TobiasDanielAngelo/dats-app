@@ -3,7 +3,7 @@ import { useState } from "react";
 import { toTitleCase } from "../../constants/helpers";
 import { type Field } from "../../constants/interfaces";
 import { MyForm } from "../MyForm";
-import { IStore } from "../../components/core/_GenericStore";
+import { IStore } from "./MyGenericStore";
 
 export interface MyGenericFormProps<T extends { id: string | number }> {
   item?: Partial<T & { id?: number | string }>;

@@ -76,7 +76,10 @@ export const MyAreaChart = observer(
             <Legend />
             <XAxis dataKey={xKey as string} />
             <YAxis />
-            <Tooltip content={<MyCustomTooltip />} formatter={formatter} />
+            <Tooltip
+              content={(props) => <MyCustomTooltip {...props} />}
+              formatter={formatter}
+            />
             {allTraceKeys
               .filter((s) => shownFields.includes(s))
               .map((key, i) => (

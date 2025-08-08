@@ -1,6 +1,6 @@
 import { prop, type OptionalModelProp } from "mobx-keystone";
-import { type Field, type Option } from "./interfaces";
 import { toTitleCase } from "./helpers";
+import { type Field, type Option } from "./interfaces";
 
 const DjangoFields = {
   DefaultBooleanField: {
@@ -8,6 +8,10 @@ const DjangoFields = {
     type: "check",
   },
   FileField: {
+    prop: prop<File | null>(null),
+    type: "file",
+  },
+  ImageField: {
     prop: prop<File | null>(null),
     type: "file",
   },

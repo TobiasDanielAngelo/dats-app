@@ -2,17 +2,13 @@ import { BASE_URL } from "../../constants/constants";
 import { DjangoModelField, fieldToProps } from "../../constants/djangoHelpers";
 import { getPathParts, toOptions } from "../../constants/helpers";
 import { PropsToInterface } from "../../constants/interfaces";
-import { MyModel, MyStore } from "../core/_GenericStore";
+import {
+  MyModel,
+  MyStore,
+} from "../../blueprints/MyGenericComponents/MyGenericStore";
+import { STATUS_CHOICES } from "./_AllChoices";
 
-export const { slug, titleCase } = getPathParts(import.meta.url, "Store");
-
-export const STATUS_CHOICES = [
-  "Draft",
-  "Pending Approval",
-  "Approved",
-  "Fulfilled",
-  "Cancelled",
-];
+const { slug } = getPathParts(import.meta.url, "Store");
 
 export const SaleFields = {
   id: {

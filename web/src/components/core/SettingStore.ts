@@ -1,7 +1,11 @@
 import { modelAction, modelFlow, prop } from "mobx-keystone";
 import { BASE_URL } from "../../constants/constants";
 import { PropsToInterface } from "../../constants/interfaces";
-import { functionBinder, MyModel, MyStore } from "./_GenericStore";
+import {
+  functionBinder,
+  MyModel,
+  MyStore,
+} from "../../blueprints/MyGenericComponents/MyGenericStore";
 
 export const SettingIdMap = {
   Theme: 1000001,

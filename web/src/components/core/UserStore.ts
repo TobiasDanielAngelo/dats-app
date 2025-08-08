@@ -1,10 +1,13 @@
 import { modelAction, prop } from "mobx-keystone";
 import { type PropsToInterface } from "../../constants/interfaces";
-import { functionBinder, MyModel, MyStore } from "./_GenericStore";
+import {
+  functionBinder,
+  MyModel,
+  MyStore,
+} from "../../blueprints/MyGenericComponents/MyGenericStore";
 import { BASE_URL } from "../../constants/constants";
 
-const slug = "users/";
-const keyName = "User";
+const slug = "employees/";
 const props = {
   id: prop<number | string>(-1),
   createdAt: prop<string>(""),
@@ -32,7 +35,7 @@ export type LoginInterface = {
   password: string;
 };
 
-export class User extends MyModel(keyName, props, derivedProps) {}
+export class User extends MyModel(slug, props, derivedProps) {}
 export class UserStore extends MyStore(User, BASE_URL, slug) {
   constructor(args: any) {
     super(args);

@@ -2,9 +2,8 @@ import { MyGenericComponents } from "../../blueprints/MyGenericComponents/MyGene
 import { getPathParts } from "../../constants/helpers";
 import { InventoryLog, InventoryLogFields } from "./InventoryLogStore";
 
-export const { Form: InventoryLogForm, Filter: InventoryLogFilter } =
-  MyGenericComponents(
-    InventoryLog,
-    InventoryLogFields,
-    getPathParts(import.meta.url, "Components")
-  );
+export const InventoryLogComponents = MyGenericComponents(
+  InventoryLog,
+  InventoryLogFields,
+  getPathParts(import.meta.url, "Components")
+);

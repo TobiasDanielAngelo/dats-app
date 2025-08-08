@@ -2,18 +2,13 @@ import { BASE_URL } from "../../constants/constants";
 import { DjangoModelField, fieldToProps } from "../../constants/djangoHelpers";
 import { getPathParts, toOptions } from "../../constants/helpers";
 import { PropsToInterface } from "../../constants/interfaces";
-import { MyModel, MyStore } from "../core/_GenericStore";
+import {
+  MyModel,
+  MyStore,
+} from "../../blueprints/MyGenericComponents/MyGenericStore";
+import { LOG_TYPE_CHOICES } from "./_AllChoices";
 
-export const { slug, titleCase } = getPathParts(import.meta.url, "Store");
-
-const LOG_TYPE_CHOICES = [
-  "Sale",
-  "Purchase",
-  "Return",
-  "Adjustment",
-  "Physical Count",
-  "Transfer",
-];
+const { slug } = getPathParts(import.meta.url, "Store");
 
 export const InventoryLogFields = {
   id: {
@@ -21,8 +16,7 @@ export const InventoryLogFields = {
   },
   product: {
     field: "CascadeRequiredForeignKey",
-    fk: "Product",
-    choices: [],
+    fk: "Article",
   },
   quantity: {
     field: "LimitedIntegerField",
@@ -35,12 +29,10 @@ export const InventoryLogFields = {
   transmitter: {
     field: "SetNullOptionalForeignKey",
     fk: "Location",
-    choices: [],
   },
   receiver: {
     field: "SetNullOptionalForeignKey",
     fk: "Location",
-    choices: [],
   },
 } satisfies Record<string, DjangoModelField>;
 const props = fieldToProps(InventoryLogFields);

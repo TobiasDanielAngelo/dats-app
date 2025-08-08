@@ -1,7 +1,10 @@
 import { model, Model } from "mobx-keystone";
 import { createContext, useContext } from "react";
 import * as AllStores from "./_AllStores";
-import { instantiateStores, storesToProps } from "./_GenericStore";
+import {
+  instantiateStores,
+  storesToProps,
+} from "../../blueprints/MyGenericComponents/MyGenericStore";
 
 @model("myApp/Store")
 export class Store extends Model(storesToProps(AllStores)) {}
