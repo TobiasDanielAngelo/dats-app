@@ -32,7 +32,7 @@ class GenericProduct(fields.CustomModel):
     reorder_level = fields.LimitedIntegerField(1, 100000, 10)
 
 
-class Product(fields.CustomModel):
+class Article(fields.CustomModel):
     generic_product = fields.CascadeRequiredForeignKey(GenericProduct)
     brand = fields.ShortCharField()
     is_orig = fields.DefaultBooleanField(False)
@@ -43,23 +43,23 @@ class Product(fields.CustomModel):
 
 
 class ProductComponent(fields.CustomModel):
-    kit = fields.CascadeRequiredForeignKey(Product)
-    component = fields.CascadeRequiredForeignKey(Product)
+    kit = fields.CascadeRequiredForeignKey(Article)
+    component = fields.CascadeRequiredForeignKey(Article)
     percent_cost = fields.LimitedDecimalField(0, 100)
 
 
 class Barcode(fields.CustomModel):
-    product = fields.OneToOneField(Product)
+    product = fields.OneToOneField(Article)
     code = fields.ShortCharField(unique=True)
 
 
 class PrintJob(fields.CustomModel):
-    product = fields.CascadeRequiredForeignKey(Product)
+    product = fields.CascadeRequiredForeignKey(Article)
     quantity = fields.LimitedIntegerField(1, 10000)
 
 
 class ProductImage(fields.CustomModel):
-    part = fields.CascadeRequiredForeignKey(Product)
+    part = fields.CascadeRequiredForeignKey(Article)
     image = fields.ImageField(upload_to="part_images/")
     alt_text = fields.ShortCharField()
 

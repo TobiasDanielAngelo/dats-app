@@ -1,87 +1,71 @@
 import { useState } from "react";
 import { MySpinner } from "./MySpinner";
-// import accounts from "/images/accounts.png";
-// import back from "/images/back.png";
-// import bodyFats from "/images/body-fats.png";
-// import career from "/images/career.png";
-// import categories from "/images/categories.png";
-// import credentials from "/images/credentials.png";
-// import dashboard from "/images/dashboard.png";
-// import dreams from "/images/dreams.png";
-// import events from "/images/events.png";
-// import finance from "/images/finance.png";
-// import followUps from "/images/follow-ups.png";
-// import goals from "/images/goals.png";
-// import habits from "/images/habits.png";
-// import health from "/images/health.png";
-// import inventoryTypes from "/images/inventory-types.png";
-// import inventory from "/images/inventory.png";
-// import issueComments from "/images/issue-comments.png";
-// import issueTags from "/images/issue-tags.png";
-// import jobs from "/images/jobs.png";
-// import journals from "/images/journals.png";
-// import logout from "/images/logout.png";
-// import logs from "/images/logs.png";
-// import meals from "/images/meals.png";
-// import payables from "/images/payables.png";
-// import personal from "/images/personal.png";
-// import platforms from "/images/platforms.png";
-// import productivity from "/images/productivity.png";
-// import properties from "/images/properties.png";
-// import receivables from "/images/receivables.png";
-// import schedules from "/images/schedules.png";
-// import settings from "/images/settings.png";
-// import support from "/images/support.png";
-// import tags from "/images/tags.png";
-// import tasks from "/images/tasks.png";
-// import tickets from "/images/tickets.png";
-// import transactions from "/images/transactions.png";
-// import waistMeasure from "/images/waist-measure.png";
-// import weighIns from "/images/weigh-ins.png";
-// import wishlist from "/images/wishlist.png";
-// import workouts from "/images/workouts.png";
+import commerce from "/images/commerce.png";
+import commerceInventoryLog from "/images/commerce_inventory-log.png";
+import commerceLaborType from "/images/commerce_labor-type.png";
+import commerceLabor from "/images/commerce_labor.png";
+import commercePrintJob from "/images/commerce_print-job.png";
+import commercePurchase from "/images/commerce_purchase.png";
+import commerceSale from "/images/commerce_sale.png";
+import finance from "/images/finance.png";
+import financePayable from "/images/finance_payable.png";
+import financeCategory from "/images/finance_category.png";
+import financeReceivable from "/images/finance_receivable.png";
+import financeAccount from "/images/finance_account.png";
+import financeTransaction from "/images/finance_transaction.png";
+import peopleCustomer from "/images/people_customer.png";
+import peoplePosition from "/images/people_position.png";
+import peopleSupplier from "/images/people_supplier.png";
+import people from "/images/people.png";
+import productBarcode from "/images/product_barcode.png";
+import product from "/images/product.png";
+import productArticle from "/images/product_article.png";
+import productCategoryComponent from "/images/product_category-component.png";
+import productCategory from "/images/product_category.png";
+import productGenericProduct from "/images/product_generic-product.png";
+import productLocation from "/images/product_location.png";
+import productMaker from "/images/product_maker.png";
+import productMotor from "/images/product_motor.png";
+import productPrintJob from "/images/product_print-job.png";
+import productProductComponent from "/images/product_product-component.png";
+import productProductImage from "/images/product_product-image.png";
+import productUnit from "/images/product_unit.png";
+import setting from "/images/setting.png";
+import logout from "/images/logout.png";
 
 const IMAGES: Record<string, string> = {
-  // accounts,
-  // bodyFats,
-  // career,
-  // categories,
-  // credentials,
-  // events,
-  // finance,
-  // followUps,
-  // back,
-  // goals,
-  // logs,
-  // logout,
-  // habits,
-  // health,
-  // dashboard,
-  // dreams,
-  // inventoryTypes,
-  // jobs,
-  // journals,
-  // support,
-  // meals,
-  // issueComments,
-  // issueTags,
-  // tickets,
-  // payables,
-  // inventory,
-  // personal,
-  // platforms,
-  // properties,
-  // productivity,
-  // receivables,
-  // schedules,
-  // tags,
-  // tasks,
-  // transactions,
-  // waistMeasure,
-  // weighIns,
-  // wishlist,
-  // settings,
-  // workouts,
+  commerceInventoryLog,
+  commerceLaborType,
+  commerceLabor,
+  commercePrintJob,
+  commercePurchase,
+  commerceSale,
+  commerce,
+  financePayable,
+  financeReceivable,
+  financeCategory,
+  financeTransaction,
+  peopleCustomer,
+  peoplePosition,
+  peopleSupplier,
+  productBarcode,
+  productArticle,
+  productCategoryComponent,
+  finance,
+  people,
+  financeAccount,
+  productCategory,
+  productGenericProduct,
+  productLocation,
+  productMaker,
+  productMotor,
+  productPrintJob,
+  productProductComponent,
+  productProductImage,
+  productUnit,
+  product,
+  setting,
+  logout,
 };
 
 type MyImageProps = {
@@ -90,14 +74,14 @@ type MyImageProps = {
 };
 
 export const MyImage = ({
-  image = "journals",
+  image = "productMotor",
   className = "",
 }: MyImageProps) => {
   const [loading, setLoading] = useState(true);
   return (
     <>
       <img
-        src={IMAGES[image] || ""}
+        src={IMAGES[image] || productMotor}
         onLoad={() => {
           setLoading(false);
         }}

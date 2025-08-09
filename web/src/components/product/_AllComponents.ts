@@ -12,6 +12,7 @@ import { ProductImageComponents } from "./ProductImageComponents";
 import { UnitComponents } from "./UnitComponents";
 
 export const Product = {
+  Article: ArticleComponents,
   Barcode: BarcodeComponents,
   Category: CategoryComponents,
   CategoryComponent: CategoryComponentComponents,
@@ -20,7 +21,6 @@ export const Product = {
   Maker: MakerComponents,
   Motor: MotorComponents,
   PrintJob: PrintJobComponents,
-  Article: ArticleComponents,
   ProductComponent: ProductComponentComponents,
   ProductImage: ProductImageComponents,
   Unit: UnitComponents,

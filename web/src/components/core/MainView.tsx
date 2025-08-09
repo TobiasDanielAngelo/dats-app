@@ -4,32 +4,7 @@ import { Route, Routes, useNavigate } from "react-router-dom";
 import { useStore } from "./Store";
 import { Main } from "./_AllComponents";
 import { NavBar } from "./NavigationBar";
-
-function buildRoutes(obj: any, basePath = "") {
-  const routes: { path: string; component: any }[] = [];
-
-  for (const key in obj) {
-    const value = obj[key];
-    const newPath = `${basePath}/${key.toLowerCase()}`;
-
-    if (typeof value === "function" || "$$typeof" in value) {
-      // Direct React component → use basePath as route
-      routes.push({ path: basePath, component: value });
-    } else if (typeof value === "object") {
-      // If object contains a View key, use it directly
-      if (
-        "View" in value &&
-        (typeof value.View === "function" || "$$typeof" in value.View)
-      ) {
-        routes.push({ path: newPath, component: value.View });
-      } else {
-        routes.push(...buildRoutes(value, newPath));
-      }
-    }
-  }
-
-  return routes;
-}
+import { buildRoutes } from "../../constants/helpers";
 
 export const MainView = observer(() => {
   const navigate = useNavigate();

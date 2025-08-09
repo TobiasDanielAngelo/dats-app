@@ -6,7 +6,7 @@ import { MyForm } from "../MyForm";
 import { IStore } from "./MyGenericStore";
 
 export interface MyGenericFormProps<T extends { id: string | number }> {
-  item?: Partial<T & { id?: number | string }>;
+  item?: Partial<T & { id?: number | string; $?: any }>;
   setVisible?: (t: boolean) => void;
   fetchFcn?: () => void;
   fields: Field[][];
@@ -15,7 +15,7 @@ export interface MyGenericFormProps<T extends { id: string | number }> {
 }
 
 export interface MyGenericForm<T extends { id: string | number }> {
-  item?: Partial<T & { id?: number | string }>;
+  item?: Partial<T & { id?: number | string; $?: any }>;
   setVisible?: (t: boolean) => void;
   store?: IStore;
 }
@@ -108,8 +108,9 @@ export function MyGenericForm<T extends { id: string | number }>({
   };
 
   const [details, setDetails] = useState<T>(() =>
-    item ? transformFrom(item as T) : ({} as T)
+    item ? transformFrom((item.$ ?? item) as T) : ({} as T)
   );
+
   const [msg, setMsg] = useState<Object>();
   const [isLoading, setLoading] = useState(false);
 

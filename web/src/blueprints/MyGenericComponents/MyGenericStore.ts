@@ -512,7 +512,7 @@ export function MyStore<
           postItemRequest<NullableProps<Partial<T>>>(baseURL, slug, details)
         );
       } catch {
-        Swal.fire({ icon: "error", title: "Network Error" });
+        // Swal.fire({ icon: "error", title: "Network Error" });
         return { details: "Network Error", ok: false, data: null };
       }
 

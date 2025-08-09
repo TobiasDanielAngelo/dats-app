@@ -7,17 +7,17 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useStore } from "../components/core/Store";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import anon from "../assets/anon.jpg";
+import { useStore } from "../components/core/Store";
+import { toCamel } from "../constants/helpers";
 import { useIsUnhoverable, useKeyPress } from "../constants/hooks";
 import type { Page, StateSetter } from "../constants/interfaces";
 import { MyDropdownMenu } from "./MyDropdownMenu";
 import { MyIcon } from "./MyIcon";
 import { MyImage } from "./MyImages";
-import { titleToCamel } from "../constants/helpers";
 
-const drawerWidth = 240;
+const drawerWidth = 340;
 
 export const ResponsiveDrawer = observer(
   (props: {
@@ -55,11 +55,11 @@ export const ResponsiveDrawer = observer(
                   >
                     <ListItemIcon>
                       <MyImage
-                        image={titleToCamel(s.title).replace("-", "")}
+                        image={toCamel(s.link ?? s.title)}
                         className="w-10"
                       />
                     </ListItemIcon>
-                    <ListItemText primary={s.title} secondary={""} />
+                    <ListItemText primary={`${s.title}`} secondary={""} />
                   </ListItemButton>
                 </ListItem>
               ))}
@@ -119,14 +119,15 @@ const NavLink = ({ page }: { page: Page }) => {
       )}
 
       {page.children && page.children?.length > 0 && (
-        <div className="absolute top-full left-0 z-20 hidden group-hover:block dark:bg-gray-800 bg-teal-100 rounded shadow-lg min-w-[150px] py-2">
+        <div className="absolute top-full left-0 z-20 hidden group-hover:block dark:bg-gray-800 bg-teal-100 rounded shadow-lg min-w-[200px] py-2">
           {page.children.map((child, idx) => (
             <Link
               key={idx}
               to={child.link ?? ""}
-              className="block px-4 py-2 text-sm dark:text-white text-teal-700 hover:bg-teal-200 dark:hover:bg-gray-400"
+              className="flex flex-row px-4 py-2 text-sm dark:text-white text-teal-700 hover:bg-teal-200 dark:hover:bg-gray-400"
             >
-              {child.title}
+              <MyImage image={toCamel(child.link ?? "")} className="w-5 mr-2" />
+              {child.title.slice(5)}
             </Link>
           ))}
         </div>
@@ -144,6 +145,7 @@ export const MyNavBar = observer(
     paths?: Page[];
   }) => {
     const { title, drawerOpen, setDrawerOpen, profileUrl, paths } = props;
+    const location = useLocation();
 
     const { settingStore } = useStore();
     const navigate = useNavigate();
@@ -159,12 +161,10 @@ export const MyNavBar = observer(
         ? p.children.filter((c) => !c.children?.length)
         : [];
 
-      if (p.link) {
-        leaves.push({
-          title: p.title,
-          link: p.link,
-        });
-      }
+      leaves.push({
+        title: p.title,
+        link: p.link,
+      });
       return leaves.length ? leaves : [p];
     });
 
@@ -178,11 +178,12 @@ export const MyNavBar = observer(
         <div className="flex flex-wrap items-center justify-between mx-auto p-4">
           <div className="flex items-center space-x-3 rtl:space-x-reverse">
             <Link to={"/menu"}>
-              <MyIcon
+              {/* <MyIcon
                 icon="InsertChart"
                 fontSize="large"
                 className="text-gray-700 dark:text-gray-100 hover:text-green-700 hover:scale-125 [&:not(hover)]:transition-all hover:transition-all ease-in-out hover:animate-pulse"
-              />
+              /> */}
+              <MyImage image={toCamel(location.pathname)} className="w-10" />
             </Link>
             <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
               {title}

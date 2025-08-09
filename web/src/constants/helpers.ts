@@ -2,8 +2,9 @@ import { format, isValid, parse } from "date-fns";
 import LZString from "lz-string";
 import moment from "moment";
 import { type Options, RRule, Weekday } from "rrule";
-import type { Option, ScheduleInterface } from "./interfaces";
+import type { Option, Page, ScheduleInterface } from "./interfaces";
 import { pluralize } from "inflection";
+import { ViewPath } from "../components/core/NavigationBar";
 
 export const posRamp = (x: number) => (x > 0 ? x : 0);
 
@@ -965,3 +966,118 @@ export const getPathParts = (url: string, eliminate?: string) => {
 };
 
 export type PathParts = ReturnType<typeof getPathParts>;
+
+const toKebab = (str: string) =>
+  str.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
+
+export function buildRoutes(obj: any, basePath = "") {
+  const routes: { path: string; component: any }[] = [];
+
+  for (const key in obj) {
+    const value = obj[key];
+    const newPath = `${basePath}/${toKebab(key)}`;
+
+    if (typeof value === "function" || "$$typeof" in value) {
+      // Direct React component → use basePath as route
+      routes.push({ path: basePath, component: value });
+    } else if (typeof value === "object") {
+      // If object contains a View key, use it directly
+      if (
+        "View" in value &&
+        (typeof value.View === "function" || "$$typeof" in value.View)
+      ) {
+        routes.push({ path: newPath, component: value.View });
+      } else {
+        routes.push(...buildRoutes(value, newPath));
+      }
+    }
+  }
+
+  return routes;
+}
+
+export function buildViewPaths(obj: any): ViewPath[] {
+  const viewPaths: ViewPath[] = [];
+
+  for (const moduleName in obj) {
+    const moduleValue = obj[moduleName];
+    const subKeys = Object.keys(moduleValue);
+
+    // Case 1: Top-level has direct View
+    if ("View" in moduleValue) {
+      viewPaths.push({
+        title: moduleName,
+        items: [],
+        mainLink: `/${moduleName.toLowerCase()}`,
+      });
+    }
+    // Case 2: Top-level has submodules
+    else {
+      const items: string[] = [];
+      for (const subName of subKeys) {
+        items.push(subName);
+      }
+      viewPaths.push({
+        title: moduleName,
+        items,
+        mainLink: "",
+      });
+    }
+  }
+
+  return viewPaths;
+}
+
+const slugify = (s: string) => s.trim().toLowerCase().replace(/\s+/g, "-");
+// .replace(/[^a-z0-9-]/g, "");
+
+const normalizePath = (p: string) => "/" + p.replace(/^\/+|\/+$/g, "");
+
+export function buildNav(allViewPaths: ViewPath[], current: string): Page[] {
+  return allViewPaths.map(({ title, items = [], mainLink }) => {
+    const moduleBase = `/${slugify(title)}`;
+
+    const children =
+      items && items.length > 0
+        ? items.map((item) => {
+            const itemSlug = toKebab(item);
+            return {
+              title: `${title.slice(0, 3).toUpperCase()} - ${toTitleCase(
+                item
+              )}`,
+              link: `${moduleBase}/${itemSlug}`,
+            };
+          })
+        : undefined;
+
+    // Decide the "link" for the top-level item:
+    // - If mainLink is provided (usually when no submodules), use it (normalized).
+    // - Else if there's a single child, point to that child's link.
+    // - Else point to the module base (overview).
+    const link = mainLink
+      ? normalizePath(mainLink)
+      : children && children.length === 1
+      ? children[0].link
+      : moduleBase;
+
+    // Selected if current matches the top-level link or any child, or is nested under the module base
+    const isSelected = current === link.replace("/", "");
+
+    return {
+      title,
+      selected: isSelected,
+      ...(children ? { children } : { link }),
+    } as Page;
+  });
+}
+
+export const toCamel = (str: string) =>
+  str
+    .split(/[\/\-]/) // split by / or -
+    .filter(Boolean) // remove empty parts
+    .map((part, i) =>
+      i === 0
+        ? part.toLowerCase()
+        : part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()
+    )
+    .join("");

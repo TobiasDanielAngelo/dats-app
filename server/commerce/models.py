@@ -13,7 +13,7 @@ class InventoryLog(fields.CustomModel):
         (4, "Physical Count"),
         (5, "Transfer"),
     ]
-    product = fields.CascadeRequiredForeignKey(Product)
+    product = fields.CascadeRequiredForeignKey(Article)
     quantity = fields.LimitedIntegerField()
     log_type = fields.ChoiceIntegerField(LOG_TYPE_CHOICES)
     transmitter = fields.SetNullOptionalForeignKey(Location)
