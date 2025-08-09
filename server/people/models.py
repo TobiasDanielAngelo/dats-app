@@ -8,7 +8,7 @@ class Position(fields.CustomModel):
 
 
 class Employee(AbstractUser):
-    position = fields.SetNullOptionalForeignKey(Position)
+    position = fields.SetNullOptionalForeignKey(Position, display=True)
     phone = fields.ShortCharField()
 
 

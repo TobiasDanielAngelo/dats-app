@@ -27,10 +27,10 @@ class Category(fields.CustomModel):
 
 
 class Transaction(fields.CustomModel):
-    category = fields.SetNullOptionalForeignKey(Category)
+    category = fields.SetNullOptionalForeignKey(Category, display=True)
     description = fields.MediumCharField(display=True)
-    transmitter = fields.SetNullOptionalForeignKey(Account)
-    receiver = fields.SetNullOptionalForeignKey(Account)
+    transmitter = fields.SetNullOptionalForeignKey(Account, display=True)
+    receiver = fields.SetNullOptionalForeignKey(Account, display=True)
     amount = fields.AmountField()
 
 
@@ -38,10 +38,10 @@ class Receivable(fields.CustomModel):
     charge = fields.CascadeOptionalForeignKey(Transaction)
     payments = fields.OptionalManyToManyField(Transaction)
     name = fields.ShortCharField(display=True)
-    amount = fields.AmountField()
+    amount = fields.AmountField(display=True)
     description = fields.MediumCharField(display=True)
     date_due = fields.OptionalDateField()
-    date_completed = fields.OptionalDateField()
+    date_completed = fields.OptionalDateField(display=True)
 
     def payment_total(self):
         return sum(p.amount for p in self.payments.all())
@@ -51,10 +51,10 @@ class Payable(fields.CustomModel):
     charge = fields.CascadeOptionalForeignKey(Transaction)
     payments = fields.OptionalManyToManyField(Transaction)
     name = fields.ShortCharField(display=True)
-    amount = fields.AmountField()
+    amount = fields.AmountField(display=True)
     description = fields.MediumCharField(display=True)
     date_due = fields.OptionalDateField()
-    date_completed = fields.OptionalDateField()
+    date_completed = fields.OptionalDateField(display=True)
 
     def payment_total(self):
         return sum(p.amount for p in self.payments.all())

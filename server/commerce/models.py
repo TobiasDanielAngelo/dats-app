@@ -13,9 +13,9 @@ class InventoryLog(fields.CustomModel):
         (4, "Physical Count"),
         (5, "Transfer"),
     ]
-    product = fields.CascadeRequiredForeignKey(Article)
+    product = fields.CascadeRequiredForeignKey(Article, display=True)
     quantity = fields.LimitedIntegerField()
-    log_type = fields.ChoiceIntegerField(LOG_TYPE_CHOICES)
+    log_type = fields.ChoiceIntegerField(LOG_TYPE_CHOICES, display=True)
     transmitter = fields.SetNullOptionalForeignKey(Location)
     receiver = fields.SetNullOptionalForeignKey(Location)
 
@@ -30,22 +30,22 @@ STATUS_CHOICES = [
 
 
 class Sale(fields.CustomModel):
-    status = fields.ChoiceIntegerField(STATUS_CHOICES)
+    status = fields.ChoiceIntegerField(STATUS_CHOICES, display=True)
     transactions = fields.OptionalManyToManyField(Transaction)
     inventory_logs = fields.OptionalManyToManyField(InventoryLog)
-    customer = fields.SetNullOptionalForeignKey(Customer)
+    customer = fields.SetNullOptionalForeignKey(Customer, display=True)
 
 
 class Purchase(fields.CustomModel):
-    status = fields.ChoiceIntegerField(STATUS_CHOICES)
+    status = fields.ChoiceIntegerField(STATUS_CHOICES, display=True)
     transactions = fields.OptionalManyToManyField(Transaction)
     inventory_logs = fields.OptionalManyToManyField(InventoryLog)
-    supplier = fields.SetNullOptionalForeignKey(Supplier)
+    supplier = fields.SetNullOptionalForeignKey(Supplier, display=True)
 
 
 class PrintJob(fields.CustomModel):
-    sale = fields.CascadeOptionalForeignKey(Sale)
-    purchase = fields.CascadeOptionalForeignKey(Purchase)
+    sale = fields.CascadeOptionalForeignKey(Sale, display=True)
+    purchase = fields.CascadeOptionalForeignKey(Purchase, display=True)
 
 
 class LaborType(fields.CustomModel):
@@ -55,10 +55,10 @@ class LaborType(fields.CustomModel):
 
 class Labor(fields.CustomModel):
     sale = fields.CascadeRequiredForeignKey(Sale)
-    employees = fields.OptionalManyToManyField(Employee)
-    labor_type = fields.SetNullOptionalForeignKey(LaborType)
-    description = fields.MediumCharField(blank=True)
+    employees = fields.OptionalManyToManyField(Employee, display=True)
+    labor_type = fields.SetNullOptionalForeignKey(LaborType, display=True)
+    description = fields.MediumCharField()
     cost = fields.AmountField()
     compensation_amount = fields.AmountField()
     is_paid = fields.DefaultBooleanField(False)
-    paid_at = fields.OptionalDateTimeField()
+    paid_at = fields.OptionalDateTimeField(display=True)
