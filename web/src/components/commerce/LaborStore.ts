@@ -12,8 +12,14 @@ const { slug } = getPathParts(import.meta.url, "Store");
 export const LaborFields = {
   id: { field: "ID" },
   sale: { field: "CascadeRequiredForeignKey", fk: "Sale" },
-  employees: { field: "OptionalManyToManyField", fk: "Employee" },
-  labor_type: { field: "SetNullOptionalForeignKey", fk: "LaborType" },
+  employees: {
+    field: "OptionalManyToManyField",
+    fk: "Employee",
+  },
+  labor_type: {
+    field: "SetNullOptionalForeignKey",
+    fk: "LaborType",
+  },
   description: { field: "MediumCharField" },
   cost: { field: "AmountField" },
   compensation_amount: { field: "AmountField" },

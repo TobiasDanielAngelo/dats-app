@@ -33,9 +33,9 @@ INSTALLED_APPS = [
     "knox",
     "core",
     "people",
-    "product",
     "finance",
     "commerce",
+    "product",
 ]
 MIDDLEWARE = [
     "my_django_app.middleware.CsrfExemptMobileMiddleware",

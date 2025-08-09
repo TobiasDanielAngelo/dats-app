@@ -12,7 +12,10 @@ const { slug } = getPathParts(import.meta.url, "Store");
 export const ProductComponentFields = {
   id: { field: "ID" },
   kit: { field: "CascadeRequiredForeignKey", fk: "Article" },
-  component: { field: "CascadeRequiredForeignKey", fk: "Article" },
+  component: {
+    field: "CascadeRequiredForeignKey",
+    fk: "Article",
+  },
   percent_cost: { field: "LimitedDecimalField" },
 } satisfies Record<string, DjangoModelField>;
 

@@ -55,8 +55,8 @@ class LaborType(fields.CustomModel):
 
 class Labor(fields.CustomModel):
     sale = fields.CascadeRequiredForeignKey(Sale)
-    employees = fields.OptionalManyToManyField(Employee, display=True)
-    labor_type = fields.SetNullOptionalForeignKey(LaborType, display=True)
+    employees = fields.OptionalManyToManyField(Employee)
+    labor_type = fields.SetNullOptionalForeignKey(LaborType)
     description = fields.MediumCharField()
     cost = fields.AmountField()
     compensation_amount = fields.AmountField()

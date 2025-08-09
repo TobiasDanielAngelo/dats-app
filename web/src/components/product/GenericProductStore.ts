@@ -11,8 +11,14 @@ const { slug } = getPathParts(import.meta.url, "Store");
 
 export const GenericProductFields = {
   id: { field: "ID" },
-  category: { field: "SetNullOptionalForeignKey", fk: "Category" },
-  compatibility: { field: "OptionalManyToManyField", fk: "Motor" },
+  category: {
+    field: "SetNullOptionalForeignKey",
+    fk: "Category",
+  },
+  compatibility: {
+    field: "OptionalManyToManyField",
+    fk: "Motor",
+  },
   reorder_level: { field: "LimitedIntegerField" },
 } satisfies Record<string, DjangoModelField>;
 

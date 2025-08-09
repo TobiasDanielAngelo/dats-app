@@ -1,6 +1,8 @@
 import { prop, type OptionalModelProp } from "mobx-keystone";
-import { toTitleCase } from "./helpers";
+import { Store } from "../components/core/Store";
+import { toCamel, toTitleCase } from "./helpers";
 import { type Field, type Option } from "./interfaces";
+import { IStore } from "../blueprints/MyGenericComponents/MyGenericStore";
 
 const DjangoFields = {
   DefaultBooleanField: {
@@ -169,7 +171,9 @@ type FieldToProp<F extends FieldsInput> = {
 };
 
 export function fieldToProps<F extends FieldsInput>(fields: F): FieldToProp<F> {
-  const result: any = {};
+  const result: any = {
+    displayName: prop<string>(""),
+  };
 
   for (const key in fields) {
     const { field } = fields[key];
@@ -180,9 +184,15 @@ export function fieldToProps<F extends FieldsInput>(fields: F): FieldToProp<F> {
   return result;
 }
 
+// export const getDisplayKeys = <F extends FieldsInput>(fields: F): string[] => {
+//   return Object.keys(fields).filter((key) => fields[key].display === true);
+// };
+
 export function fieldToFormField<F extends FieldsInput>(
   fields: F,
-  excludedFields?: (keyof F)[]
+  folder: string,
+  excludedFields?: (keyof F)[],
+  store?: Store
 ): Field[][] {
   const result: Field[][] = [];
 
@@ -190,15 +200,34 @@ export function fieldToFormField<F extends FieldsInput>(
     if (["id", ...(excludedFields ?? [])].includes(key)) {
       continue;
     }
-    const { field, choices, label, defaultValue } = fields[key];
+    const { field, choices, label, defaultValue, fk } = fields[key];
     const type = DjangoFields[field].type;
+
+    const selectedStore = (store as any)[`${folder}Store`][
+      `${toCamel(fk ?? "")}Store`
+    ] as IStore;
+    const storeOptions = store
+      ? fk
+        ? (store as any)[`${folder}Store`][`${toCamel(fk ?? "")}Store`][
+            "items"
+          ].map((s: any) => ({
+            id: s.id,
+            name: s.displayName,
+          }))
+        : []
+      : [];
+
     result.push([
       {
         name: key,
         label: label ?? toTitleCase(key),
         type,
-        options: choices ?? [],
+        options: choices ?? storeOptions,
         defaultValue: defaultValue,
+        fetchFcn:
+          (type === "select" || type === "multi") && store
+            ? selectedStore.fetchAll
+            : undefined,
       },
     ]);
   }

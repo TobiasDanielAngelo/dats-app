@@ -21,11 +21,15 @@ export const MyDropdownSelector = (props: {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      search !== "" && fetchFcn?.(search);
+      search !== "" && fetchFcn?.(`the_ultimate__search=${search}`);
     }, 1000);
 
     return () => clearTimeout(timer);
   }, [search]);
+
+  useEffect(() => {
+    fetchFcn?.("page=1");
+  }, []);
 
   return (
     <div className="mb-0 flex flex-row items-center justify-center gap-2">

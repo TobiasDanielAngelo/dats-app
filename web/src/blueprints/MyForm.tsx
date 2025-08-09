@@ -91,6 +91,7 @@ const renderField = (
         <MyMultiDropdownSelector
           key={key}
           {...commonProps}
+          fetchFcn={t.fetchFcn}
           options={t.options}
         />
       );

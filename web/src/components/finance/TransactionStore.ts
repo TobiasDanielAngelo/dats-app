@@ -11,10 +11,19 @@ const { slug } = getPathParts(import.meta.url, "Store");
 
 export const TransactionFields = {
   id: { field: "ID" },
-  category: { field: "SetNullOptionalForeignKey", fk: "Category" },
+  category: {
+    field: "SetNullOptionalForeignKey",
+    fk: "Category",
+  },
   description: { field: "MediumCharField" },
-  transmitter: { field: "SetNullOptionalForeignKey", fk: "Account" },
-  receiver: { field: "SetNullOptionalForeignKey", fk: "Account" },
+  transmitter: {
+    field: "SetNullOptionalForeignKey",
+    fk: "Account",
+  },
+  receiver: {
+    field: "SetNullOptionalForeignKey",
+    fk: "Account",
+  },
   amount: { field: "AmountField" },
 } satisfies Record<string, DjangoModelField>;
 

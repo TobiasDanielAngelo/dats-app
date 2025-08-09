@@ -28,7 +28,7 @@ class Motor(fields.CustomModel):
 
 class GenericProduct(fields.CustomModel):
     category = fields.SetNullOptionalForeignKey(Category, display=True)
-    compatibility = fields.OptionalManyToManyField(Motor, display=True)
+    compatibility = fields.OptionalManyToManyField(Motor)
     reorder_level = fields.LimitedIntegerField(1, 100000, 10)
 
 

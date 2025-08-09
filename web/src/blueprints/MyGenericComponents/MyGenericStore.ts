@@ -275,6 +275,7 @@ export type LoginInterface = {
 export type KeystoneModel<U> = {
   id: number | string | null;
   $view: Required<U>;
+  displayName: string;
   update: (details: Partial<U>) => void;
 };
 

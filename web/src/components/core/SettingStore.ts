@@ -1,11 +1,12 @@
-import { modelAction, modelFlow, prop } from "mobx-keystone";
-import { BASE_URL } from "../../constants/constants";
-import { PropsToInterface } from "../../constants/interfaces";
+import { modelAction, modelFlow } from "mobx-keystone";
 import {
   functionBinder,
   MyModel,
   MyStore,
 } from "../../blueprints/MyGenericComponents/MyGenericStore";
+import { BASE_URL } from "../../constants/constants";
+import { DjangoModelField, fieldToProps } from "../../constants/djangoHelpers";
+import { PropsToInterface } from "../../constants/interfaces";
 
 export const SettingIdMap = {
   Theme: 1000001,
@@ -17,14 +18,15 @@ export const SettingIdMap = {
 } as const;
 
 const slug = "settings/";
-const props = {
-  id: prop<number | string>(-1),
-  createdAt: prop<string>(""),
-  updatedAt: prop<string>(""),
-  key: prop<string>(""),
-  value: prop<string>(""),
-  description: prop<string>(""),
-};
+
+export const SettingFields = {
+  id: { field: "ID" },
+  key: { field: "ShortCharField" },
+  value: { field: "LongCharField" },
+  description: { field: "MediumCharField" },
+} satisfies Record<string, DjangoModelField>;
+
+const props = fieldToProps(SettingFields);
 
 export type SettingInterface = PropsToInterface<typeof props>;
 export class Setting extends MyModel(slug, props) {}

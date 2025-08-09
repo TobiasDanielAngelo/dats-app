@@ -49,7 +49,12 @@ export const MyGenericComponents = <
   const FormComponent = (props: MyGenericForm<NonNullableModelData>) => {
     const { item, setVisible } = props;
     const store = useStore();
-    const allFields = fieldToFormField(fields);
+    const allFields = fieldToFormField(
+      fields,
+      modelNameParts.folder,
+      [],
+      store
+    );
     const defaultItem = toDefaultItem(allFields);
 
     return (
@@ -174,13 +179,6 @@ export const MyGenericComponents = <
       modelNameParts.rawName,
       new ModelClass({})
     );
-    const { params } = values;
-    const fetchFcn = async () => {
-      const resp = await theStore.fetchAll(params.toString());
-      if (!resp.ok || !resp.data) {
-        return;
-      }
-    };
 
     const itemMap = useMemo(() => [] satisfies KV<any>[], []);
 
@@ -196,11 +194,12 @@ export const MyGenericComponents = <
         actionModalDefs={actionModalDefs}
         TableComponent={Table}
         related={theStore.related}
-        fetchFcn={fetchFcn}
+        fetchFcn={theStore.fetchAll}
         isVisible={isVisible}
         setVisible={setVisible}
         itemMap={itemMap}
         {...values}
+        pageDetails={theStore.pageDetails}
       />
     );
   };

@@ -194,15 +194,30 @@ export const sortByKey = <T>(
  * toOptions(users, "username");
  * // [{ id: 1, name: "johndoe" }, ...]
  */
-export const toOptions = <T>(items: T[], keyName?: keyof T): Option[] => {
+export const toOptions = <T>(
+  items: T[],
+  keyName?: keyof T | (keyof T)[]
+): Option[] => {
   return items.map((item, index) => {
     if (typeof item === "string") {
       return { id: index, name: item };
     } else {
       const obj = item as Record<string, any>;
+      const getValue = (key: keyof T) => {
+        const val = obj[key as string];
+        if (typeof val === "boolean") {
+          return val ? String(key) : "";
+        }
+        return val ?? "";
+      };
+      const name = Array.isArray(keyName)
+        ? keyName.map(getValue).filter(Boolean).join(" ")
+        : keyName
+        ? getValue(keyName)
+        : "";
       return {
         id: obj.id ?? index,
-        name: obj[keyName as string] ?? "",
+        name,
       };
     }
   });

@@ -12,7 +12,10 @@ const { slug } = getPathParts(import.meta.url, "Store");
 export const PrintJobFields = {
   id: { field: "ID" },
   sale: { field: "CascadeOptionalForeignKey", fk: "Sale" },
-  purchase: { field: "CascadeOptionalForeignKey", fk: "Purchase" },
+  purchase: {
+    field: "CascadeOptionalForeignKey",
+    fk: "Purchase",
+  },
 } satisfies Record<string, DjangoModelField>;
 
 const props = fieldToProps(PrintJobFields);
