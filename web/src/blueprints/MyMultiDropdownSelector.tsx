@@ -52,7 +52,7 @@ export const MyMultiDropdownSelector = (props: {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      search !== "" && fetchFcn?.(`the_ultimate__search=${search}`);
+      search !== "" && fetchFcn?.(`display_name__search=${search}`);
     }, 1000);
 
     return () => clearTimeout(timer);
@@ -122,7 +122,7 @@ export const MyMultiDropdownSelector = (props: {
             )}
             <div
               onClick={() => setOpen(!isOpen)}
-              className="cursor-pointer border bg-teal-100 dark:bg-gray-800 dark:border-gray-600 border-teal-300 p-2 rounded-lg text-sm text-gray-700 dark:text-white flex justify-between items-center"
+              className="cursor-pointer border bg-teal-100 dark:bg-gray-800 dark:border-gray-600 border-teal-300 py-2 pl-2 rounded-lg text-sm text-gray-700 dark:text-white flex justify-between items-center"
             >
               <span className="truncate">
                 {!value || value.length === 0
@@ -132,7 +132,7 @@ export const MyMultiDropdownSelector = (props: {
                     } selected.`}
               </span>
               <span className="ml-2 text-gray-500 dark:text-gray-300 text-xs">
-                ▼
+                <MyIcon icon="ExpandMore" fontSize={"small"} />
               </span>
             </div>
             {isOpen && (

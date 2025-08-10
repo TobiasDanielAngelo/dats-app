@@ -202,18 +202,23 @@ export function fieldToFormField<F extends FieldsInput>(
     }
     const { field, choices, label, defaultValue, fk } = fields[key];
     const type = DjangoFields[field].type;
+    const fileStore = fk ? fk[0].toLowerCase() + fk.slice(1) : "";
 
     const selectedStore = (store as any)[`${folder}Store`][
-      `${toCamel(fk ?? "")}Store`
+      `${fileStore}Store`
     ] as IStore;
+
     const storeOptions = store
       ? fk
-        ? (store as any)[`${folder}Store`][`${toCamel(fk ?? "")}Store`][
-            "items"
-          ].map((s: any) => ({
-            id: s.id,
-            name: s.displayName,
-          }))
+        ? [
+            ...selectedStore.items.map((s: any) => ({
+              id: s.id,
+              name: s.displayName,
+            })),
+            ...(selectedStore.pageDetails.count > 10
+              ? [{ id: -1, name: "..." }]
+              : []),
+          ]
         : []
       : [];
 
@@ -225,7 +230,7 @@ export function fieldToFormField<F extends FieldsInput>(
         options: choices ?? storeOptions,
         defaultValue: defaultValue,
         fetchFcn:
-          (type === "select" || type === "multi") && store
+          (type === "select" || type === "multi") && store && !choices
             ? selectedStore.fetchAll
             : undefined,
       },

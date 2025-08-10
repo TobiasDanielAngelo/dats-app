@@ -1,7 +1,6 @@
 import { observer } from "mobx-react-lite";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { type SetURLSearchParams, useSearchParams } from "react-router-dom";
-import type { Related } from "../../constants/interfaces";
 import type { SettingStore } from "../../components/core/SettingStore";
 import { useStore } from "../../components/core/Store";
 import { toTitleCase } from "../../constants/helpers";
@@ -16,6 +15,7 @@ import type {
   KeyboardCodes,
   KV,
   PaginatedDetails,
+  Related,
   StateSetter,
 } from "../../constants/interfaces";
 import { type IconName, MyIcon } from "../MyIcon";
@@ -283,10 +283,6 @@ export const MyGenericView = observer(
     actions.forEach((s, ind) =>
       useKeyPress(["Alt", `Digit${ind + 1}` as KeyboardCodes], s.onClick)
     );
-
-    useEffect(() => {
-      fetchFcn();
-    }, [params]);
 
     const value = {
       shownFields,

@@ -9,7 +9,7 @@ def create_default_accounts(sender, **kwargs):
         return
 
     defaults = [
-        (Setting, 1000001, {"key": "Theme", "value": "dark"}),
+        (Setting, -1, {"key": "Theme", "value": "dark"}),
     ]
 
     for model, id, fields in defaults:

@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { observer } from "mobx-react-lite";
-import { useMemo } from "react";
-import { KeystoneModel } from "./MyGenericStore";
+import { useEffect, useMemo } from "react";
+import { IStore, KeystoneModel } from "./MyGenericStore";
 import { useStore } from "../../components/core/Store";
 import {
   DjangoModelField,
@@ -20,6 +20,8 @@ import { createGenericViewContext } from "./MyGenericProps";
 import { MyGenericRow } from "./MyGenericRow";
 import { MyGenericTable } from "./MyGenericTable";
 import { MyGenericView, useViewValues } from "./MyGenericView";
+import { MyPageBar } from "../MyPageBar";
+import { useSearchParams } from "react-router-dom";
 
 export const MyGenericComponents = <
   T extends KeystoneModel<{ id: number | string | null }>
@@ -114,6 +116,7 @@ export const MyGenericComponents = <
         priceFields={theStore.priceFields}
         renderActions={(i: any) => <Row item={i} />}
         {...values}
+        PageBar={PageBar}
       />
     );
   };
@@ -149,16 +152,49 @@ export const MyGenericComponents = <
     );
   };
 
+  const PageBar = observer(() => {
+    const store = useStore();
+    const theStore = (store as any)[selectedStore1][selectedStore2] as IStore;
+    const [params, setParams] = useSearchParams();
+
+    const updatePage = (updateFn: (curr: number) => number) => {
+      setParams((t) => {
+        const p = new URLSearchParams(t);
+        const curr = Number(p.get("page")) || 1;
+        p.set("page", String(updateFn(curr)));
+        return p;
+      });
+    };
+
+    useEffect(() => {
+      theStore.fetchAll(params.size ? params.toString() : "page=1");
+    }, [params]);
+
+    return (
+      <MyPageBar
+        pageDetails={theStore.pageDetails}
+        onClickPrev={() => updatePage((curr) => Math.max(curr - 1, 1))}
+        onClickNext={() =>
+          updatePage((curr) =>
+            Math.min(curr + 1, theStore.pageDetails.totalPages ?? curr)
+          )
+        }
+        onClickPage={(n: number) => updatePage(() => n)}
+        title={modelNameParts.titleCase}
+      />
+    );
+  });
+
   const CollectionComponent = () => {
     const store = useStore();
-    const theStore = (store as any)[selectedStore1][selectedStore2];
-    const { PageBar } = useGenericView();
+    const theStore = (store as any)[selectedStore1][selectedStore2] as IStore;
     return (
       <SideBySideView
         SideA={
           <MyGenericCollection
             CardComponent={Card}
             title={modelNameParts.titleCase}
+            pageDetails={theStore.pageDetails}
             PageBar={PageBar}
             items={theStore.items}
             updates={theStore.countToUpdate}
@@ -172,7 +208,7 @@ export const MyGenericComponents = <
 
   const ViewComponent = () => {
     const store = useStore();
-    const theStore = (store as any)[selectedStore1][selectedStore2];
+    const theStore = (store as any)[selectedStore1][selectedStore2] as IStore;
     const { isVisible, setVisible } = useVisible();
     const values = useViewValues(
       store.settingStore,

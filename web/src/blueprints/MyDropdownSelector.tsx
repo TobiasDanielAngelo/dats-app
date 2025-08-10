@@ -21,7 +21,7 @@ export const MyDropdownSelector = (props: {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      search !== "" && fetchFcn?.(`the_ultimate__search=${search}`);
+      search !== "" && fetchFcn?.(`display_name__search=${search}`);
     }, 1000);
 
     return () => clearTimeout(timer);

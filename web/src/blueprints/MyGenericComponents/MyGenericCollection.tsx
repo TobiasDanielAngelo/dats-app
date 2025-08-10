@@ -35,13 +35,15 @@ export const MyGenericCollection = observer(
 
     return (
       <div
-        className="flex flex-col overflow-scroll shadow-xl rounded-lg"
-        style={{
-          minHeight: isVisible1 ? "85vh" : undefined,
-          maxHeight: isVisible1 ? "85vh" : undefined,
-        }}
+        className="flex flex-col  rounded-lg"
+        style={
+          {
+            // minHeight: isVisible1 ? "85vh" : undefined,
+            // maxHeight: isVisible1 ? "85vh" : undefined,
+          }
+        }
       >
-        <div className="flex rounded-md flex-row sticky font-bold top-0 z-10 text-lg border-b-2 dark:border-gray-600 border-teal-400 p-2 text-center bg-teal-100 dark:bg-[#242424]">
+        <div className="flex rounded-md items-center flex-row sticky font-bold top-0 z-10 text-lg border-b-2 dark:border-gray-600 border-teal-400 p-2 text-center bg-teal-100 dark:bg-[#242424]">
           <MyIcon
             icon={"RestartAlt"}
             onClick={onClickUpdate}
@@ -55,9 +57,9 @@ export const MyGenericCollection = observer(
         </div>
 
         {isVisible1 && (
-          <>
+          <div>
             {PageBar ? <PageBar /> : <></>}
-            <div className="flex-1">
+            <div className="flex-1 overflow-scroll">
               {sortAndFilterByIds(
                 items,
                 pageDetails?.ids ?? items.map((s) => s.id),
@@ -66,7 +68,7 @@ export const MyGenericCollection = observer(
                 <CardComponent item={s} key={s.id} />
               ))}
             </div>
-          </>
+          </div>
         )}
       </div>
     );

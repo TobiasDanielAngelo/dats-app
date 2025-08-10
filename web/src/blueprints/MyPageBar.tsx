@@ -63,7 +63,7 @@ export const MyPageBar: React.FC<MyPageBarProps> = ({
         {title.toUpperCase()}
       </span>
       <ul className="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8 cursor-pointer">
-        {currentPage === 1 ? (
+        {currentPage === 1 || totalPages === 0 ? (
           <></>
         ) : (
           <li>

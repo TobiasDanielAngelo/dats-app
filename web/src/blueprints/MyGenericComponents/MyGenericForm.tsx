@@ -10,6 +10,7 @@ export interface MyGenericFormProps<T extends { id: string | number }> {
   setVisible?: (t: boolean) => void;
   fetchFcn?: () => void;
   fields: Field[][];
+  isLoading?: boolean;
   objectName: string;
   store: IStore;
 }
@@ -24,6 +25,7 @@ export function MyGenericForm<T extends { id: string | number }>({
   item,
   setVisible,
   fetchFcn,
+  isLoading,
   fields,
   objectName,
   store,
@@ -112,21 +114,15 @@ export function MyGenericForm<T extends { id: string | number }>({
   );
 
   const [msg, setMsg] = useState<Object>();
-  const [isLoading, setLoading] = useState(false);
 
   const onClickCreate = async () => {
-    setLoading(true);
     const resp = await addItem(transformTo(details));
-    setLoading(false);
     if (!resp.ok) return setMsg(resp.details);
     fetchFcn?.();
-    setVisible?.(false);
   };
 
   const onClickCreateAdd = async () => {
-    setLoading(true);
     const resp = await addItem(transformTo(details));
-    setLoading(false);
     if (!resp.ok) return setMsg(resp.details);
     fetchAll();
     setDetails(transformFrom({} as T));
@@ -134,9 +130,7 @@ export function MyGenericForm<T extends { id: string | number }>({
 
   const onClickEdit = async () => {
     if (!item?.id) return;
-    setLoading(true);
     const resp = await updateItem(item.id, transformTo(details));
-    setLoading(false);
     if (!resp.ok) return setMsg(resp.details);
     fetchAll();
     setVisible?.(false);
@@ -144,9 +138,7 @@ export function MyGenericForm<T extends { id: string | number }>({
 
   const onClickDelete = async () => {
     if (!item?.id) return;
-    setLoading(true);
     const resp = await deleteItem(item.id);
-    setLoading(false);
     if (!resp.ok) return setMsg(resp.details);
     fetchAll();
     setVisible?.(false);

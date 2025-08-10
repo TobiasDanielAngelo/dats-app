@@ -9,12 +9,7 @@ import { DjangoModelField, fieldToProps } from "../../constants/djangoHelpers";
 import { PropsToInterface } from "../../constants/interfaces";
 
 export const SettingIdMap = {
-  Theme: 1000001,
-  UGW: 1000002,
-  GW4: 1000003,
-  GW3: 1000004,
-  GW2: 1000005,
-  GW1: 1000006,
+  Theme: -1,
 } as const;
 
 const slug = "settings/";

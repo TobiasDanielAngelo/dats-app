@@ -10,6 +10,7 @@ import type { KV, StateSetter } from "../../constants/interfaces";
 import { formatValue } from "../../constants/JSXHelpers";
 import { MyTable } from "../MyTable";
 import type { Related } from "../../constants/interfaces";
+import _ from "lodash";
 
 type MyGenericTableProps<T extends object> = {
   items: T[];
@@ -41,6 +42,9 @@ export const MyGenericTable = observer(
     PageBar,
     renderActions,
   }: MyGenericTableProps<T>) => {
+    const allKeys = [
+      ...new Set(shownFields.map((s) => _.camelCase(s))),
+    ] as string[];
     const HeaderWithSort = ({ k }: { k: string }) => {
       const orderByParams = params.getAll("order_by");
       const snakeK = camelToSnakeCase(k);
@@ -94,7 +98,7 @@ export const MyGenericTable = observer(
     const matrix = useMemo(() => {
       if (!items.length) return [];
       const header = [
-        ...shownFields
+        ...allKeys
           .filter((s) => Object.keys(items[0].$view).includes(s))
           .map((k) => <HeaderWithSort k={k} key={k} />),
         "Actions",
@@ -105,7 +109,7 @@ export const MyGenericTable = observer(
           return (pageIds.indexOf(a.id) ?? 0) - (pageIds.indexOf(b.id) ?? 0);
         })
         .map((item) => [
-          ...shownFields
+          ...allKeys
             .filter((s) => Object.keys(items[0].$view).includes(s))
             .map((key) => {
               const relatedName = related?.find(

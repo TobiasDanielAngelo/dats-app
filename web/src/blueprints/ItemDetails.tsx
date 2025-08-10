@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { observer } from "mobx-react-lite";
 import { toRomanWithExponents, toTitleCase } from "../constants/helpers";
 import { type ItemDetailsProps } from "../constants/interfaces";
@@ -22,8 +23,16 @@ export const ItemDetails = observer(
   }: ItemDetailsProps<T>) => {
     const itemView = item.$view ?? item;
 
+    const newShownFields = shownFields.filter(
+      (s) => !["createdAt", "updatedAt", "displayName"].includes(s)
+    );
+
     const allItemKeys = [
-      ...new Set(Object.keys(itemView).filter((s) => !s.includes("$"))),
+      ...new Set(
+        Object.keys(itemView)
+          .filter((s) => !s.includes("$"))
+          .map((s) => _.camelCase(s))
+      ),
     ] as string[];
 
     const sections = [
@@ -73,7 +82,7 @@ export const ItemDetails = observer(
         {sections.map(({ title, keys }) => (
           <div key={title} className={sectionStyles[title] || ""}>
             {keys
-              .filter((key) => shownFields.includes(key) || showMore)
+              .filter((key) => newShownFields.includes(key) || showMore)
               .map((key) => renderRow(key, title))}
             {/* {title === "Body" &&
               showMore &&

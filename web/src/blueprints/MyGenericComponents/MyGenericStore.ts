@@ -355,6 +355,7 @@ export function MyStore<
     lastUpdated: prop<string>(""),
     latestParam: prop<string>(""),
     countToUpdate: prop<number>(0),
+    isLoading: prop<boolean>(false),
   };
 
   type GenericInterface = Required<PropsToInterface<typeof props>>;
@@ -401,6 +402,9 @@ export function MyStore<
     @modelFlow
     fetchAll = _async(function* (this: GenericStore, params?: string) {
       let result;
+      this.isLoading = true;
+
+      this.pageDetails = defaultPageDetails;
 
       try {
         result = yield* _await(
@@ -418,6 +422,8 @@ export function MyStore<
           pageDetails: null,
         };
       }
+
+      this.isLoading = false;
 
       if (!result.ok || !result.data) {
         Swal.fire({
