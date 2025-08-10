@@ -1,8 +1,8 @@
 import { prop, type OptionalModelProp } from "mobx-keystone";
-import { Store } from "../components/core/Store";
-import { toCamel, toTitleCase } from "./helpers";
-import { type Field, type Option } from "./interfaces";
 import { IStore } from "../blueprints/MyGenericComponents/MyGenericStore";
+import { Store } from "../components/core/Store";
+import { toTitleCase } from "./helpers";
+import { type Field, type Option } from "./interfaces";
 
 const DjangoFields = {
   DefaultBooleanField: {
