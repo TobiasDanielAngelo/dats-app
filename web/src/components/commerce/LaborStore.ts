@@ -15,6 +15,7 @@ export const LaborFields = {
   employees: {
     field: "OptionalManyToManyField",
     fk: "Employee",
+    appFK: "People",
   },
   labor_type: {
     field: "SetNullOptionalForeignKey",

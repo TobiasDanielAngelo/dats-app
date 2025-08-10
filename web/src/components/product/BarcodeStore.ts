@@ -11,7 +11,7 @@ const { slug } = getPathParts(import.meta.url, "Store");
 
 export const BarcodeFields = {
   id: { field: "ID" },
-  product: { field: "OneToOneField" },
+  product: { field: "OneToOneField", fk: "Article" },
   code: { field: "ShortCharField" },
 } satisfies Record<string, DjangoModelField>;
 

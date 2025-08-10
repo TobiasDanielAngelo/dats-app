@@ -1,5 +1,4 @@
 from my_django_app import fields
-from django.contrib.auth.models import AbstractUser
 
 
 class Position(fields.CustomModel):
@@ -7,7 +6,9 @@ class Position(fields.CustomModel):
     description = fields.MediumCharField()
 
 
-class Employee(AbstractUser):
+class Employee(fields.CustomModel):
+    first_name = fields.ShortCharField()
+    last_name = fields.ShortCharField()
     position = fields.SetNullOptionalForeignKey(Position, display=True)
     phone = fields.ShortCharField()
 

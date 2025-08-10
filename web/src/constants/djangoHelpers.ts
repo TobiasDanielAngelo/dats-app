@@ -154,6 +154,7 @@ const DjangoFields = {
 export type DjangoModelField = {
   field: keyof typeof DjangoFields;
   fk?: string;
+  appFK?: string;
   choices?: Option[];
   label?: string;
   defaultValue?: any;
@@ -200,13 +201,13 @@ export function fieldToFormField<F extends FieldsInput>(
     if (["id", ...(excludedFields ?? [])].includes(key)) {
       continue;
     }
-    const { field, choices, label, defaultValue, fk } = fields[key];
+    const { field, choices, label, defaultValue, fk, appFK } = fields[key];
     const type = DjangoFields[field].type;
     const fileStore = fk ? fk[0].toLowerCase() + fk.slice(1) : "";
 
-    const selectedStore = (store as any)[`${folder}Store`][
-      `${fileStore}Store`
-    ] as IStore;
+    const selectedStore = (store as any)[
+      `${appFK?.toLowerCase() ?? folder}Store`
+    ][`${fileStore}Store`] as IStore;
 
     const storeOptions = store
       ? fk

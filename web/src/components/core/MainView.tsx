@@ -1,10 +1,10 @@
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
-import { useStore } from "./Store";
+import { buildRoutes } from "../../constants/helpers";
 import { Main } from "./_AllComponents";
 import { NavBar } from "./NavigationBar";
-import { buildRoutes } from "../../constants/helpers";
+import { useStore } from "./Store";
 
 export const MainView = observer(() => {
   const navigate = useNavigate();
@@ -36,7 +36,11 @@ export const MainView = observer(() => {
       <NavBar />
       <Routes>
         {routes.map(({ path, component: Component }) => (
-          <Route key={path} path={path} element={<Component />} />
+          <Route
+            key={path}
+            path={path}
+            element={<Component routePath={path} />}
+          />
         ))}
       </Routes>
     </div>

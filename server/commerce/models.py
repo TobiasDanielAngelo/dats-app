@@ -1,7 +1,7 @@
 from my_django_app import fields
-from product.models import *
-from finance.models import *
-from people.models import *
+from product.models import Location, Article
+from finance.models import Transaction
+from people.models import Customer, Supplier, Employee
 
 
 class InventoryLog(fields.CustomModel):

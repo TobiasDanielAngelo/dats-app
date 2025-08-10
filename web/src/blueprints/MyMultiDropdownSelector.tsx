@@ -52,7 +52,7 @@ export const MyMultiDropdownSelector = (props: {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      search !== "" && fetchFcn?.(`display_name__search=${search}`);
+      search !== "" && fetchFcn?.(`display_name__search=${search}&page=1`);
     }, 1000);
 
     return () => clearTimeout(timer);

@@ -119,6 +119,7 @@ export function MyGenericForm<T extends { id: string | number }>({
     const resp = await addItem(transformTo(details));
     if (!resp.ok) return setMsg(resp.details);
     fetchFcn?.();
+    setVisible?.(false);
   };
 
   const onClickCreateAdd = async () => {
@@ -126,6 +127,7 @@ export function MyGenericForm<T extends { id: string | number }>({
     if (!resp.ok) return setMsg(resp.details);
     fetchAll();
     setDetails(transformFrom({} as T));
+    setVisible?.(false);
   };
 
   const onClickEdit = async () => {

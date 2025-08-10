@@ -21,14 +21,16 @@ export const PurchaseFields = {
   transactions: {
     field: "OptionalManyToManyField",
     fk: "Transaction",
+    appFK: "Finance",
   },
   inventory_logs: {
     field: "OptionalManyToManyField",
     fk: "Purchase",
   },
-  customer: {
+  supplier: {
     field: "SetNullOptionalForeignKey",
     fk: "Customer",
+    appFK: "People",
   },
 } satisfies Record<string, DjangoModelField>;
 

@@ -7,7 +7,7 @@ import {
 } from "../../blueprints/MyGenericComponents/MyGenericStore";
 import { BASE_URL } from "../../constants/constants";
 
-const slug = "employees/";
+const slug = "users/";
 const props = {
   id: prop<number | string>(-1),
   createdAt: prop<string>(""),

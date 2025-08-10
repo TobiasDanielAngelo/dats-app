@@ -79,16 +79,20 @@ export const ItemDetails = observer(
 
     return (
       <>
-        {sections.map(({ title, keys }) => (
-          <div key={title} className={sectionStyles[title] || ""}>
-            {keys
-              .filter((key) => newShownFields.includes(key) || showMore)
-              .map((key) => renderRow(key, title))}
-            {/* {title === "Body" &&
-              showMore &&
-              hiddenKeys.map((key) => renderRow(key, title))} */}
-          </div>
-        ))}
+        {sections.map(({ title, keys }) => {
+          return (
+            <div key={title} className={sectionStyles[title] || ""}>
+              {keys
+                .filter(
+                  (key) =>
+                    newShownFields.includes(key) ||
+                    showMore ||
+                    important.includes(key)
+                )
+                .map((key) => renderRow(key, title))}
+            </div>
+          );
+        })}
       </>
     );
   }

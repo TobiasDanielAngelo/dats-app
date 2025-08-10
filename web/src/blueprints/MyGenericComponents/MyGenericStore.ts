@@ -18,7 +18,7 @@ import {
   PropsToInterface,
   Related,
 } from "../../constants/interfaces";
-import { defaultPageDetails } from "../../constants/constants";
+import { BASE_URL, defaultPageDetails } from "../../constants/constants";
 
 export function autoFormData(body: Record<string, any>) {
   let needsFormData = false;
@@ -408,7 +408,7 @@ export function MyStore<
 
       try {
         result = yield* _await(
-          fetchItemsRequest<Partial<T>>(baseURL, slug, params)
+          fetchItemsRequest<Partial<T>>(baseURL, slug, params ?? "page=1")
         );
       } catch (error) {
         Swal.fire({
@@ -468,7 +468,8 @@ export function MyStore<
         }
       });
       this.lastUpdated = new Date().toISOString();
-      this.latestParam = params ?? "";
+      this.latestParam = params ?? "page=1";
+      this.countToUpdate = 0;
 
       return result;
     });
@@ -480,6 +481,7 @@ export function MyStore<
       try {
         result = yield* _await(
           fetchItemsRequest<Partial<T>>(
+            BASE_URL,
             slug,
             `check_last_updated=1&last_updated=${lastUpdated}`
           )

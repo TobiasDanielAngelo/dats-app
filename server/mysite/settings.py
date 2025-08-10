@@ -109,7 +109,7 @@ MEDIA_ROOT = BASE_DIR / "uploads"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-AUTH_USER_MODEL = "people.Employee"
+AUTH_USER_MODEL = "auth.User"
 
 REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": (

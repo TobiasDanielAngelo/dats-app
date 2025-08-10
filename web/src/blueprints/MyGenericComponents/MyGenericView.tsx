@@ -284,6 +284,13 @@ export const MyGenericView = observer(
       useKeyPress(["Alt", `Digit${ind + 1}` as KeyboardCodes], s.onClick)
     );
 
+    views.forEach((s, ind) =>
+      useKeyPress(
+        ["Alt", `Digit${ind + 1 + actions.length}` as KeyboardCodes],
+        s.onClick
+      )
+    );
+
     const value = {
       shownFields,
       setShownFields,

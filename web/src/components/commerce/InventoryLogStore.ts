@@ -17,6 +17,7 @@ export const InventoryLogFields = {
   product: {
     field: "CascadeRequiredForeignKey",
     fk: "Article",
+    appFK: "Product",
   },
   quantity: {
     field: "LimitedIntegerField",
@@ -29,10 +30,12 @@ export const InventoryLogFields = {
   transmitter: {
     field: "SetNullOptionalForeignKey",
     fk: "Location",
+    appFK: "Product",
   },
   receiver: {
     field: "SetNullOptionalForeignKey",
     fk: "Location",
+    appFK: "Product",
   },
 } satisfies Record<string, DjangoModelField>;
 const props = fieldToProps(InventoryLogFields);

@@ -3,6 +3,7 @@ import { storesToProps } from "../../blueprints/MyGenericComponents/MyGenericSto
 import { CustomerStore } from "./CustomerStore";
 import { PositionStore } from "./PositionStore";
 import { SupplierStore } from "./SupplierStore";
+import { EmployeeStore } from "./EmployeeStore";
 
 @model("myApp/PeopleStore")
 export class PeopleStore extends Model(
@@ -10,5 +11,6 @@ export class PeopleStore extends Model(
     CustomerStore,
     PositionStore,
     SupplierStore,
+    EmployeeStore,
   })
 ) {}

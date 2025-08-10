@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { observer } from "mobx-react-lite";
 import { useEffect, useMemo } from "react";
-import { IStore, KeystoneModel } from "./MyGenericStore";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { useStore } from "../../components/core/Store";
 import {
   DjangoModelField,
@@ -11,6 +11,7 @@ import {
 import { PathParts } from "../../constants/helpers";
 import { useVisible } from "../../constants/hooks";
 import { ActionModalDef, KV } from "../../constants/interfaces";
+import { MyPageBar } from "../MyPageBar";
 import { SideBySideView } from "../SideBySideView";
 import { MyGenericCard } from "./MyGenericCard";
 import { MyGenericCollection } from "./MyGenericCollection";
@@ -18,10 +19,10 @@ import { MyGenericFilter } from "./MyGenericFilter";
 import { MyGenericForm } from "./MyGenericForm";
 import { createGenericViewContext } from "./MyGenericProps";
 import { MyGenericRow } from "./MyGenericRow";
+import { IStore, KeystoneModel } from "./MyGenericStore";
 import { MyGenericTable } from "./MyGenericTable";
 import { MyGenericView, useViewValues } from "./MyGenericView";
-import { MyPageBar } from "../MyPageBar";
-import { useSearchParams } from "react-router-dom";
+import { MyIcon } from "../MyIcon";
 
 export const MyGenericComponents = <
   T extends KeystoneModel<{ id: number | string | null }>
@@ -142,6 +143,7 @@ export const MyGenericComponents = <
         item={item}
         shownFields={shownFields}
         header={["id"]}
+        important={["displayName"]}
         prices={theStore.priceFields}
         FormComponent={Form}
         deleteItem={theStore.deleteItem}
@@ -171,17 +173,25 @@ export const MyGenericComponents = <
     }, [params]);
 
     return (
-      <MyPageBar
-        pageDetails={theStore.pageDetails}
-        onClickPrev={() => updatePage((curr) => Math.max(curr - 1, 1))}
-        onClickNext={() =>
-          updatePage((curr) =>
-            Math.min(curr + 1, theStore.pageDetails.totalPages ?? curr)
-          )
-        }
-        onClickPage={(n: number) => updatePage(() => n)}
-        title={modelNameParts.titleCase}
-      />
+      <div className="flex flex-row items-center pl-2">
+        <MyIcon
+          icon={"RestartAlt"}
+          onClick={theStore.fetchUpdated}
+          label={String(theStore.countToUpdate ?? 0)}
+        />
+
+        <MyPageBar
+          pageDetails={theStore.pageDetails}
+          onClickPrev={() => updatePage((curr) => Math.max(curr - 1, 1))}
+          onClickNext={() =>
+            updatePage((curr) =>
+              Math.min(curr + 1, theStore.pageDetails.totalPages ?? curr)
+            )
+          }
+          onClickPage={(n: number) => updatePage(() => n)}
+          title={modelNameParts.titleCase}
+        />
+      </div>
     );
   });
 
@@ -197,7 +207,6 @@ export const MyGenericComponents = <
             pageDetails={theStore.pageDetails}
             PageBar={PageBar}
             items={theStore.items}
-            updates={theStore.countToUpdate}
           />
         }
         SideB=""
@@ -206,7 +215,7 @@ export const MyGenericComponents = <
     );
   };
 
-  const ViewComponent = () => {
+  const ViewComponent = (props: { routePath: string }) => {
     const store = useStore();
     const theStore = (store as any)[selectedStore1][selectedStore2] as IStore;
     const { isVisible, setVisible } = useVisible();
@@ -216,7 +225,31 @@ export const MyGenericComponents = <
       new ModelClass({})
     );
 
+    const location = useLocation();
+    const match = props.routePath === location.pathname;
+
     const itemMap = useMemo(() => [] satisfies KV<any>[], []);
+
+    useEffect(() => {
+      if (!match) return;
+      let count = 0;
+      let timeoutId: number;
+
+      const run = () => {
+        count++;
+        if (count > 20) return;
+        const lastUpdated =
+          theStore.lastUpdated === ""
+            ? new Date().toISOString()
+            : theStore.lastUpdated;
+        theStore.checkUpdated(lastUpdated);
+        timeoutId = setTimeout(run, (count + 1) * 1000);
+      };
+
+      run();
+
+      return () => clearTimeout(timeoutId);
+    }, [match, theStore.lastUpdated]);
 
     const actionModalDefs = [] satisfies ActionModalDef[];
 
