@@ -46,6 +46,9 @@ export const MyGenericComponents = <
 
   const selectedStore1 = `${modelNameParts.folder}Store`;
   const selectedStore2 = `${modelNameParts.camelCase}Store`;
+  const morePriceFields = Object.entries(fields)
+    .filter(([_, value]) => value.field === "AmountField")
+    .map(([key]) => key);
 
   const { Context, useGenericView } = createGenericViewContext();
 
@@ -114,7 +117,7 @@ export const MyGenericComponents = <
       <MyGenericTable
         items={theStore.items}
         pageIds={theStore.pageDetails.ids}
-        priceFields={theStore.priceFields}
+        priceFields={[...theStore.priceFields, ...morePriceFields]}
         renderActions={(i: any) => <Row item={i} />}
         {...values}
         PageBar={PageBar}
@@ -144,7 +147,7 @@ export const MyGenericComponents = <
         shownFields={shownFields}
         header={["id"]}
         important={["displayName"]}
-        prices={theStore.priceFields}
+        prices={[...theStore.priceFields, ...morePriceFields]}
         FormComponent={Form}
         deleteItem={theStore.deleteItem}
         fetchFcn={theStore.fetchAll}
@@ -230,26 +233,26 @@ export const MyGenericComponents = <
 
     const itemMap = useMemo(() => [] satisfies KV<any>[], []);
 
-    useEffect(() => {
-      if (!match) return;
-      let count = 0;
-      let timeoutId: number;
+    // useEffect(() => {
+    //   if (!match) return;
+    //   let count = 0;
+    //   let timeoutId: number;
 
-      const run = () => {
-        count++;
-        if (count > 20) return;
-        const lastUpdated =
-          theStore.lastUpdated === ""
-            ? new Date().toISOString()
-            : theStore.lastUpdated;
-        theStore.checkUpdated(lastUpdated);
-        timeoutId = setTimeout(run, (count + 1) * 1000);
-      };
+    //   const run = () => {
+    //     count++;
+    //     if (count > 20) return;
+    //     const lastUpdated =
+    //       theStore.lastUpdated === ""
+    //         ? new Date().toISOString()
+    //         : theStore.lastUpdated;
+    //     theStore.checkUpdated(lastUpdated);
+    //     timeoutId = setTimeout(run, (count + 1) * 1000);
+    //   };
 
-      run();
+    //   run();
 
-      return () => clearTimeout(timeoutId);
-    }, [match, theStore.lastUpdated]);
+    //   return () => clearTimeout(timeoutId);
+    // }, [match, theStore.lastUpdated]);
 
     const actionModalDefs = [] satisfies ActionModalDef[];
 

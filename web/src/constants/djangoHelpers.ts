@@ -158,6 +158,7 @@ export type DjangoModelField = {
   choices?: Option[];
   label?: string;
   defaultValue?: any;
+  readOnly?: boolean;
 };
 
 type ExtractPropType<F> = F extends OptionalModelProp<infer T> ? T : never;
@@ -201,7 +202,8 @@ export function fieldToFormField<F extends FieldsInput>(
     if (["id", ...(excludedFields ?? [])].includes(key)) {
       continue;
     }
-    const { field, choices, label, defaultValue, fk, appFK } = fields[key];
+    const { field, choices, label, defaultValue, fk, appFK, readOnly } =
+      fields[key];
     const type = DjangoFields[field].type;
     const fileStore = fk ? fk[0].toLowerCase() + fk.slice(1) : "";
 
@@ -223,19 +225,20 @@ export function fieldToFormField<F extends FieldsInput>(
         : []
       : [];
 
-    result.push([
-      {
-        name: key,
-        label: label ?? toTitleCase(key),
-        type,
-        options: choices ?? storeOptions,
-        defaultValue: defaultValue,
-        fetchFcn:
-          (type === "select" || type === "multi") && store && !choices
-            ? selectedStore.fetchAll
-            : undefined,
-      },
-    ]);
+    if (!readOnly)
+      result.push([
+        {
+          name: key,
+          label: label ?? toTitleCase(key),
+          type,
+          options: choices ?? storeOptions,
+          defaultValue: defaultValue,
+          fetchFcn:
+            (type === "select" || type === "multi") && store && !choices
+              ? selectedStore.fetchAll
+              : undefined,
+        },
+      ]);
   }
 
   return result;

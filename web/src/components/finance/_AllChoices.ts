@@ -5,3 +5,12 @@ export const NATURE_CHOICES = [
   "Receivable",
   "Payable",
 ];
+
+export const TYPE_CHOICES = [
+  "Cash",
+  "Coins",
+  "Mixed",
+  "Debit",
+  "Credit",
+  "Untracked",
+];

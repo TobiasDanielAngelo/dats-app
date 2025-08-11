@@ -3,7 +3,16 @@ from django.db.models import Sum
 
 
 class Account(fields.CustomModel):
+    TYPE_CHOICES = [
+        (0, "Cash"),
+        (1, "Coins"),
+        (3, "Mixed"),
+        (4, "Debit"),
+        (5, "Credit"),
+        (6, "Untracked"),
+    ]
     name = fields.ShortCharField(display=True)
+    type = fields.ChoiceIntegerField(TYPE_CHOICES)
 
     @property
     def net_balance(self):

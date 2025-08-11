@@ -1,17 +1,20 @@
 import { BASE_URL } from "../../constants/constants";
 import { DjangoModelField, fieldToProps } from "../../constants/djangoHelpers";
-import { getPathParts } from "../../constants/helpers";
+import { getPathParts, toOptions } from "../../constants/helpers";
 import { PropsToInterface } from "../../constants/interfaces";
 import {
   MyModel,
   MyStore,
 } from "../../blueprints/MyGenericComponents/MyGenericStore";
+import { TYPE_CHOICES } from "./_AllChoices";
 
 const { slug } = getPathParts(import.meta.url, "Store");
 
 export const AccountFields = {
   id: { field: "ID" },
   name: { field: "ShortCharField" },
+  type: { field: "ChoiceIntegerField", choices: toOptions(TYPE_CHOICES) },
+  netBalance: { field: "AmountField", readOnly: true },
 } satisfies Record<string, DjangoModelField>;
 
 const props = fieldToProps(AccountFields);
