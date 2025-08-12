@@ -12,7 +12,7 @@ const { slug } = getPathParts(import.meta.url, "Store");
 export const SupplierFields = {
   id: { field: "ID" },
   name: { field: "ShortCharField" },
-  contact_person: { field: "ShortCharField" },
+  contactPerson: { field: "ShortCharField" },
   email: { field: "ShortCharField" },
   phone: { field: "ShortCharField" },
   address: { field: "MediumCharField" },

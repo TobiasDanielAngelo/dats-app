@@ -139,7 +139,7 @@ export const MyGenericView = observer(
         icon: "NoteAdd",
         label: "NEW",
         name: `Add ${title}`,
-        modal: (
+        modal: () => (
           <FormComponent
             fetchFcn={fetchFcn}
             setVisible={setVisibleForIndex(1)}
@@ -150,7 +150,7 @@ export const MyGenericView = observer(
         icon: "ViewList",
         label: "FIELDS",
         name: "Show Fields",
-        modal: (
+        modal: () => (
           <MyMultiDropdownSelector
             label="Fields"
             value={shownFields as string[]}
@@ -168,7 +168,7 @@ export const MyGenericView = observer(
         icon: "FilterListAlt",
         label: "FILTERS",
         name: "Filters",
-        modal: <FilterComponent />,
+        modal: () => <FilterComponent />,
       },
     ] satisfies ActionModalDef[];
 
@@ -225,23 +225,9 @@ export const MyGenericView = observer(
       />
     );
 
-    const Modals = [...defaultActionModalDefs, ...(actionModalDefs ?? [])]
-      .map((s) => s.modal)
-      .map((child, i) => (
-        <MyModal
-          key={i}
-          isVisible={isVisible[i + 1]}
-          setVisible={(v) =>
-            setVisible(
-              i + 1,
-              typeof v === "function" ? (v as any)(isVisible[i + 1]) : v
-            )
-          }
-          disableClose
-        >
-          {child}
-        </MyModal>
-      ));
+    const Modals = [...defaultActionModalDefs, ...(actionModalDefs ?? [])].map(
+      (s) => s.modal
+    );
 
     const views = useMemo(
       () => [
@@ -310,7 +296,21 @@ export const MyGenericView = observer(
     return (
       <Context.Provider value={value}>
         {view === "card" ? <CollectionComponent /> : <TableComponent />}
-        {Modals}
+        {Modals.map((S, ind) => (
+          <MyModal
+            key={ind}
+            isVisible={isVisible[ind + 1]}
+            setVisible={(v: boolean) =>
+              setVisible(
+                ind + 1,
+                typeof v === "function" ? (v as any)(isVisible[ind + 1]) : v
+              )
+            }
+            disableClose
+          >
+            <S />
+          </MyModal>
+        ))}
         <MySpeedDial actions={actions} />
         <MySpeedDial actions={views} leftSide />
       </Context.Provider>

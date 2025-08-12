@@ -12,13 +12,13 @@ import {
   prop,
 } from "mobx-keystone";
 import Swal from "sweetalert2";
+import { BASE_URL, defaultPageDetails } from "../../constants/constants";
 import {
   PaginatedDetails,
   PaginatedResponse,
   PropsToInterface,
   Related,
 } from "../../constants/interfaces";
-import { BASE_URL, defaultPageDetails } from "../../constants/constants";
 
 export function autoFormData(body: Record<string, any>) {
   let needsFormData = false;
@@ -507,6 +507,7 @@ export function MyStore<
 
     @modelFlow
     fetchUpdated = _async(function* (this: GenericStore) {
+      console.log("Fetch Updated", this.latestParam);
       return yield* _await(this.fetchAll(this.latestParam));
     });
 

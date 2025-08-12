@@ -24,6 +24,16 @@ export const TransactionFields = {
     field: "SetNullOptionalForeignKey",
     fk: "Account",
   },
+  purchase: {
+    field: "CascadeOptionalForeignKey",
+    fk: "Purchase",
+    appFK: "Commerce",
+  },
+  sale: {
+    field: "CascadeOptionalForeignKey",
+    fk: "Sale",
+    appFK: "Commerce",
+  },
   amount: { field: "AmountField" },
 } satisfies Record<string, DjangoModelField>;
 

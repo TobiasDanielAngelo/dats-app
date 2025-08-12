@@ -12,8 +12,8 @@ const { slug } = getPathParts(import.meta.url, "Store");
 export const CategoryFields = {
   id: { field: "ID" },
   name: { field: "ShortCharField" },
-  is_kit: { field: "DefaultBooleanField" },
-  is_universal: { field: "DefaultBooleanField" },
+  isKit: { field: "DefaultBooleanField" },
+  isUniversal: { field: "DefaultBooleanField" },
   notes: { field: "MediumCharField" },
 } satisfies Record<string, DjangoModelField>;
 

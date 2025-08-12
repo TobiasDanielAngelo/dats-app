@@ -1,48 +1,52 @@
 import { Dialog } from "@mui/material";
-import { useClickAway } from "@uidotdev/usehooks";
 import type { PropsWithChildren } from "react";
-import { useKeyPress } from "../constants/hooks";
-import type { StateSetter } from "../constants/interfaces";
+import { Index, useKeyPress, useVisible } from "../constants/hooks";
+import type { ActionModalDef, StateSetter } from "../constants/interfaces";
 import { MyIcon } from "./MyIcon";
 
 export const MyModal = (
   props: PropsWithChildren<{
     isVisible: boolean;
-    setVisible: StateSetter<boolean>;
+    setVisible: StateSetter<boolean> | ((t: boolean) => void);
     fullWidth?: boolean;
     title?: string;
     subTitle?: string;
     disableClose?: boolean;
+    moreActions?: ActionModalDef[];
   }>
 ) => {
   const {
-    isVisible,
-    setVisible,
+    isVisible: isVisibleX,
+    setVisible: setVisibleX,
     children,
     fullWidth,
     title,
     subTitle,
     disableClose,
+    moreActions,
   } = props;
 
-  const ref = useClickAway<HTMLDivElement>(() => setVisible(false));
+  const { setVisibleForIndex, isVisible } = useVisible();
+  // const ref = useClickAway<HTMLDivElement>(() => setVisible(false));
 
-  useKeyPress(["Escape"], () => setVisible(false));
+  useKeyPress(["Escape"], () => setVisibleX(false));
 
   return (
     <Dialog
       onClose={
         disableClose
           ? (_, reason) =>
-              reason !== "backdropClick" ? setVisible(false) : setVisible(true)
-          : () => setVisible(false)
+              reason !== "backdropClick"
+                ? setVisibleX(false)
+                : setVisibleX(true)
+          : () => setVisibleX(false)
       }
       maxWidth={fullWidth ? false : undefined}
-      open={isVisible}
+      open={isVisibleX}
       className="overscroll-contain overflow-hidden"
     >
       <div
-        ref={ref}
+        // ref={ref}
         className="dark:bg-gray-900 bg-teal-100 overflow-y-scroll scrollbar scrollbar-thin scrollbar-thumb-gray-300 scrollbar-rounded-[12px] scrollbar-mx-10 scrollbar-track-gray-100 dark:scrollbar-thumb-gray-600 dark:scrollbar-track-gray-900"
       >
         <div className="flex justify-between items-center m-2">
@@ -54,11 +58,23 @@ export const MyModal = (
               {subTitle}
             </div>
           </div>
-          <MyIcon icon="Close" onClick={() => setVisible(false)} />
+          <MyIcon icon="Close" onClick={() => setVisibleX(false)} />
         </div>
-        <div className="min-w-[300px] max-w-[80vw] min-h-[100px] p-3">
+        <div className="min-w-[500px] max-w-[80vw] min-h-[100px] p-3">
           {children}
         </div>
+        {moreActions?.map((s, ind) => (
+          <div key={ind}>
+            <MyIcon icon={s.icon} onClick={s.onClick} fontSize="small" />
+            <MyModal
+              isVisible={isVisible[ind + 1]}
+              setVisible={setVisibleForIndex((ind + 1) as Index)}
+              title={s.label}
+            >
+              <s.modal setVisible={setVisibleForIndex((ind + 1) as Index)} />
+            </MyModal>
+          </div>
+        ))}
       </div>
     </Dialog>
   );

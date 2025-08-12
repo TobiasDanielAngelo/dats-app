@@ -1,16 +1,25 @@
 from my_django_app import fields
 from django.db.models import Sum
+from commerce.models import Sale, Purchase
+
+
+TYPE_CHOICES = [
+    (0, "Cash"),
+    (1, "Coins"),
+    (3, "Cash + Coins"),
+    (4, "Savings"),
+    (5, "Credit"),
+    (6, "Loan"),
+    (7, "Mortgage"),
+    (8, "Stocks"),
+    (9, "Assets"),
+    (10, "Liabilities"),
+    (11, "Untracked"),
+]
 
 
 class Account(fields.CustomModel):
-    TYPE_CHOICES = [
-        (0, "Cash"),
-        (1, "Coins"),
-        (3, "Mixed"),
-        (4, "Debit"),
-        (5, "Credit"),
-        (6, "Untracked"),
-    ]
+
     name = fields.ShortCharField(display=True)
     type = fields.ChoiceIntegerField(TYPE_CHOICES)
 
@@ -36,6 +45,8 @@ class Category(fields.CustomModel):
 
 
 class Transaction(fields.CustomModel):
+    sale = fields.CascadeOptionalForeignKey(Sale)
+    purchase = fields.CascadeOptionalForeignKey(Purchase)
     category = fields.SetNullOptionalForeignKey(Category, display=True)
     description = fields.MediumCharField(display=True)
     transmitter = fields.SetNullOptionalForeignKey(Account, display=True)

@@ -22,13 +22,13 @@ class Maker(fields.CustomModel):
 
 
 class Motor(fields.CustomModel):
-    maker = fields.SetNullOptionalForeignKey(Maker, display=True)
+    maker = fields.SetNullOptionalForeignKey(Maker)
     model = fields.ShortCharField(display=True, unique=True)
 
 
 class GenericProduct(fields.CustomModel):
     category = fields.SetNullOptionalForeignKey(Category, display=True)
-    compatibility = fields.OptionalManyToManyField(Motor)
+    compatibility = fields.OptionalManyToManyField(Motor, display=True)
     reorder_level = fields.LimitedIntegerField(1, 100000, 10)
 
 

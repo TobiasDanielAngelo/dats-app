@@ -9,8 +9,13 @@ export const NATURE_CHOICES = [
 export const TYPE_CHOICES = [
   "Cash",
   "Coins",
-  "Mixed",
-  "Debit",
+  "Cash + Coins",
+  "Savings",
   "Credit",
+  "Loan",
+  "Mortgage",
+  "Stocks",
+  "Assets",
+  "Liabilities",
   "Untracked",
 ];

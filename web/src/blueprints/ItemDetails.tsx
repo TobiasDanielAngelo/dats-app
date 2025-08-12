@@ -50,9 +50,12 @@ export const ItemDetails = observer(
 
     const renderRow = (key: keyof T, title: string) => {
       const value = item[key];
-      const relatedName = related?.find(
-        (s) => s.field === key && s.id === item[key]
-      )?.name;
+      const relatedName = Array.isArray(item[key])
+        ? item[key].map(
+            (t: number) =>
+              related.find((s) => s.field === key && s.id === t)?.name
+          )
+        : related.find((s) => s.field === key && s.id === item[key])?.name;
       const kv = itemMap?.find((s) => s.key === key);
       const keyTitle = key === "id" ? "ID" : toTitleCase(key as string);
       const body =

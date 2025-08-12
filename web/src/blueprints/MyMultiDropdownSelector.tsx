@@ -83,7 +83,7 @@ export const MyMultiDropdownSelector = (props: {
 
   return (
     <div className="mb-3 relative" ref={dropdownRef}>
-      <div className="flex-row flex justify-center items-center gap-2">
+      <div className="flex-row flex justify-center items-center gap-2 text-gray-700">
         {!isOption ? (
           <div className="relative flex-1">
             <label className="block text-xs font-medium dark:text-white md:mt-1 text-blue-600">

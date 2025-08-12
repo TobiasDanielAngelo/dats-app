@@ -2,6 +2,7 @@ import { observer } from "mobx-react-lite";
 import moment from "moment";
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { DjangoFields, DjangoModelField } from "../../constants/djangoHelpers";
 import {
   camelToSnakeCase,
   decodeShortParam,
@@ -48,6 +49,16 @@ const renderField = (
           key={field.name}
           onChangeValue={onChangeValue}
           value={value ?? ""}
+        />
+      );
+    case "multi":
+      return (
+        <MyMultiDropdownSelector
+          {...commonProps}
+          key={field.name}
+          options={field.options}
+          value={parseMultiValue(value)}
+          onChangeValue={(u) => onChangeValue(formatMultiValue(u.map(Number)))}
         />
       );
     case "check":
@@ -191,7 +202,8 @@ export const MyFilter = observer(({ fields }: { fields: Field[][] }) => {
 });
 
 type Props<T extends Record<string, any>> = {
-  view: T;
+  view?: T;
+  fields: Record<string, DjangoModelField>;
   title?: string;
   setVisible?: (t: boolean) => void;
   dateFields?: string[];
@@ -201,18 +213,18 @@ type Props<T extends Record<string, any>> = {
 };
 
 export const MyGenericFilter = <T extends Record<string, any>>({
-  view,
+  fields,
   title = "Filters",
   dateFields = [],
-  excludeFields = ["id"],
+  excludeFields = [],
   relatedFields = [],
   optionFields = [],
 }: Props<T>) => {
-  const [shownFields, setShownFields] = useState([...Object.keys(view)]);
+  const [shownFields, setShownFields] = useState([...Object.keys(fields)]);
 
-  const fields: Field[][] = useMemo(
+  const allFields: Field[][] = useMemo(
     () =>
-      Object.entries(view).flatMap(([key, value]) => {
+      Object.entries(fields).flatMap(([key, value]) => {
         if (excludeFields.includes(key) || !shownFields.includes(key))
           return [];
         const baseName = camelToSnakeCase(key);
@@ -258,8 +270,8 @@ export const MyGenericFilter = <T extends Record<string, any>>({
             ],
           ];
         } else if (
-          [...relatedFields, ...optionFields].includes(key) ||
-          typeof value === "string"
+          [...relatedFields].includes(key) ||
+          DjangoFields[value.field].type === "text"
         ) {
           return [
             [
@@ -270,7 +282,21 @@ export const MyGenericFilter = <T extends Record<string, any>>({
               },
             ],
           ];
-        } else if (typeof value === "number") {
+        } else if (optionFields.includes(key)) {
+          return [
+            [
+              {
+                name: `${baseName}__in`,
+                label: label,
+                type: "multi",
+                options: value.choices,
+              },
+            ],
+          ];
+        } else if (
+          typeof value === "number" ||
+          DjangoFields[value.field].type === "number"
+        ) {
           return [
             [
               {
@@ -322,13 +348,13 @@ export const MyGenericFilter = <T extends Record<string, any>>({
         label="Fields"
         value={shownFields}
         onChangeValue={(t) => setShownFields(t as string[])}
-        options={Object.keys(view).map((s) => ({
+        options={Object.keys(fields).map((s) => ({
           id: s,
           name: toTitleCase(s),
         }))}
         relative
       />
-      <MyFilter fields={fields} />
+      <MyFilter fields={allFields} />
     </div>
   );
 };

@@ -55,11 +55,15 @@ export const graphTypes = ["pie", "line", "bar", "area"] as const;
 
 export type GraphType = (typeof graphTypes)[number];
 
-export type ActionModalDef = {
+export type ActionModalDef<T extends { id: string | number | null } = any> = {
   icon: IconName;
   label: string;
   name: string;
-  modal: React.ReactNode;
+  modal: React.FC<{
+    setVisible?: (t: boolean) => void;
+    item?: T;
+  }>;
+  onClick?: () => void;
 };
 
 export interface KV<U extends Record<string, any>> {
@@ -96,9 +100,10 @@ export type Field = {
   options?: Option[];
   defaultValue?: any;
   fetchFcn?: (t: string) => void;
-  function?: (t: any) => any;
+  function?: (t: Object) => any;
   centered?: boolean;
   infoType?: string;
+  AddForm?: React.FC;
 };
 
 export type MySpeedDialProps = {

@@ -17,20 +17,27 @@ export const SaleFields = {
   status: {
     field: "ChoiceIntegerField",
     choices: toOptions(STATUS_CHOICES),
-  },
-  transactions: {
-    field: "OptionalManyToManyField",
-    fk: "Transaction",
-    appFK: "Finance",
-  },
-  inventory_logs: {
-    field: "OptionalManyToManyField",
-    fk: "Sale",
+    defaultValue: 0,
   },
   customer: {
-    field: "SetNullOptionalForeignKey",
-    fk: "Customer",
-    appFK: "People",
+    field: "ShortCharField",
+  },
+  salesItems: {
+    field: "AnyListField",
+    readOnly: true,
+  },
+
+  totalCost: {
+    field: "AmountField",
+    readOnly: true,
+  },
+  amountPaid: {
+    field: "AmountField",
+    readOnly: true,
+  },
+  amountPayable: {
+    field: "AmountField",
+    readOnly: true,
   },
 } satisfies Record<string, DjangoModelField>;
 

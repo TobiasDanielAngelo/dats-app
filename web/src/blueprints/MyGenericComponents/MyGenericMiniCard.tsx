@@ -2,7 +2,6 @@ import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { useVisible } from "../../constants/hooks";
 import {
-  ActionModalDef,
   type ItemDetailsProps,
   type KV,
   type Page,
@@ -39,7 +38,7 @@ interface MyGenericCardProps<T> extends ItemDetailsProps<T> {
     id: number | string
   ) => Promise<{ ok: boolean; details?: string }>;
   fetchFcn: () => void;
-  moreActions?: ActionModalDef[];
+  moreActions?: IAction[];
   dropdownActions?: Page[];
   itemMap?: KV<any>[];
   related: Related[];
@@ -67,8 +66,6 @@ export const MyGenericCard = observer(
       setVisible2,
       isVisible3,
       setVisible3,
-      setVisible,
-      isVisible,
     } = useVisible();
     const [showMore, setShowMore] = useState(false);
     const [msg, setMsg] = useState("");
@@ -81,12 +78,6 @@ export const MyGenericCard = observer(
       }
       fetchFcn();
       setVisible2(false);
-    };
-
-    const setVisibleForIndex = (index: number) => {
-      return (value: boolean) => {
-        setVisible(index, value); // Use setVisible with the given index
-      };
     };
 
     const actions = [
@@ -142,28 +133,13 @@ export const MyGenericCard = observer(
                 />
               </div>
               {moreActions?.map((s, ind) => (
-                <div key={ind}>
-                  <MyIcon
-                    icon={s.icon}
-                    onClick={
-                      s.onClick ??
-                      (() => {
-                        setVisible(ind + 4, true);
-                      })
-                    }
-                    fontSize="small"
-                  />
-                  <MyModal
-                    isVisible={isVisible[ind + 4]}
-                    setVisible={setVisibleForIndex(ind + 4)}
-                    title={s.label}
-                  >
-                    <s.modal
-                      setVisible={setVisibleForIndex(ind + 4)}
-                      item={item}
-                    />
-                  </MyModal>
-                </div>
+                <MyIcon
+                  icon={s.icon}
+                  onClick={s.onClick}
+                  fontSize="small"
+                  key={ind}
+                  color={s.color}
+                />
               ))}
               <MyIcon
                 icon={showMore ? "ExpandLess" : "ExpandMore"}

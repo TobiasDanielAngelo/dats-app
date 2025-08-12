@@ -16,8 +16,8 @@ export const ReceivableFields = {
   name: { field: "ShortCharField" },
   amount: { field: "AmountField" },
   description: { field: "MediumCharField" },
-  date_due: { field: "OptionalDateField" },
-  date_completed: { field: "OptionalDateField" },
+  dateDue: { field: "OptionalDateField" },
+  dateCompleted: { field: "OptionalDateField" },
 } satisfies Record<string, DjangoModelField>;
 
 const props = fieldToProps(ReceivableFields);

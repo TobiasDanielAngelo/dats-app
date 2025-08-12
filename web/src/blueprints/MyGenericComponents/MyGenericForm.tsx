@@ -19,6 +19,8 @@ export interface MyGenericForm<T extends { id: string | number }> {
   item?: Partial<T & { id?: number | string; $?: any }>;
   setVisible?: (t: boolean) => void;
   store?: IStore;
+  hiddenFields?: (keyof T)[];
+  fetchFcn?: () => void;
 }
 
 export function MyGenericForm<T extends { id: string | number }>({

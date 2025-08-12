@@ -8,10 +8,13 @@ export const MyDropdownSelector = (props: {
   value?: number;
   onChangeValue: (t: number) => void;
   fetchFcn?: (t: string) => void;
+  AddForm?: React.ComponentType<{
+    setVisible: (v: boolean) => void;
+    fetchFcn: () => void;
+  }>;
   msg?: string;
 }) => {
   const { label, options, onChangeValue, value, msg, fetchFcn } = props;
-
   const [isOption, setIsOption] = useState(true);
   const [search, setSearch] = useState("");
 

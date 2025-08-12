@@ -95,6 +95,7 @@ export type UseVisibleMapReturn = {
   isVisible: VisibleMap;
   toggleVisible: (key: number) => void;
   setVisible: (key: number, value: boolean) => void;
+  setVisibleForIndex: (index: Index) => (value: boolean) => void;
 } & {
   [K in Index as `setVisible${K}`]: StateSetter<boolean>;
 } & {
@@ -145,6 +146,12 @@ export function useVisible(): UseVisibleMapReturn {
     })
   );
 
+  const setVisibleForIndex = (index: Index) => {
+    return (value: boolean) => {
+      setVisible(index, value); // Use setVisible with the given index
+    };
+  };
+
   const isVisibleMap = Object.fromEntries(
     indices.map((i) => [`isVisible${i}`, isVisible[i]])
   );
@@ -153,6 +160,7 @@ export function useVisible(): UseVisibleMapReturn {
     isVisible,
     toggleVisible,
     setVisible,
+    setVisibleForIndex,
     ...individualSetters,
     ...isVisibleMap,
   } as UseVisibleMapReturn;

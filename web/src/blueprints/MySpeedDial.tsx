@@ -1,12 +1,19 @@
-import { SpeedDial, SpeedDialAction, SpeedDialIcon } from "@mui/material";
+import {
+  SpeedDial,
+  SpeedDialAction,
+  SpeedDialIcon,
+  SxProps,
+  Theme,
+} from "@mui/material";
 import type { MySpeedDialProps } from "../constants/interfaces";
 import { MyIcon } from "./MyIcon";
 
 export const MySpeedDial = (props: {
   actions?: MySpeedDialProps[];
   leftSide?: boolean;
+  sx?: SxProps<Theme>;
 }) => {
-  const { actions, leftSide } = props;
+  const { sx, actions, leftSide } = props;
   return (
     <SpeedDial
       hidden={
@@ -14,13 +21,15 @@ export const MySpeedDial = (props: {
         actions.filter((s) => (s.hidden ? !s.hidden : true)).length === 0
       }
       ariaLabel=""
-      sx={{
-        position: "fixed",
-        bottom: 25,
-        left: leftSide ? 25 : undefined,
-        right: leftSide ? undefined : 25,
-        zIndex: 1,
-      }}
+      sx={
+        sx ?? {
+          position: "fixed",
+          bottom: 25,
+          left: leftSide ? 25 : undefined,
+          right: leftSide ? undefined : 25,
+          zIndex: 1,
+        }
+      }
       FabProps={{
         sx: {
           bgcolor: "teal",

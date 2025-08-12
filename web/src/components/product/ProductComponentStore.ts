@@ -16,7 +16,7 @@ export const ProductComponentFields = {
     field: "CascadeRequiredForeignKey",
     fk: "Article",
   },
-  percent_cost: { field: "LimitedDecimalField" },
+  percentCost: { field: "LimitedDecimalField" },
 } satisfies Record<string, DjangoModelField>;
 
 const props = fieldToProps(ProductComponentFields);

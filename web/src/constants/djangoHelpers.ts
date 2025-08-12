@@ -4,7 +4,11 @@ import { Store } from "../components/core/Store";
 import { toTitleCase } from "./helpers";
 import { type Field, type Option } from "./interfaces";
 
-const DjangoFields = {
+export const DjangoFields = {
+  AnyListField: {
+    prop: prop<number[]>(() => []),
+    type: "",
+  },
   DefaultBooleanField: {
     prop: prop<boolean>(false),
     type: "check",
@@ -154,6 +158,7 @@ const DjangoFields = {
 export type DjangoModelField = {
   field: keyof typeof DjangoFields;
   fk?: string;
+  prop?: OptionalModelProp<any>;
   appFK?: string;
   choices?: Option[];
   label?: string;
@@ -178,9 +183,9 @@ export function fieldToProps<F extends FieldsInput>(fields: F): FieldToProp<F> {
   };
 
   for (const key in fields) {
-    const { field } = fields[key];
+    const { field, prop } = fields[key];
     const propFn = (DjangoFields as any)[field]["prop"];
-    result[key] = propFn;
+    result[key] = prop ?? propFn;
   }
 
   return result;
@@ -193,7 +198,7 @@ export function fieldToProps<F extends FieldsInput>(fields: F): FieldToProp<F> {
 export function fieldToFormField<F extends FieldsInput>(
   fields: F,
   folder: string,
-  excludedFields?: (keyof F)[],
+  excludedFields?: (keyof F | string)[],
   store?: Store
 ): Field[][] {
   const result: Field[][] = [];

@@ -18,15 +18,6 @@ export const PurchaseFields = {
     field: "ChoiceIntegerField",
     choices: toOptions(STATUS_CHOICES),
   },
-  transactions: {
-    field: "OptionalManyToManyField",
-    fk: "Transaction",
-    appFK: "Finance",
-  },
-  inventory_logs: {
-    field: "OptionalManyToManyField",
-    fk: "Purchase",
-  },
   supplier: {
     field: "SetNullOptionalForeignKey",
     fk: "Customer",

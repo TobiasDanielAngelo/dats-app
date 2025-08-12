@@ -16,11 +16,11 @@ type MyGenericTableProps<T extends object> = {
   items: T[];
   itemMap?: KV<any>[];
   related?: Related[];
-  shownFields: (keyof T & string)[];
+  shownFields: string[];
   sortFields: string[];
   setSortFields: StateSetter<string[]>;
   priceFields?: string[];
-  pageIds: number[];
+  pageIds?: number[];
   setParams: (updater: (params: URLSearchParams) => URLSearchParams) => void;
   params: URLSearchParams;
   PageBar: React.FC;
@@ -42,9 +42,7 @@ export const MyGenericTable = observer(
     PageBar,
     renderActions,
   }: MyGenericTableProps<T>) => {
-    const allKeys = [
-      ...new Set(shownFields.map((s) => _.camelCase(s))),
-    ] as string[];
+    const allKeys = shownFields;
     const HeaderWithSort = ({ k }: { k: string }) => {
       const orderByParams = params.getAll("order_by");
       const snakeK = camelToSnakeCase(k);
@@ -103,18 +101,26 @@ export const MyGenericTable = observer(
           .map((k) => <HeaderWithSort k={k} key={k} />),
         "Actions",
       ];
+
       const rows = items
-        .filter((item) => pageIds.includes(item.id))
+        .filter((item) => (pageIds ? pageIds.includes(item.id) : true))
         .sort((a, b) => {
-          return (pageIds.indexOf(a.id) ?? 0) - (pageIds.indexOf(b.id) ?? 0);
+          return pageIds
+            ? (pageIds.indexOf(a.id) ?? 0) - (pageIds.indexOf(b.id) ?? 0)
+            : 1;
         })
         .map((item) => [
           ...allKeys
             .filter((s) => Object.keys(items[0].$view).includes(s))
             .map((key) => {
-              const relatedName = related?.find(
-                (s) => s.field === key && s.id === item[key]
-              )?.name;
+              const relatedName = Array.isArray(item[key])
+                ? item[key].map(
+                    (t: number) =>
+                      related?.find((s) => s.field === key && s.id === t)?.name
+                  )
+                : related?.find((s) => s.field === key && s.id === item[key])
+                    ?.name;
+
               return key === "id"
                 ? toRomanWithExponents(item[key])
                 : formatValue(relatedName ?? item[key], key, priceFields);
@@ -125,10 +131,11 @@ export const MyGenericTable = observer(
       return [header, ...rows];
     }, [
       params,
+      items.length,
       JSON.stringify(related),
       getStoreSignature(items.map((s) => s.$)),
       shownFields.length,
-      Number(pageIds.map(String).join("")),
+      Number(pageIds?.map(String).join("")),
       itemMap,
     ]);
 
@@ -143,7 +150,7 @@ export const MyGenericTable = observer(
     }, []);
 
     return (
-      <div className="flex flex-1 flex-col min-h-[85vh] max-h-[85vh] w-[90%] justify-center m-auto">
+      <div className="flex flex-1 flex-col  max-h-[85vh] w-[90%] justify-center m-auto">
         <div className="sticky top-0">
           <PageBar />
         </div>

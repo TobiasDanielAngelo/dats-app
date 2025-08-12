@@ -19,7 +19,7 @@ export const GenericProductFields = {
     field: "OptionalManyToManyField",
     fk: "Motor",
   },
-  reorder_level: { field: "LimitedIntegerField" },
+  reorderLevel: { field: "LimitedIntegerField" },
 } satisfies Record<string, DjangoModelField>;
 
 const props = fieldToProps(GenericProductFields);

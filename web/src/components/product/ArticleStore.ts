@@ -16,11 +16,11 @@ export const ArticleFields = {
     fk: "GenericProduct",
   },
   brand: { field: "ShortCharField" },
-  is_orig: { field: "DefaultBooleanField" },
+  isOrig: { field: "DefaultBooleanField" },
   unit: { field: "SetNullOptionalForeignKey", fk: "Unit" },
-  quantity_per_unit: { field: "LimitedIntegerField" },
-  purchase_price: { field: "LimitedDecimalField" },
-  selling_price: { field: "LimitedDecimalField" },
+  quantityPerUnit: { field: "LimitedIntegerField" },
+  purchasePrice: { field: "LimitedDecimalField" },
+  sellingPrice: { field: "LimitedDecimalField" },
 } satisfies Record<string, DjangoModelField>;
 
 const props = fieldToProps(ArticleFields);

@@ -63,6 +63,7 @@ const renderField = (
           {...commonProps}
           fetchFcn={t.fetchFcn}
           options={t.options}
+          AddForm={t.AddForm}
         />
       );
     case "date":
@@ -132,6 +133,7 @@ const renderField = (
           {...commonProps}
           value={details[t.name] ?? ""}
           centered={t.centered}
+          type={t.type}
         />
       );
     default:
@@ -153,7 +155,7 @@ type FormProps = {
   details: any;
   setDetails: (t: any) => void;
   onClickSubmit: () => void;
-  onClickSubmitAdd: () => void;
+  onClickSubmitAdd?: () => void;
   hasDelete?: boolean;
   onDelete?: () => Promise<void>;
   msg?: Object;
@@ -244,11 +246,15 @@ export const MyForm = observer(
             label="Save"
           />
           {!hasDelete ? (
-            <MyButton
-              onClick={onClickSubmitAdd}
-              isLoading={isLoading}
-              label="Save and Add"
-            />
+            onClickSubmitAdd ? (
+              <MyButton
+                onClick={onClickSubmitAdd}
+                isLoading={isLoading}
+                label="Save and Add"
+              />
+            ) : (
+              <></>
+            )
           ) : (
             <MyIcon icon="Delete" fontSize="large" onClick={onClickDelete} />
           )}

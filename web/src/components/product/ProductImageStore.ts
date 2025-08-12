@@ -13,7 +13,7 @@ export const ProductImageFields = {
   id: { field: "ID" },
   part: { field: "CascadeRequiredForeignKey", fk: "Article" },
   image: { field: "ImageField" },
-  alt_text: { field: "ShortCharField" },
+  altText: { field: "ShortCharField" },
 } satisfies Record<string, DjangoModelField>;
 
 const props = fieldToProps(ProductImageFields);

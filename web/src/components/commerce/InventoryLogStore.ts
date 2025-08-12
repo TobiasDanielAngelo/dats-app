@@ -37,6 +37,22 @@ export const InventoryLogFields = {
     fk: "Location",
     appFK: "Product",
   },
+  purchase: {
+    field: "CascadeOptionalForeignKey",
+    fk: "Purchase",
+  },
+  sale: {
+    field: "CascadeOptionalForeignKey",
+    fk: "Sale",
+  },
+  unitAmount: {
+    field: "AmountField",
+    readOnly: true,
+  },
+  subtotalAmount: {
+    field: "AmountField",
+    readOnly: true,
+  },
 } satisfies Record<string, DjangoModelField>;
 const props = fieldToProps(InventoryLogFields);
 

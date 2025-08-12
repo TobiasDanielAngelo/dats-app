@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { observer } from "mobx-react-lite";
-import { useEffect, useMemo } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { useStore } from "../../components/core/Store";
 import {
@@ -25,13 +25,23 @@ import { MyGenericView, useViewValues } from "./MyGenericView";
 import { MyIcon } from "../MyIcon";
 
 export const MyGenericComponents = <
-  T extends KeystoneModel<{ id: number | string | null }>
+  T extends KeystoneModel<{ id: number | string | null }>,
+  V extends object
 >(
   ModelClass: {
     new (...args: any[]): T;
   },
   fields: Record<string, DjangoModelField>,
-  modelNameParts: PathParts
+  modelNameParts: PathParts,
+  SideB?: React.ReactNode,
+  MoreModals?: (
+    item: any,
+    context: {
+      value: V;
+      setValue: (t: V) => void;
+    }
+  ) => ActionModalDef[],
+  MainModals?: ActionModalDef[]
 ) => {
   type ExtractModelArg<U> = U extends KeystoneModel<infer X> ? X : never;
 
@@ -53,12 +63,12 @@ export const MyGenericComponents = <
   const { Context, useGenericView } = createGenericViewContext();
 
   const FormComponent = (props: MyGenericForm<NonNullableModelData>) => {
-    const { item, setVisible } = props;
+    const { item, setVisible, hiddenFields, fetchFcn } = props;
     const store = useStore();
     const allFields = fieldToFormField(
       fields,
       modelNameParts.folder,
-      [],
+      hiddenFields as string[],
       store
     );
     const defaultItem = toDefaultItem(allFields);
@@ -70,6 +80,7 @@ export const MyGenericComponents = <
         objectName={modelNameParts.titleCase}
         store={(store as any)[selectedStore1][selectedStore2]}
         setVisible={setVisible}
+        fetchFcn={fetchFcn}
       />
     );
   };
@@ -80,6 +91,7 @@ export const MyGenericComponents = <
 
     return (
       <MyGenericFilter
+        fields={fields}
         view={new ModelClass({}).$view}
         title={modelNameParts.titleCase}
         dateFields={[
@@ -97,6 +109,7 @@ export const MyGenericComponents = <
     const { item } = props;
     const store = useStore();
     const theStore = (store as any)[selectedStore1][selectedStore2];
+    const context = useContext(SomeContext);
 
     return (
       <MyGenericRow
@@ -104,22 +117,28 @@ export const MyGenericComponents = <
         FormComponent={Form}
         deleteItem={theStore.deleteItem}
         fetchFcn={theStore.fetchAll}
+        moreActions={MoreModals?.(item, context)}
       />
     );
   };
 
-  const TableComponent = () => {
+  const TableComponent = (props: {
+    shownFields?: string[];
+    items?: ModelInstance[];
+    renderActions?: (item: ModelInstance) => React.ReactNode;
+  }) => {
     const store = useStore();
     const theStore = (store as any)[selectedStore1][selectedStore2];
     const values = useGenericView();
 
     return (
       <MyGenericTable
-        items={theStore.items}
-        pageIds={theStore.pageDetails.ids}
+        items={props.items ?? theStore.items}
+        pageIds={props.items ? undefined : theStore.pageDetails.ids}
         priceFields={[...theStore.priceFields, ...morePriceFields]}
-        renderActions={(i: any) => <Row item={i} />}
+        renderActions={props.renderActions ?? ((i: any) => <Row item={i} />)}
         {...values}
+        shownFields={props.shownFields ?? values.shownFields}
         PageBar={PageBar}
       />
     );
@@ -131,28 +150,21 @@ export const MyGenericComponents = <
     const { item } = props;
     const store = useStore();
     const theStore = (store as any)[selectedStore1][selectedStore2];
-
-    const shownFields = Array.from(
-      new Set(
-        (theStore.items.length > 0
-          ? Object.keys(theStore.items[0].$view)
-          : []
-        ).map((s) => _.camelCase(s))
-      )
-    );
+    const values = useGenericView();
+    const context = useContext(SomeContext);
 
     return (
       <MyGenericCard
         item={item}
-        shownFields={shownFields}
+        {...values}
         header={["id"]}
         important={["displayName"]}
         prices={[...theStore.priceFields, ...morePriceFields]}
         FormComponent={Form}
         deleteItem={theStore.deleteItem}
         fetchFcn={theStore.fetchAll}
-        itemMap={[]}
         related={theStore.related}
+        moreActions={MoreModals?.(item, context)}
       />
     );
   };
@@ -198,9 +210,15 @@ export const MyGenericComponents = <
     );
   });
 
+  const SomeContext = createContext<{ value: V; setValue: (t: V) => void }>({
+    value: {} as V,
+    setValue: () => {},
+  });
+
   const CollectionComponent = () => {
     const store = useStore();
     const theStore = (store as any)[selectedStore1][selectedStore2] as IStore;
+
     return (
       <SideBySideView
         SideA={
@@ -212,7 +230,7 @@ export const MyGenericComponents = <
             items={theStore.items}
           />
         }
-        SideB=""
+        SideB={SideB}
         ratio={0.7}
       />
     );
@@ -233,46 +251,58 @@ export const MyGenericComponents = <
 
     const itemMap = useMemo(() => [] satisfies KV<any>[], []);
 
-    // useEffect(() => {
-    //   if (!match) return;
-    //   let count = 0;
-    //   let timeoutId: number;
+    useEffect(() => {
+      if (!match) return;
+      let count = 0;
+      let timeoutId: number;
 
-    //   const run = () => {
-    //     count++;
-    //     if (count > 20) return;
-    //     const lastUpdated =
-    //       theStore.lastUpdated === ""
-    //         ? new Date().toISOString()
-    //         : theStore.lastUpdated;
-    //     theStore.checkUpdated(lastUpdated);
-    //     timeoutId = setTimeout(run, (count + 1) * 1000);
-    //   };
+      const run = () => {
+        count++;
+        if (count < 20) {
+          const lastUpdated =
+            theStore.lastUpdated === ""
+              ? new Date().toISOString()
+              : theStore.lastUpdated;
+          theStore.checkUpdated(lastUpdated);
+          timeoutId = setTimeout(run, (count + 1) * 1500);
+        } else {
+          theStore.fetchUpdated();
+        }
+      };
 
-    //   run();
+      run();
 
-    //   return () => clearTimeout(timeoutId);
-    // }, [match, theStore.lastUpdated]);
+      return () => clearTimeout(timeoutId);
+    }, [match, theStore.lastUpdated]);
 
-    const actionModalDefs = [] satisfies ActionModalDef[];
+    const actionModalDefs = (MainModals ?? []) satisfies ActionModalDef[];
+
+    const [value, setValue] = useState<V>({} as V);
+
+    const val = {
+      value,
+      setValue,
+    };
 
     return (
-      <MyGenericView
-        title={modelNameParts.titleCase}
-        Context={Context}
-        CollectionComponent={Collection}
-        FormComponent={Form}
-        FilterComponent={Filter}
-        actionModalDefs={actionModalDefs}
-        TableComponent={Table}
-        related={theStore.related}
-        fetchFcn={theStore.fetchAll}
-        isVisible={isVisible}
-        setVisible={setVisible}
-        itemMap={itemMap}
-        {...values}
-        pageDetails={theStore.pageDetails}
-      />
+      <SomeContext.Provider value={val}>
+        <MyGenericView
+          title={modelNameParts.titleCase}
+          Context={Context}
+          CollectionComponent={Collection}
+          FormComponent={Form}
+          FilterComponent={Filter}
+          actionModalDefs={actionModalDefs}
+          TableComponent={Table}
+          related={theStore.related}
+          fetchFcn={theStore.fetchAll}
+          isVisible={isVisible}
+          setVisible={setVisible}
+          itemMap={itemMap}
+          {...values}
+          pageDetails={theStore.pageDetails}
+        />
+      </SomeContext.Provider>
     );
   };
 
@@ -283,6 +313,7 @@ export const MyGenericComponents = <
   const Card = observer(CardComponent);
   const Collection = observer(CollectionComponent);
   const View = observer(ViewComponent);
+  const MoreContext = SomeContext;
 
   return {
     Form,
@@ -292,5 +323,6 @@ export const MyGenericComponents = <
     Card,
     Collection,
     View,
+    MoreContext,
   };
 };

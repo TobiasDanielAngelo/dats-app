@@ -927,8 +927,10 @@ export function toSuperscript(n: number | string): string {
     .join("");
 }
 
-export function toRomanWithExponents(num: number): string {
+export function toRomanWithExponents(number: number): string {
   const chunks: string[] = [];
+  let num = Math.abs(number);
+  const sign = number < 0;
 
   const powers = [
     [1_000_000_000, 4],
@@ -946,7 +948,7 @@ export function toRomanWithExponents(num: number): string {
 
   if (num > 0) chunks.push(toRoman(num));
 
-  return chunks.join(" ");
+  return `${sign ? "[" : ""}${chunks.join(" ")}${sign ? "]" : ""}`;
 }
 
 export const getPathParts = (url: string, eliminate?: string) => {
@@ -1096,3 +1098,38 @@ export const toCamel = (str: string) =>
         : part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()
     )
     .join("");
+
+// utils/numberCorrector.ts
+export function correctNumberInput(input: string): string {
+  if (!input) return "";
+
+  // preserve leading minus
+  const isNegative = input.startsWith("-");
+  // remove everything except digits and dots
+  const stripped = input.replace(/[^0-9.]/g, "");
+
+  // keep only the first dot; join remaining parts (removes extra dots)
+  const parts = stripped.split(".");
+  const intPart = parts.shift() || "";
+  const fracPart = parts.length ? parts.join("") : "";
+
+  // if there was a fractional part, build "int.frac", else just int
+  const core = fracPart ? `${intPart || "0"}.${fracPart}` : intPart;
+
+  if (core === "" || core === "0") {
+    // return empty string for totally invalid, but keep "0" as valid if input produced it
+    return core === "0" ? "0" : "";
+  }
+
+  return isNegative ? `-${core}` : core;
+}
+
+export function keyListToObject<T = any>(
+  keys: string[],
+  value: T
+): Record<string, T> {
+  return keys.reduce((obj, key) => {
+    obj[key] = value;
+    return obj;
+  }, {} as Record<string, T>);
+}

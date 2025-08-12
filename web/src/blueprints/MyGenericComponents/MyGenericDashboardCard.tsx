@@ -12,7 +12,9 @@ export const DashboardCard = (
   return (
     <div
       className="flex flex-row rounded-xl shadow-md h-[100px] p-2 shrink-0 border border-teal-800 dark:bg-gray-900"
-      style={{ boxShadow: "6px 6px 12px black" }}
+      style={{
+        boxShadow: "6px 6px 12px black",
+      }}
     >
       <div className="rounded-lg border-2 items-center my-auto p-5 mx-5 bg-gradient-to-br from-blue-900 via-blue-500 to-blue-700">
         {children}

@@ -43,7 +43,7 @@ export const MyPageBar: React.FC<MyPageBarProps> = ({
   };
 
   return (
-    <nav className="sticky flex items-center flex-column flex-wrap md:flex-row justify-between m-4">
+    <nav className="sticky flex flex-1 items-center flex-column flex-wrap md:flex-row justify-between m-4">
       {totalPages <= 1 ? (
         <></>
       ) : (

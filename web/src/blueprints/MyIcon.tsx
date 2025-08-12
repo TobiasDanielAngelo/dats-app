@@ -2,6 +2,8 @@ import Edit from "@mui/icons-material/Edit";
 import Delete from "@mui/icons-material/Delete";
 import Save from "@mui/icons-material/Save";
 import AddCard from "@mui/icons-material/AddCard";
+import Add from "@mui/icons-material/Add";
+import Remove from "@mui/icons-material/Remove";
 import Check from "@mui/icons-material/Check";
 import Close from "@mui/icons-material/Close";
 import CloudUpload from "@mui/icons-material/CloudUpload";
@@ -36,6 +38,7 @@ import LightMode from "@mui/icons-material/LightMode";
 import DisabledVisible from "@mui/icons-material/DisabledVisible";
 import RemoveRedEye from "@mui/icons-material/RemoveRedEye";
 import Settings from "@mui/icons-material/Settings";
+import Calculate from "@mui/icons-material/Calculate";
 import Sunny from "@mui/icons-material/Sunny";
 import FilePresent from "@mui/icons-material/FilePresent";
 import Star from "@mui/icons-material/Star";
@@ -51,6 +54,7 @@ const iconMap = {
   Edit,
   Delete,
   Save,
+  Calculate,
   AddCard,
   Check,
   Close,
@@ -58,6 +62,8 @@ const iconMap = {
   CloudUpload,
   WarningAmber,
   Event,
+  Add,
+  Remove,
   FilterAlt,
   Inbox,
   InsertChart,
