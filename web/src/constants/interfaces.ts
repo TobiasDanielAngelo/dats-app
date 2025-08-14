@@ -104,7 +104,7 @@ export type Field = {
   function?: (t: Object) => any;
   centered?: boolean;
   infoType?: string;
-  AddForm?: React.FC;
+  onClickAdd?: () => void;
 };
 
 export type MySpeedDialProps = {

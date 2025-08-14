@@ -9,14 +9,19 @@ export const MyDropdownSelector = (props: {
   onChangeValue: (t: number) => void;
   fetchFcn?: (t: string) => void;
   searchFcn?: (t: string) => void;
-  AddForm?: React.ComponentType<{
-    setVisible: (v: boolean) => void;
-    fetchFcn: () => void;
-  }>;
   msg?: string;
+  onClickAdd?: () => void;
 }) => {
-  const { label, options, onChangeValue, value, msg, fetchFcn, searchFcn } =
-    props;
+  const {
+    label,
+    options,
+    onChangeValue,
+    value,
+    msg,
+    fetchFcn,
+    searchFcn,
+    onClickAdd,
+  } = props;
   const [isOption, setIsOption] = useState(true);
   const [search, setSearch] = useState("");
 
@@ -96,6 +101,7 @@ export const MyDropdownSelector = (props: {
         icon={isOption ? "Search" : "ViewList"}
         onClick={() => setIsOption((t) => !t)}
       />
+      {onClickAdd ? <MyIcon icon="Add" onClick={onClickAdd} /> : <></>}
     </div>
   );
 };

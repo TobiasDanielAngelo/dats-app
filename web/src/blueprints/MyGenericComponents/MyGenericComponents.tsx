@@ -1,4 +1,3 @@
-import _ from "lodash";
 import { observer } from "mobx-react-lite";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
@@ -11,6 +10,9 @@ import {
 import { PathParts } from "../../constants/helpers";
 import { useVisible } from "../../constants/hooks";
 import { ActionModalDef, KV } from "../../constants/interfaces";
+import { FieldToRelatedModals } from "../../constants/JSXHelpers";
+import { MyIcon } from "../MyIcon";
+import { MyModal } from "../MyModal";
 import { MyPageBar } from "../MyPageBar";
 import { SideBySideView } from "../SideBySideView";
 import { MyGenericCard } from "./MyGenericCard";
@@ -22,7 +24,6 @@ import { MyGenericRow } from "./MyGenericRow";
 import { IStore, KeystoneModel } from "./MyGenericStore";
 import { MyGenericTable } from "./MyGenericTable";
 import { MyGenericView, useViewValues } from "./MyGenericView";
-import { MyIcon } from "../MyIcon";
 
 export const MyGenericComponents = <
   T extends KeystoneModel<{ id: number | string | null }>,
@@ -63,27 +64,47 @@ export const MyGenericComponents = <
 
   const { Context, useGenericView } = createGenericViewContext();
 
+  const RelatedFieldModals = () =>
+    FieldToRelatedModals(fields, modelNameParts.folder);
+
   const FormComponent = (props: MyGenericForm<NonNullableModelData>) => {
     const { item, setVisible, hiddenFields, fetchFcn } = props;
     const store = useStore();
+    const [key, setKey] = useState("");
     const allFields = fieldToFormField(
       fields,
       modelNameParts.folder,
       modelNameParts.rawName,
       hiddenFields as string[],
-      store
+      store,
+      setKey
     );
     const defaultItem = toDefaultItem(allFields);
 
+    const setVisibleViaKey = () => {
+      setKey("");
+    };
+
+    const Modals = RelatedFieldModals?.();
+    const ModalComponent = Modals?.[key];
+
     return (
-      <MyGenericForm
-        item={item ?? defaultItem}
-        fields={allFields}
-        objectName={modelNameParts.titleCase}
-        store={(store as any)[selectedStore1][selectedStore2]}
-        setVisible={setVisible}
-        fetchFcn={fetchFcn}
-      />
+      <>
+        <MyModal
+          isVisible={key !== "" && !!ModalComponent}
+          setVisible={setVisibleViaKey}
+        >
+          {ModalComponent ? <ModalComponent /> : null}
+        </MyModal>
+        <MyGenericForm
+          item={item ?? defaultItem}
+          fields={allFields}
+          objectName={modelNameParts.titleCase}
+          store={(store as any)[selectedStore1][selectedStore2]}
+          setVisible={setVisible}
+          fetchFcn={fetchFcn}
+        />
+      </>
     );
   };
 

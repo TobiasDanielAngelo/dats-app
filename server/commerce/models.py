@@ -2,7 +2,7 @@ from my_django_app import fields
 from product.models import Location, Article
 from people.models import Supplier, Employee
 from django.db.models import Sum
-from my_django_app.utils import SumProduct, to_money
+from my_django_app.utils import SumProduct, to_money, CannotEqual
 from django.core.exceptions import ValidationError
 
 
@@ -23,6 +23,9 @@ class InventoryLog(fields.CustomModel):
     coming_from = fields.SetNullOptionalForeignKey(Location)
     going_to = fields.SetNullOptionalForeignKey(Location)
     is_collected = fields.DefaultBooleanField(False)
+
+    class Meta:
+        constraints = [CannotEqual("coming_from", "going_to", "InventoryLog")]
 
     @property
     def unit_amount(self):

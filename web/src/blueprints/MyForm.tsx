@@ -64,7 +64,7 @@ const renderField = (
           fetchFcn={t.fetchFcn}
           searchFcn={t.searchFcn}
           options={t.options}
-          AddForm={t.AddForm}
+          onClickAdd={t.onClickAdd}
         />
       );
     case "date":

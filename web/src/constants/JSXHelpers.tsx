@@ -1,7 +1,9 @@
 import moment from "moment";
-import { GuidedDiv } from "../blueprints/MyGuidedDiv";
-import { isDatetimeValue, isDateValue, toMoney } from "./helpers";
 import ReactMarkdown from "react-markdown";
+import { GuidedDiv } from "../blueprints/MyGuidedDiv";
+import { Main } from "../components/core/_AllComponents";
+import { DjangoFields, FieldsInput } from "./djangoHelpers";
+import { isDatetimeValue, isDateValue, toMoney, toTitleCase } from "./helpers";
 import type { KV } from "./interfaces";
 
 export function isValidJSON(str: string): boolean {
@@ -122,3 +124,25 @@ export const formatValue = (
     "—"
   );
 };
+
+export function FieldToRelatedModals<F extends FieldsInput>(
+  fields: F,
+  folder: string,
+  excludedFields?: (keyof F | string)[]
+): Record<keyof F, React.FC> {
+  const result = {} as Record<keyof F, React.FC>;
+
+  for (const key in fields) {
+    if (["id", ...(excludedFields ?? [])].includes(key)) {
+      continue;
+    }
+    const { field, choices, fk, appFK, readOnly } = fields[key];
+    const type = DjangoFields[field].type;
+
+    if (!readOnly && ["select", "multi"].includes(type) && !choices && fk) {
+      result[key] = (Main as any)[appFK ?? toTitleCase(folder)][fk].Form;
+    }
+  }
+
+  return result;
+}

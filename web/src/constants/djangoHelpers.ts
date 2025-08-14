@@ -172,7 +172,7 @@ type FieldTypeToType = {
     (typeof DjangoFields)[K]["prop"]
   >;
 };
-type FieldsInput = Record<string, DjangoModelField>;
+export type FieldsInput = Record<string, DjangoModelField>;
 type FieldToProp<F extends FieldsInput> = {
   [K in keyof F]: OptionalModelProp<FieldTypeToType[F[K]["field"]]>;
 };
@@ -200,7 +200,8 @@ export function fieldToFormField<F extends FieldsInput>(
   folder: string,
   target: string,
   excludedFields?: (keyof F | string)[],
-  store?: Store
+  store?: Store,
+  setKey?: (t: string) => void
 ): Field[][] {
   const result: Field[][] = [];
 
@@ -250,6 +251,7 @@ export function fieldToFormField<F extends FieldsInput>(
             (type === "select" || type === "multi") && store && !choices
               ? selectedStore.fetchTemp
               : undefined,
+          onClickAdd: choices ? undefined : () => setKey?.(key),
         },
       ]);
   }

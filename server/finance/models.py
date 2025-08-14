@@ -1,5 +1,6 @@
 from my_django_app import fields
-from django.db.models import Sum
+from my_django_app.utils import CannotEqual
+from django.db.models import Sum, CheckConstraint, Q, F
 from commerce.models import Sale, Purchase
 
 
@@ -54,6 +55,9 @@ class Transaction(fields.CustomModel):
     coming_from = fields.SetNullOptionalForeignKey(Account, display=True)
     going_to = fields.SetNullOptionalForeignKey(Account, display=True)
     amount = fields.AmountField()
+
+    class Meta:
+        constraints = [CannotEqual("coming_from", "going_to", "Transaction")]
 
 
 class Receivable(fields.CustomModel):

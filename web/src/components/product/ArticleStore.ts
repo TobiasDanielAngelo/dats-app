@@ -21,6 +21,7 @@ export const ArticleFields = {
   quantityPerUnit: { field: "LimitedIntegerField" },
   purchasePrice: { field: "LimitedDecimalField" },
   sellingPrice: { field: "LimitedDecimalField" },
+  parentArticle: { field: "SetNullOptionalForeignKey", fk: "Article" },
 } satisfies Record<string, DjangoModelField>;
 
 const props = fieldToProps(ArticleFields);

@@ -67,11 +67,15 @@ export const MyModal = (
           <div key={ind}>
             <MyIcon icon={s.icon} onClick={s.onClick} fontSize="small" />
             <MyModal
-              isVisible={isVisible[ind + 1]}
+              isVisible={!!s.modal && isVisible[ind + 1]}
               setVisible={setVisibleForIndex((ind + 1) as Index)}
               title={s.label}
             >
-              <s.modal setVisible={setVisibleForIndex((ind + 1) as Index)} />
+              {s.modal ? (
+                <s.modal setVisible={setVisibleForIndex((ind + 1) as Index)} />
+              ) : (
+                <></>
+              )}
             </MyModal>
           </div>
         ))}
