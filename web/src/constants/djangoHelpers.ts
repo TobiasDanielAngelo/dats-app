@@ -251,7 +251,8 @@ export function fieldToFormField<F extends FieldsInput>(
             (type === "select" || type === "multi") && store && !choices
               ? selectedStore.fetchTemp
               : undefined,
-          onClickAdd: choices ? undefined : () => setKey?.(key),
+          onClickAdd:
+            choices || target === fileStore ? undefined : () => setKey?.(key),
         },
       ]);
   }
