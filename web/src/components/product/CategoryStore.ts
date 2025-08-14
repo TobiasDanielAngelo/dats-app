@@ -14,6 +14,7 @@ export const CategoryFields = {
   name: { field: "ShortCharField" },
   isKit: { field: "DefaultBooleanField" },
   isUniversal: { field: "DefaultBooleanField" },
+  parentCategory: { field: "SetNullOptionalForeignKey", fk: "Category" },
   notes: { field: "MediumCharField" },
 } satisfies Record<string, DjangoModelField>;
 

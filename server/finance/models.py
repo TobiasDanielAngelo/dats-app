@@ -25,21 +25,23 @@ class Account(fields.CustomModel):
 
     @property
     def net_balance(self):
-        inflow = self.transaction_receiver.aggregate(total=Sum("amount"))["total"] or 0
+        inflow = self.transaction_going_to.aggregate(total=Sum("amount"))["total"] or 0
         outflow = (
-            self.transaction_transmitter.aggregate(total=Sum("amount"))["total"] or 0
+            self.transaction_coming_from.aggregate(total=Sum("amount"))["total"] or 0
         )
         return inflow - outflow
 
 
+NATURE_CHOICES = [
+    (0, "Outgoing"),
+    (1, "Incoming"),
+    (2, "Transfer"),
+    (3, "Receivable"),
+    (4, "Payable"),
+]
+
+
 class Category(fields.CustomModel):
-    NATURE_CHOICES = [
-        (0, "Outgoing"),
-        (1, "Incoming"),
-        (2, "Transfer"),
-        (3, "Receivable"),
-        (4, "Payable"),
-    ]
     title = fields.ShortCharField(display=True)
     nature = fields.ChoiceIntegerField(NATURE_CHOICES)
 
@@ -49,8 +51,8 @@ class Transaction(fields.CustomModel):
     purchase = fields.CascadeOptionalForeignKey(Purchase)
     category = fields.SetNullOptionalForeignKey(Category, display=True)
     description = fields.MediumCharField(display=True)
-    transmitter = fields.SetNullOptionalForeignKey(Account, display=True)
-    receiver = fields.SetNullOptionalForeignKey(Account, display=True)
+    coming_from = fields.SetNullOptionalForeignKey(Account, display=True)
+    going_to = fields.SetNullOptionalForeignKey(Account, display=True)
     amount = fields.AmountField()
 
 

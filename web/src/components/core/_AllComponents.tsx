@@ -4,8 +4,8 @@ import { People } from "../people/_AllComponents";
 import { Product } from "../product/_AllComponents";
 
 export const Main = {
-  Finance,
   Commerce,
+  Finance,
   Product,
   People,
 };

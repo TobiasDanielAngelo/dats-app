@@ -151,7 +151,7 @@ export const MyGenericTable = observer(
 
     return (
       <div className="flex flex-1 flex-col  max-h-[85vh] w-[90%] justify-center m-auto">
-        <div className="sticky top-0">
+        <div className="top-0">
           <PageBar />
         </div>
         <div

@@ -7,11 +7,16 @@ import {
   MyStore,
 } from "../../blueprints/MyGenericComponents/MyGenericStore";
 
+export const LocationIdMap = {
+  "Gen Luna Main": -1,
+  "Gen Luna Storage": -2,
+} as const;
+
 const { slug } = getPathParts(import.meta.url, "Store");
 
 export const LocationFields = {
   id: { field: "ID" },
-  address: { field: "MediumCharField" },
+  address: { field: "CascadeRequiredForeignKey", fk: "Address" },
   shelf: { field: "ShortCharField" },
 } satisfies Record<string, DjangoModelField>;
 

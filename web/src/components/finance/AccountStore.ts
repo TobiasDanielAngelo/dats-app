@@ -17,6 +17,19 @@ export const AccountFields = {
   netBalance: { field: "AmountField", readOnly: true },
 } satisfies Record<string, DjangoModelField>;
 
+export const AccountIdMap = {
+  Initial: -1,
+  Untracked: -2,
+  Assets: -3,
+  Liabilities: -4,
+  Loan: -5,
+  Mortgage: -6,
+  Stocks: -7,
+  "Cash Box": -8,
+  "Coin Box": -9,
+  "Cash Register": -10,
+} as const;
+
 const props = fieldToProps(AccountFields);
 
 export class Account extends MyModel(slug, props) {}

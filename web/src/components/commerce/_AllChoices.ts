@@ -1,6 +1,6 @@
 export const STATUS_CHOICES = [
   "Draft",
-  "Pending Approval",
+  "Pending",
   "Approved",
   "Fulfilled",
   "Cancelled",

@@ -1,4 +1,5 @@
 from my_django_app import fields
+from django.core.exceptions import ValidationError
 
 
 class Unit(fields.CustomModel):
@@ -6,15 +7,11 @@ class Unit(fields.CustomModel):
 
 
 class Category(fields.CustomModel):
+    parent_category = fields.SetNullOptionalForeignKey("self")
     name = fields.ShortCharField(display=True, unique=True)
     is_kit = fields.DefaultBooleanField(False, display=True)
     is_universal = fields.DefaultBooleanField(False, display=True)
     notes = fields.MediumCharField()
-
-
-class CategoryComponent(fields.CustomModel):
-    kit = fields.CascadeRequiredForeignKey(Category, display=True)
-    percent_cost = fields.LimitedDecimalField(0, 100, 100)
 
 
 class Maker(fields.CustomModel):
@@ -31,8 +28,29 @@ class GenericProduct(fields.CustomModel):
     compatibility = fields.OptionalManyToManyField(Motor, display=True)
     reorder_level = fields.LimitedIntegerField(1, 100000, 10)
 
+    def clean(self):
+        super().clean()
+        motors = (
+            getattr(self, "_prefetched_compatibility", None) or self.compatibility.all()
+        )
+        print(vars(self))
+        if self.category:
+            for motor in motors:
+                if (
+                    GenericProduct.objects.exclude(pk=self.pk)
+                    .filter(category=self.category, compatibility=motor)
+                    .exists()
+                ):
+                    raise ValidationError(
+                        {
+                            "category": f"Combination of category '{self.category}' and motor '{motor}' already exists.",
+                            "compatibility": f"Combination of category '{self.category}' and motor '{motor}' already exists.",
+                        }
+                    )
+
 
 class Article(fields.CustomModel):
+    parent_article = fields.CascadeOptionalForeignKey("self")
     generic_product = fields.CascadeRequiredForeignKey(GenericProduct, display=True)
     brand = fields.ShortCharField(display=True)
     is_orig = fields.DefaultBooleanField(False, display=True)
@@ -40,12 +58,6 @@ class Article(fields.CustomModel):
     quantity_per_unit = fields.LimitedIntegerField(1, 100, 1)
     purchase_price = fields.LimitedDecimalField(0, 999999.99)
     selling_price = fields.LimitedDecimalField(0, 999999.99)
-
-
-class ProductComponent(fields.CustomModel):
-    kit = fields.CascadeRequiredForeignKey(Article, display=True)
-    component = fields.CascadeRequiredForeignKey(Article, display=True)
-    percent_cost = fields.LimitedDecimalField(0, 100)
 
 
 class Barcode(fields.CustomModel):
@@ -64,8 +76,12 @@ class ProductImage(fields.CustomModel):
     alt_text = fields.ShortCharField()
 
 
+class Address(fields.CustomModel):
+    name = fields.MediumCharField(display=True, unique=True)
+
+
 class Location(fields.CustomModel):
-    address = fields.MediumCharField(display=True)
+    address = fields.CascadeRequiredForeignKey(Address, display=True)
     shelf = fields.ShortCharField(display=True)
 
     class Meta:

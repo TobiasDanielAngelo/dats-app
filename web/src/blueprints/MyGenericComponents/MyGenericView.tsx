@@ -299,7 +299,7 @@ export const MyGenericView = observer(
         {Modals.map((S, ind) => (
           <MyModal
             key={ind}
-            isVisible={isVisible[ind + 1]}
+            isVisible={!!S && isVisible[ind + 1]}
             setVisible={(v: boolean) =>
               setVisible(
                 ind + 1,
@@ -308,7 +308,7 @@ export const MyGenericView = observer(
             }
             disableClose
           >
-            <S />
+            {S ? <S /> : <></>}
           </MyModal>
         ))}
         <MySpeedDial actions={actions} />

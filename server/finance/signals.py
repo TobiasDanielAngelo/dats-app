@@ -1,10 +1,11 @@
 from django.db.models.signals import post_migrate
 from django.dispatch import receiver
-from .models import Account, TYPE_CHOICES
+from .models import Account, TYPE_CHOICES, Category, NATURE_CHOICES
 from my_django_app.utils import invert_choices
 
 
 REVTYPE = invert_choices(TYPE_CHOICES)
+REV_NATURE_TYPE = invert_choices(NATURE_CHOICES)
 
 
 @receiver(post_migrate)
@@ -20,11 +21,62 @@ def create_default_accounts(sender, **kwargs):
         (Account, -5, {"name": "Loan", "type": REVTYPE["Loan"]}),
         (Account, -6, {"name": "Mortgage", "type": REVTYPE["Mortgage"]}),
         (Account, -7, {"name": "Stocks", "type": REVTYPE["Stocks"]}),
-        (Account, -8, {"name": "Assets", "type": REVTYPE["Assets"]}),
-        (Account, -9, {"name": "Cash Box", "type": REVTYPE["Cash"]}),
-        (Account, -10, {"name": "Coin Box", "type": REVTYPE["Coins"]}),
-        (Account, -11, {"name": "Cash Register", "type": REVTYPE["Cash + Coins"]}),
+        (Account, -8, {"name": "Cash Box", "type": REVTYPE["Cash"]}),
+        (Account, -9, {"name": "Coin Box", "type": REVTYPE["Coins"]}),
+        (Account, -10, {"name": "Cash Register", "type": REVTYPE["Cash + Coins"]}),
     ]
 
     for model, id, fields in defaults:
+        model.objects.get_or_create(id=id, defaults=fields)
+
+    default = []
+
+    CATEGORY_GROUPS = {
+        "Outgoing": [
+            "Food",
+            "Utilities",
+            "Rent",
+            "Salaries",
+            "Supplies",
+            "Transportation",
+            "Repairs & Maintenance",
+            "Marketing",
+            "Taxes",
+            "Miscellaneous",
+        ],
+        "Incoming": [
+            "Product Sales",
+            "Service Income",
+            "Rental Income",
+            "Interest Income",
+            "Other Income",
+        ],
+        "Transfer": [
+            "Bank Transfer",
+            "Cash to Bank",
+            "Bank to Cash",
+            "Inter-branch Transfer",
+        ],
+        "Receivable": [
+            "Customer Credit",
+            "Loan to Employee",
+            "Advance Payment from Customer",
+        ],
+        "Payable": ["Supplier Invoice", "Loan Payable", "Tax Payable"],
+    }
+
+    pk_counter = -1
+
+    for nature, titles in CATEGORY_GROUPS.items():
+        for title in titles:
+            default.append(
+                (
+                    Category,
+                    pk_counter,
+                    {"title": title, "nature": REV_NATURE_TYPE[nature]},
+                )
+            )
+            pk_counter -= 1
+
+    for model, id, fields in default:
         model.objects.get_or_create(id=id, defaults=fields)

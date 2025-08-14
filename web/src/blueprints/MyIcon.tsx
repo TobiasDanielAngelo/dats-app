@@ -11,6 +11,8 @@ import Event from "@mui/icons-material/Event";
 import FilterAlt from "@mui/icons-material/FilterAlt";
 import Inbox from "@mui/icons-material/MoveToInbox";
 import InsertChart from "@mui/icons-material/InsertChart";
+import Toll from "@mui/icons-material/Toll";
+import Inventory from "@mui/icons-material/Inventory";
 import Menu from "@mui/icons-material/Menu";
 import Payment from "@mui/icons-material/Payment";
 import Print from "@mui/icons-material/Print";
@@ -35,6 +37,7 @@ import CheckBoxOutlineBlank from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBox from "@mui/icons-material/CheckBox";
 import DarkMode from "@mui/icons-material/DarkMode";
 import LightMode from "@mui/icons-material/LightMode";
+import PrecisionManufacturing from "@mui/icons-material/PrecisionManufacturing";
 import DisabledVisible from "@mui/icons-material/DisabledVisible";
 import RemoveRedEye from "@mui/icons-material/RemoveRedEye";
 import Settings from "@mui/icons-material/Settings";
@@ -69,7 +72,9 @@ const iconMap = {
   InsertChart,
   Menu,
   Payment,
+  PrecisionManufacturing,
   Print,
+  Inventory,
   DisplaySettings,
   RestartAlt,
   FilePresent,
@@ -77,6 +82,7 @@ const iconMap = {
   FilterListAlt,
   ViewList,
   NoteAdd,
+  Toll,
   PieChart,
   Timeline,
   TableChart,

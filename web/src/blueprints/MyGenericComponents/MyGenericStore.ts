@@ -5,7 +5,6 @@ import {
   MaybeOptionalModelProp,
   model,
   Model,
-  modelAction,
   ModelClass,
   modelFlow,
   ModelProps,
@@ -394,17 +393,21 @@ export function MyStore<
       return computeItemsSignature(ModelClass, this.items);
     }
 
-    @modelAction
-    setSubscription = function (this: GenericStore, state: boolean) {
+    @modelFlow
+    setSubscription = _async(function* (this: GenericStore, state: boolean) {
       this.isSubscribed = state;
-    };
+    });
 
     @modelFlow
-    fetchAll = _async(function* (this: GenericStore, params?: string) {
+    fetchAll = _async(function* (
+      this: GenericStore,
+      params?: string,
+      temporary?: boolean
+    ) {
       let result;
       this.isLoading = true;
 
-      this.pageDetails = defaultPageDetails;
+      this.pageDetails = this.pageDetails ?? defaultPageDetails;
 
       try {
         result = yield* _await(
@@ -451,7 +454,13 @@ export function MyStore<
         }
       });
 
-      this.pageDetails = result.pageDetails ?? defaultPageDetails;
+      if (!temporary) {
+        this.pageDetails = result.pageDetails ?? defaultPageDetails;
+        this.lastUpdated = new Date().toISOString();
+        this.latestParam = params ?? "page=1";
+        this.countToUpdate = 0;
+      }
+
       this.dateFields = result.dateFields;
       this.datetimeFields = result.datetimeFields;
       this.timeFields = result.timeFields;
@@ -467,11 +476,13 @@ export function MyStore<
           this.items.find((t) => t.$view.id === s.id)?.update(s);
         }
       });
-      this.lastUpdated = new Date().toISOString();
-      this.latestParam = params ?? "page=1";
-      this.countToUpdate = 0;
 
       return result;
+    });
+
+    @modelFlow
+    fetchTemp = _async(function* (this: GenericStore, params?: string) {
+      return this.fetchAll(params, true);
     });
 
     @modelFlow
@@ -507,7 +518,6 @@ export function MyStore<
 
     @modelFlow
     fetchUpdated = _async(function* (this: GenericStore) {
-      console.log("Fetch Updated", this.latestParam);
       return yield* _await(this.fetchAll(this.latestParam));
     });
 
@@ -523,7 +533,7 @@ export function MyStore<
         );
       } catch {
         // Swal.fire({ icon: "error", title: "Network Error" });
-        return { details: "Network Error", ok: false, data: null };
+        return { details: result?.details, ok: false, data: null };
       }
 
       if (!result.ok || !result.data) {
@@ -619,10 +629,10 @@ export function MyStore<
       return { details: "", ok: true, data: null };
     });
 
-    @modelAction
-    resetItems = function (this: GenericStore) {
+    @modelFlow
+    resetItems = _async(function* (this: GenericStore) {
       this.items = [];
-    };
+    });
   }
 
   type Methods = EverythingPublic<GenericStore>;

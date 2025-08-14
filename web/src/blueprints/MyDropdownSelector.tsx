@@ -8,13 +8,15 @@ export const MyDropdownSelector = (props: {
   value?: number;
   onChangeValue: (t: number) => void;
   fetchFcn?: (t: string) => void;
+  searchFcn?: (t: string) => void;
   AddForm?: React.ComponentType<{
     setVisible: (v: boolean) => void;
     fetchFcn: () => void;
   }>;
   msg?: string;
 }) => {
-  const { label, options, onChangeValue, value, msg, fetchFcn } = props;
+  const { label, options, onChangeValue, value, msg, fetchFcn, searchFcn } =
+    props;
   const [isOption, setIsOption] = useState(true);
   const [search, setSearch] = useState("");
 
@@ -24,8 +26,8 @@ export const MyDropdownSelector = (props: {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      search !== "" && fetchFcn?.(`display_name__search=${search}&page=1`);
-    }, 1000);
+      search !== "" && searchFcn?.(`display_name__search=${search}&page=1`);
+    }, 500);
 
     return () => clearTimeout(timer);
   }, [search]);

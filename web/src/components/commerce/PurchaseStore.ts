@@ -17,11 +17,20 @@ export const PurchaseFields = {
   status: {
     field: "ChoiceIntegerField",
     choices: toOptions(STATUS_CHOICES),
+    defaultValue: 0,
   },
   supplier: {
     field: "SetNullOptionalForeignKey",
-    fk: "Customer",
+    fk: "Supplier",
     appFK: "People",
+  },
+  purchaseItems: {
+    field: "AnyListField",
+    readOnly: true,
+  },
+  transactionItems: {
+    field: "AnyListField",
+    readOnly: true,
   },
 } satisfies Record<string, DjangoModelField>;
 

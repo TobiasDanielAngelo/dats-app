@@ -20,6 +20,7 @@ import people from "/images/people.png";
 import productBarcode from "/images/product_barcode.png";
 import product from "/images/product.png";
 import productArticle from "/images/product_article.png";
+import productAddress from "/images/product_address.png";
 import productCategoryComponent from "/images/product_category-component.png";
 import productCategory from "/images/product_category.png";
 import productGenericProduct from "/images/product_generic-product.png";
@@ -51,6 +52,7 @@ const IMAGES: Record<string, string> = {
   productBarcode,
   productArticle,
   productCategoryComponent,
+  productAddress,
   finance,
   people,
   financeAccount,

@@ -32,6 +32,8 @@ export const MyMultiDropdownSelector = (props: {
   const [isOption, setIsOption] = useState(true);
   const [search, setSearch] = useState("");
 
+  console.log(value.map((s) => s.toString()));
+
   const filteredOptions = options?.filter((opt) =>
     opt.name.toLowerCase().includes(search.toLowerCase())
   );
@@ -47,13 +49,13 @@ export const MyMultiDropdownSelector = (props: {
   };
 
   useEffect(() => {
-    onChangeValue(selectAll ? options.map((s) => s.id) : []);
+    onChangeValue(selectAll ? options.map((s) => s.id) : value);
   }, [selectAll, options.length]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       search !== "" && fetchFcn?.(`display_name__search=${search}&page=1`);
-    }, 1000);
+    }, 500);
 
     return () => clearTimeout(timer);
   }, [search]);

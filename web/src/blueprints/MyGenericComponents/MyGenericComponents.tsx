@@ -2,7 +2,7 @@ import _ from "lodash";
 import { observer } from "mobx-react-lite";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
-import { useStore } from "../../components/core/Store";
+import { Store, useStore } from "../../components/core/Store";
 import {
   DjangoModelField,
   fieldToFormField,
@@ -34,14 +34,15 @@ export const MyGenericComponents = <
   fields: Record<string, DjangoModelField>,
   modelNameParts: PathParts,
   SideB?: React.ReactNode,
+  MainModals?: ActionModalDef[],
   MoreModals?: (
     item: any,
     context: {
       value: V;
       setValue: (t: V) => void;
-    }
-  ) => ActionModalDef[],
-  MainModals?: ActionModalDef[]
+    },
+    store?: Store
+  ) => ActionModalDef[]
 ) => {
   type ExtractModelArg<U> = U extends KeystoneModel<infer X> ? X : never;
 
@@ -68,6 +69,7 @@ export const MyGenericComponents = <
     const allFields = fieldToFormField(
       fields,
       modelNameParts.folder,
+      modelNameParts.rawName,
       hiddenFields as string[],
       store
     );
@@ -117,13 +119,13 @@ export const MyGenericComponents = <
         FormComponent={Form}
         deleteItem={theStore.deleteItem}
         fetchFcn={theStore.fetchAll}
-        moreActions={MoreModals?.(item, context)}
+        moreActions={MoreModals?.(item, context, store)}
       />
     );
   };
 
   const TableComponent = (props: {
-    shownFields?: string[];
+    shownFields?: (keyof T)[];
     items?: ModelInstance[];
     renderActions?: (item: ModelInstance) => React.ReactNode;
   }) => {
@@ -138,7 +140,13 @@ export const MyGenericComponents = <
         priceFields={[...theStore.priceFields, ...morePriceFields]}
         renderActions={props.renderActions ?? ((i: any) => <Row item={i} />)}
         {...values}
-        shownFields={props.shownFields ?? values.shownFields}
+        related={theStore.related}
+        shownFields={[
+          ...((props.shownFields ?? values.shownFields) as string[]),
+        ]}
+        sortFields={
+          values.sortFields.length ? values.sortFields : ["-created_at"]
+        }
         PageBar={PageBar}
       />
     );
@@ -157,14 +165,14 @@ export const MyGenericComponents = <
       <MyGenericCard
         item={item}
         {...values}
-        header={["id"]}
+        header={["id", "createdAt"]}
         important={["displayName"]}
         prices={[...theStore.priceFields, ...morePriceFields]}
         FormComponent={Form}
         deleteItem={theStore.deleteItem}
         fetchFcn={theStore.fetchAll}
         related={theStore.related}
-        moreActions={MoreModals?.(item, context)}
+        moreActions={MoreModals?.(item, context, store)}
       />
     );
   };
@@ -187,13 +195,25 @@ export const MyGenericComponents = <
       theStore.fetchAll(params.size ? params.toString() : "page=1");
     }, [params]);
 
+    useEffect(() => {
+      const el = document.getElementById("reload");
+      if (!el) return;
+      if ((theStore.countToUpdate ?? 0) > 0) {
+        el.classList.add("shake");
+      } else {
+        el.classList.remove("shake");
+      }
+    }, [theStore.countToUpdate ?? 0]);
+
     return (
       <div className="flex flex-row items-center pl-2">
-        <MyIcon
-          icon={"RestartAlt"}
-          onClick={theStore.fetchUpdated}
-          label={String(theStore.countToUpdate ?? 0)}
-        />
+        <div id="reload">
+          <MyIcon
+            icon={"RestartAlt"}
+            onClick={theStore.fetchUpdated}
+            label={String(theStore.countToUpdate ?? 0)}
+          />
+        </div>
 
         <MyPageBar
           pageDetails={theStore.pageDetails}
@@ -264,7 +284,7 @@ export const MyGenericComponents = <
               ? new Date().toISOString()
               : theStore.lastUpdated;
           theStore.checkUpdated(lastUpdated);
-          timeoutId = setTimeout(run, (count + 1) * 1500);
+          timeoutId = setTimeout(run, (count + 1) * 3000);
         } else {
           theStore.fetchUpdated();
         }

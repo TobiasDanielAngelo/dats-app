@@ -7,20 +7,19 @@ import {
   MyStore,
 } from "../../blueprints/MyGenericComponents/MyGenericStore";
 
+export const AddressIdMap = {
+  "Gen Luna": -1,
+} as const;
+
 const { slug } = getPathParts(import.meta.url, "Store");
 
-export const CategoryComponentFields = {
+export const AddressFields = {
   id: { field: "ID" },
-  kit: { field: "CascadeRequiredForeignKey", fk: "Category" },
-  percentCost: { field: "LimitedDecimalField" },
+  name: { field: "MediumCharField" },
 } satisfies Record<string, DjangoModelField>;
 
-const props = fieldToProps(CategoryComponentFields);
+const props = fieldToProps(AddressFields);
 
-export class CategoryComponent extends MyModel(slug, props) {}
-export class CategoryComponentStore extends MyStore(
-  CategoryComponent,
-  BASE_URL,
-  slug
-) {}
-export type CategoryComponentInterface = PropsToInterface<typeof props>;
+export class Address extends MyModel(slug, props) {}
+export class AddressStore extends MyStore(Address, BASE_URL, slug) {}
+export type AddressInterface = PropsToInterface<typeof props>;

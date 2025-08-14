@@ -66,11 +66,15 @@ export const MyGenericRow = observer(
         {moreActions?.map((S, ind) => (
           <div key={ind}>
             <MyModal
-              isVisible={isVisible[ind + 3]}
+              isVisible={!!S.modal && isVisible[ind + 3]}
               setVisible={setVisibleForIndex(ind + 3)}
               title={S.label}
             >
-              <S.modal setVisible={setVisibleForIndex(ind + 3)} item={item} />
+              {!S.modal ? (
+                <></>
+              ) : (
+                <S.modal setVisible={setVisibleForIndex(ind + 3)} item={item} />
+              )}
             </MyModal>
             <MyIcon
               icon={S.icon}

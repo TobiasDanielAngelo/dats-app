@@ -62,6 +62,7 @@ const renderField = (
           key={key}
           {...commonProps}
           fetchFcn={t.fetchFcn}
+          searchFcn={t.searchFcn}
           options={t.options}
           AddForm={t.AddForm}
         />

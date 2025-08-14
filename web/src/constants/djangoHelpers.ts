@@ -198,6 +198,7 @@ export function fieldToProps<F extends FieldsInput>(fields: F): FieldToProp<F> {
 export function fieldToFormField<F extends FieldsInput>(
   fields: F,
   folder: string,
+  target: string,
   excludedFields?: (keyof F | string)[],
   store?: Store
 ): Field[][] {
@@ -239,8 +240,15 @@ export function fieldToFormField<F extends FieldsInput>(
           options: choices ?? storeOptions,
           defaultValue: defaultValue,
           fetchFcn:
-            (type === "select" || type === "multi") && store && !choices
+            (type === "select" || type === "multi") &&
+            store &&
+            !choices &&
+            fk !== target
               ? selectedStore.fetchAll
+              : undefined,
+          searchFcn:
+            (type === "select" || type === "multi") && store && !choices
+              ? selectedStore.fetchTemp
               : undefined,
         },
       ]);

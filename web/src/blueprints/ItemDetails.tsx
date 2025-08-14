@@ -23,8 +23,8 @@ export const ItemDetails = observer(
   }: ItemDetailsProps<T>) => {
     const itemView = item.$view ?? item;
 
-    const newShownFields = shownFields.filter(
-      (s) => !["createdAt", "updatedAt", "displayName"].includes(s)
+    const newShownFields = [...shownFields, "createdAt"].filter(
+      (s) => !["updatedAt", "displayName"].includes(s)
     );
 
     const allItemKeys = [

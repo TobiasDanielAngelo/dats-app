@@ -26,8 +26,19 @@ export const SaleFields = {
     field: "AnyListField",
     readOnly: true,
   },
-
+  laborItems: {
+    field: "AnyListField",
+    readOnly: true,
+  },
+  transactionItems: {
+    field: "AnyListField",
+    readOnly: true,
+  },
   totalCost: {
+    field: "AmountField",
+    readOnly: true,
+  },
+  change: {
     field: "AmountField",
     readOnly: true,
   },
@@ -37,6 +48,10 @@ export const SaleFields = {
   },
   amountPayable: {
     field: "AmountField",
+    readOnly: true,
+  },
+  currentStatus: {
+    field: "MediumCharField",
     readOnly: true,
   },
 } satisfies Record<string, DjangoModelField>;

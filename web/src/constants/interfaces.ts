@@ -59,7 +59,7 @@ export type ActionModalDef<T extends { id: string | number | null } = any> = {
   icon: IconName;
   label: string;
   name: string;
-  modal: React.FC<{
+  modal?: React.FC<{
     setVisible?: (t: boolean) => void;
     item?: T;
   }>;
@@ -100,6 +100,7 @@ export type Field = {
   options?: Option[];
   defaultValue?: any;
   fetchFcn?: (t: string) => void;
+  searchFcn?: (t: string) => void;
   function?: (t: Object) => any;
   centered?: boolean;
   infoType?: string;

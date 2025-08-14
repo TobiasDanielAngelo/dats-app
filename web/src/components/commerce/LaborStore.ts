@@ -17,15 +17,21 @@ export const LaborFields = {
     fk: "Employee",
     appFK: "People",
   },
-  laborLype: {
+  laborType: {
     field: "SetNullOptionalForeignKey",
     fk: "LaborType",
   },
   description: { field: "MediumCharField" },
+  collection: {
+    field: "SetNullOptionalForeignKey",
+    fk: "Transaction",
+    appFK: "Finance",
+  },
   cost: { field: "AmountField" },
   compensationAmount: { field: "AmountField" },
-  isPaid: { field: "DefaultBooleanField" },
-  paidAt: { field: "OptionalDateTimeField" },
+  isPaid: {
+    field: "DefaultBooleanField",
+  },
 } satisfies Record<string, DjangoModelField>;
 
 const props = fieldToProps(LaborFields);

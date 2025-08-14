@@ -11,7 +11,7 @@ const { slug } = getPathParts(import.meta.url, "Store");
 
 export const ArticleFields = {
   id: { field: "ID" },
-  generic_product: {
+  genericProduct: {
     field: "CascadeRequiredForeignKey",
     fk: "GenericProduct",
   },

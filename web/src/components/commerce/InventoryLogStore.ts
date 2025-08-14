@@ -1,11 +1,11 @@
-import { BASE_URL } from "../../constants/constants";
-import { DjangoModelField, fieldToProps } from "../../constants/djangoHelpers";
-import { getPathParts, toOptions } from "../../constants/helpers";
-import { PropsToInterface } from "../../constants/interfaces";
 import {
   MyModel,
   MyStore,
 } from "../../blueprints/MyGenericComponents/MyGenericStore";
+import { BASE_URL } from "../../constants/constants";
+import { DjangoModelField, fieldToProps } from "../../constants/djangoHelpers";
+import { getPathParts, toOptions } from "../../constants/helpers";
+import { PropsToInterface } from "../../constants/interfaces";
 import { LOG_TYPE_CHOICES } from "./_AllChoices";
 
 const { slug } = getPathParts(import.meta.url, "Store");
@@ -27,12 +27,12 @@ export const InventoryLogFields = {
     choices: toOptions(LOG_TYPE_CHOICES),
     defaultValue: 0,
   },
-  transmitter: {
+  comingFrom: {
     field: "SetNullOptionalForeignKey",
     fk: "Location",
     appFK: "Product",
   },
-  receiver: {
+  goingTo: {
     field: "SetNullOptionalForeignKey",
     fk: "Location",
     appFK: "Product",
@@ -52,6 +52,9 @@ export const InventoryLogFields = {
   subtotalAmount: {
     field: "AmountField",
     readOnly: true,
+  },
+  isCollected: {
+    field: "DefaultBooleanField",
   },
 } satisfies Record<string, DjangoModelField>;
 const props = fieldToProps(InventoryLogFields);

@@ -16,11 +16,11 @@ export const TransactionFields = {
     fk: "Category",
   },
   description: { field: "MediumCharField" },
-  transmitter: {
+  comingFrom: {
     field: "SetNullOptionalForeignKey",
     fk: "Account",
   },
-  receiver: {
+  goingTo: {
     field: "SetNullOptionalForeignKey",
     fk: "Account",
   },

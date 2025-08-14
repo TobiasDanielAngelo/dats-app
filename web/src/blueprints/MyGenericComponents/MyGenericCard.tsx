@@ -154,14 +154,18 @@ export const MyGenericCard = observer(
                     fontSize="small"
                   />
                   <MyModal
-                    isVisible={isVisible[ind + 4]}
+                    isVisible={!!s.modal && isVisible[ind + 4]}
                     setVisible={setVisibleForIndex(ind + 4)}
                     title={s.label}
                   >
-                    <s.modal
-                      setVisible={setVisibleForIndex(ind + 4)}
-                      item={item}
-                    />
+                    {s.modal ? (
+                      <s.modal
+                        setVisible={setVisibleForIndex(ind + 4)}
+                        item={item}
+                      />
+                    ) : (
+                      <></>
+                    )}
                   </MyModal>
                 </div>
               ))}

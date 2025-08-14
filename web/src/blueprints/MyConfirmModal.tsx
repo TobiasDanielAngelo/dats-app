@@ -8,6 +8,7 @@ export const MyConfirmModal = (props: {
   onClickCheck: () => void;
   objectName?: string;
   actionName?: string;
+  statement?: string;
   msg?: Object;
   isLoading?: boolean;
 }) => {
@@ -16,6 +17,7 @@ export const MyConfirmModal = (props: {
     setVisible,
     onClickCheck,
     objectName,
+    statement,
     actionName,
     msg,
     isLoading,
@@ -29,9 +31,10 @@ export const MyConfirmModal = (props: {
       disableClose
     >
       <div className="px-20 py-5 dark:text-gray-300">
-        {objectName
-          ? `${actionName ?? "Confirm"} this ${objectName}?`
-          : `${actionName ?? "Confirm"} this item?`}
+        {statement ??
+          (objectName
+            ? `${actionName ?? "Confirm"} this ${objectName}?`
+            : `${actionName ?? "Confirm"} this item?`)}
       </div>
       <label className="block text-sm font-medium dark:text-white text-red-600">
         <div>
