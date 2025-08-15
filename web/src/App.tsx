@@ -7,6 +7,7 @@ function App() {
   const store = createStore();
 
   return (
+    // <Chat room="testroom" />
     <div>
       <StoreContext.Provider value={store}>
         <BrowserRouter>

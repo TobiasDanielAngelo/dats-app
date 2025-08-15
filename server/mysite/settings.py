@@ -22,6 +22,7 @@ SECRET_KEY = GET_ENV("SECRET_KEY")
 DEBUG = GET_BOOL("DEBUG", "True")
 
 INSTALLED_APPS = [
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -161,3 +162,7 @@ KNOX_COOKIE_HTTPONLY = True
 KNOX_COOKIE_SECURE = COOKIE_SECURE
 KNOX_COOKIE_SAMESITE = COOKIE_SAMESITE
 KNOX_COOKIE_EXPIRE_DAYS = COOKIE_EXPIRE_DAYS
+
+
+ASGI_APPLICATION = "mysite.asgi.application"
+CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}

@@ -8,7 +8,8 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "my-django-app @ git+https://github.com/TobiasDanielAngelo/django-package.git"
+    "my-django-app @ git+https://github.com/TobiasDanielAngelo/django-package.git",
+    "channels[daphne] (>=4.3.1,<5.0.0)",
 ]
 
 
