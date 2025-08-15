@@ -129,7 +129,7 @@ export function FieldToRelatedModals<F extends FieldsInput>(
   fields: F,
   folder: string,
   excludedFields?: (keyof F | string)[]
-): Record<keyof F, React.FC> {
+): Record<keyof F, React.ComponentType<{ setVisible: (t: boolean) => void }>> {
   const result = {} as Record<keyof F, React.FC>;
 
   for (const key in fields) {

@@ -4,6 +4,7 @@ from people.models import Supplier, Employee
 from django.db.models import Sum
 from my_django_app.utils import SumProduct, to_money, CannotEqual
 from django.core.exceptions import ValidationError
+from product.models import Unit
 
 
 class InventoryLog(fields.CustomModel):
@@ -79,7 +80,9 @@ class Sale(fields.CustomModel):
             statements.append(
                 f"The mechanic has {to_money(self.uncollected_compensation)} uncollected."
             )
-        if (len(self.sales_items) + len(self.labor_items)) == 0:
+        if (
+            len(self.sales_items) + len(self.labor_items) + len(self.temp_sales_items)
+        ) == 0:
             statements.append("The customer has no items.")
         if self.unclaimed_items > 0:
             statements.append(
@@ -140,9 +143,17 @@ class Sale(fields.CustomModel):
             total=SumProduct("quantity", "product__selling_price")
         )["total"]
         value2 = self.labor_sale.aggregate(total=Sum("cost"))["total"]
+        value3 = self.temporarysale_sale.aggregate(
+            total=SumProduct("quantity", "unit_amount")
+        )["total"]
         value = float(value if value is not None else 0)
         value2 = float(value2 if value2 is not None else 0)
-        return value + value2
+        value3 = float(value3 if value3 is not None else 0)
+        return value + value2 + value3
+
+    @property
+    def temp_sales_items(self):
+        return list(self.temporarysale_sale.values_list("pk", flat=True))
 
     @property
     def sales_items(self):
@@ -160,6 +171,26 @@ class Sale(fields.CustomModel):
 class Purchase(fields.CustomModel):
     status = fields.ChoiceIntegerField(STATUS_CHOICES, display=True)
     supplier = fields.SetNullOptionalForeignKey(Supplier, display=True)
+
+
+class TemporarySale(fields.CustomModel):
+    product = fields.MediumCharField(display=True)
+    unit = fields.SetNullOptionalForeignKey(Unit)
+    quantity = fields.LimitedDecimalField()
+    unit_amount = fields.AmountField()
+    sale = fields.CascadeRequiredForeignKey(Sale)
+
+    @property
+    def subtotal_amount(self):
+        return self.unit_amount * self.quantity
+
+
+class TemporaryPurchase(fields.CustomModel):
+    product = fields.MediumCharField()
+    unit = fields.SetNullOptionalForeignKey(Unit)
+    quantity = fields.AmountField()
+    unit_amount = fields.AmountField()
+    purchase = fields.CascadeRequiredForeignKey(Purchase)
 
 
 class PrintJob(fields.CustomModel):

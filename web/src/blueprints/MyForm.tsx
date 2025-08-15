@@ -95,6 +95,7 @@ const renderField = (
           {...commonProps}
           fetchFcn={t.fetchFcn}
           options={t.options}
+          onClickAdd={t.onClickAdd}
         />
       );
     case "textarea":

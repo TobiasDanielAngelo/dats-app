@@ -13,6 +13,7 @@ export const MyMultiDropdownSelector = (props: {
   maxSelections?: number;
   fetchFcn?: (t: string) => void;
   isAll?: boolean;
+  onClickAdd?: () => void;
 }) => {
   const {
     label,
@@ -25,14 +26,13 @@ export const MyMultiDropdownSelector = (props: {
     maxSelections,
     isAll,
     fetchFcn,
+    onClickAdd,
   } = props;
   const [isOpen, setOpen] = useState(open ?? false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [selectAll, setSelectAll] = useState(isAll);
   const [isOption, setIsOption] = useState(true);
   const [search, setSearch] = useState("");
-
-  console.log(value.map((s) => s.toString()));
 
   const filteredOptions = options?.filter((opt) =>
     opt.name.toLowerCase().includes(search.toLowerCase())
@@ -173,6 +173,7 @@ export const MyMultiDropdownSelector = (props: {
           icon={isOption ? "Search" : "ViewList"}
           onClick={() => setIsOption((t) => !t)}
         />
+        {onClickAdd ? <MyIcon icon="Add" onClick={onClickAdd} /> : <></>}
       </div>
       <label className="block text-xs font-medium dark:text-white mb-3 text-red-600">
         {msg}

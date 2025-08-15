@@ -4,6 +4,8 @@ import { LaborTypeComponents } from "./LaborTypeComponents";
 import { PrintJobComponents } from "./PrintJobComponents";
 import { PurchaseComponents } from "./PurchaseComponents";
 import { SaleComponents } from "./SaleComponents";
+import { TemporaryPurchaseComponents } from "./TemporaryPurchaseComponents";
+import { TemporarySaleComponents } from "./TemporarySaleComponents";
 
 export const Commerce = {
   Sale: SaleComponents,
@@ -12,4 +14,6 @@ export const Commerce = {
   Labor: LaborComponents,
   PrintJob: PrintJobComponents,
   LaborType: LaborTypeComponents,
+  TemporaryPurchase: TemporaryPurchaseComponents,
+  TemporarySale: TemporarySaleComponents,
 };

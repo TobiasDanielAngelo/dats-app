@@ -8,7 +8,7 @@ import {
   toDefaultItem,
 } from "../../constants/djangoHelpers";
 import { PathParts } from "../../constants/helpers";
-import { useVisible } from "../../constants/hooks";
+import { useLoadingAlert, useVisible } from "../../constants/hooks";
 import { ActionModalDef, KV } from "../../constants/interfaces";
 import { FieldToRelatedModals } from "../../constants/JSXHelpers";
 import { MyIcon } from "../MyIcon";
@@ -94,7 +94,9 @@ export const MyGenericComponents = <
           isVisible={key !== "" && !!ModalComponent}
           setVisible={setVisibleViaKey}
         >
-          {ModalComponent ? <ModalComponent /> : null}
+          {ModalComponent ? (
+            <ModalComponent setVisible={setVisibleViaKey} />
+          ) : null}
         </MyModal>
         <MyGenericForm
           item={item ?? defaultItem}
@@ -202,6 +204,7 @@ export const MyGenericComponents = <
     const store = useStore();
     const theStore = (store as any)[selectedStore1][selectedStore2] as IStore;
     const [params, setParams] = useSearchParams();
+    useLoadingAlert(theStore.countToUpdate ?? 0, theStore.fetchUpdated);
 
     const updatePage = (updateFn: (curr: number) => number) => {
       setParams((t) => {
@@ -305,7 +308,7 @@ export const MyGenericComponents = <
               ? new Date().toISOString()
               : theStore.lastUpdated;
           theStore.checkUpdated(lastUpdated);
-          timeoutId = setTimeout(run, (count + 1) * 3000);
+          timeoutId = setTimeout(run, 5000);
         } else {
           theStore.fetchUpdated();
         }

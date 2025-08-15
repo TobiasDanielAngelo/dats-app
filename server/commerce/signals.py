@@ -1,7 +1,7 @@
 # signals.py
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-from .models import Sale, InventoryLog, Labor
+from .models import Sale, InventoryLog, Labor, TemporarySale
 from finance.models import Transaction, Account, Category
 from django.utils import timezone
 
@@ -14,6 +14,14 @@ def set_default_customer(sender, instance, created, **kwargs):
         Sale.objects.filter(pk=instance.pk).update(
             customer=instance.customer, updated_at=timezone.now()
         )
+
+
+@receiver(post_delete, sender=InventoryLog)
+@receiver(post_delete, sender=TemporarySale)
+@receiver(post_delete, sender=Transaction)
+@receiver(post_delete, sender=Labor)
+def items_deleted(sender, instance: Labor, **kwargs):
+    Sale.objects.filter(pk=instance.sale.pk).update(updated_at=timezone.now())
 
 
 @receiver(post_save, sender=Labor)

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { handleKeyDown } from "./helpers";
 import type { CalendarView, KeyboardCodes, StateSetter } from "./interfaces";
 import { Setting, SettingStore } from "../components/core/SettingStore";
+import Swal from "sweetalert2";
 
 export const useKeyPress = (keys: KeyboardCodes[], callbackFcn: () => void) => {
   useEffect(() => {
@@ -217,3 +218,27 @@ export const useCalendarProps = () => {
 };
 
 export type CalendarProps = ReturnType<typeof useCalendarProps>;
+
+export function useLoadingAlert(
+  countToUpdate: number,
+  callbackFcn: () => Promise<any>
+) {
+  useEffect(() => {
+    if (countToUpdate > 0) {
+      Swal.fire({
+        title: "Updating...",
+        text: "Please wait while data updates.",
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      (async () => {
+        await callbackFcn();
+      })();
+    } else {
+      Swal.close();
+    }
+  }, [countToUpdate, callbackFcn]);
+}

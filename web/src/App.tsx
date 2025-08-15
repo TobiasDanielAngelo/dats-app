@@ -7,7 +7,7 @@ function App() {
   const store = createStore();
 
   return (
-    <div className="dark:bg-[#242424]">
+    <div>
       <StoreContext.Provider value={store}>
         <BrowserRouter>
           <Routes>

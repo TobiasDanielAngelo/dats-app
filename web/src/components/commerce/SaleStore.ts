@@ -26,6 +26,10 @@ export const SaleFields = {
     field: "AnyListField",
     readOnly: true,
   },
+  tempSalesItems: {
+    field: "AnyListField",
+    readOnly: true,
+  },
   laborItems: {
     field: "AnyListField",
     readOnly: true,
