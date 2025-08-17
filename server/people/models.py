@@ -7,8 +7,8 @@ class Position(fields.CustomModel):
 
 
 class Employee(fields.CustomModel):
-    first_name = fields.ShortCharField()
-    last_name = fields.ShortCharField()
+    first_name = fields.ShortCharField(display=True)
+    last_name = fields.ShortCharField(display=True)
     position = fields.SetNullOptionalForeignKey(Position, display=True)
     phone = fields.ShortCharField()
 

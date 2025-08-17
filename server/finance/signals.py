@@ -1,7 +1,9 @@
-from django.db.models.signals import post_migrate
+from django.db.models.signals import post_migrate, post_save, post_delete
+from django.db.models import Sum
 from django.dispatch import receiver
-from .models import Account, TYPE_CHOICES, Category, NATURE_CHOICES
+from .models import Account, TYPE_CHOICES, Category, NATURE_CHOICES, Receivable
 from my_django_app.utils import invert_choices
+from django.utils import timezone
 
 
 REVTYPE = invert_choices(TYPE_CHOICES)
@@ -18,7 +20,7 @@ def create_default_accounts(sender, **kwargs):
         (Account, -2, {"name": "Untracked", "type": REVTYPE["Untracked"]}),
         (Account, -3, {"name": "Assets", "type": REVTYPE["Assets"]}),
         (Account, -4, {"name": "Liabilities", "type": REVTYPE["Liabilities"]}),
-        (Account, -5, {"name": "Loan", "type": REVTYPE["Loan"]}),
+        (Account, -5, {"name": "Checking", "type": REVTYPE["Checking"]}),
         (Account, -6, {"name": "Mortgage", "type": REVTYPE["Mortgage"]}),
         (Account, -7, {"name": "Stocks", "type": REVTYPE["Stocks"]}),
         (Account, -8, {"name": "Cash Box", "type": REVTYPE["Cash"]}),

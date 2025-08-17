@@ -12,9 +12,10 @@ const { slug } = getPathParts(import.meta.url, "Store");
 export const TemporaryPurchaseFields = {
   id: { field: "ID" },
   product: { field: "MediumCharField" },
-  unit: { field: "SetNullOptionalForeignKey", fk: "Unit" },
-  quantity: { field: "AmountField" },
-  unit_amount: { field: "AmountField" },
+  unit: { field: "SetNullOptionalForeignKey", fk: "Unit", appFK: "Product" },
+  quantity: { field: "LimitedDecimalField" },
+  unitAmount: { field: "AmountField" },
+  subtotalAmount: { field: "AmountField", readOnly: true },
   purchase: { field: "CascadeRequiredForeignKey", fk: "Purchase" },
 } satisfies Record<string, DjangoModelField>;
 

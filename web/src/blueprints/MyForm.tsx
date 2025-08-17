@@ -128,6 +128,7 @@ const renderField = (
         />
       );
     case "number":
+    case "amount":
     case "text":
       return (
         <MyInput

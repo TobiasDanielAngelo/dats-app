@@ -5,6 +5,7 @@ import { buildRoutes } from "../../constants/helpers";
 import { Main } from "./_AllComponents";
 import { NavBar } from "./NavigationBar";
 import { useStore } from "./Store";
+import Chat from "../../blueprints/ChatRoom";
 
 export const MainView = observer(() => {
   const navigate = useNavigate();
@@ -42,6 +43,7 @@ export const MainView = observer(() => {
             element={<Component routePath={path} />}
           />
         ))}
+        <Route path="/chat" element={<Chat room="room1" />} />
       </Routes>
     </div>
   );

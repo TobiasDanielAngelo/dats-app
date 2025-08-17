@@ -64,6 +64,7 @@ export type ActionModalDef<T extends { id: string | number | null } = any> = {
     item?: T;
   }>;
   onClick?: () => void;
+  hidden?: boolean;
 };
 
 export interface KV<U extends Record<string, any>> {

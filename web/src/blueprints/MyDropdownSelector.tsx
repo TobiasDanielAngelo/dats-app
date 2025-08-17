@@ -39,7 +39,8 @@ export const MyDropdownSelector = (props: {
 
   useEffect(() => {
     fetchFcn?.("page=1");
-  }, []);
+    if (value) fetchFcn?.(`id__in=${value}`);
+  }, [value]);
 
   return (
     <div className="mb-0 flex flex-row items-center justify-center gap-2">

@@ -35,7 +35,7 @@ export const DjangoFields = {
   },
   AmountField: {
     prop: prop<number>(0),
-    type: "number",
+    type: "amount",
   },
   CascadeRequiredForeignKey: {
     prop: prop<number>(-1),

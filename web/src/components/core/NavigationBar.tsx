@@ -11,7 +11,11 @@ export type ViewPath = {
   mainLink: string;
 };
 
-const allViewPaths = buildViewPaths(Main);
+export const allViewPaths = buildViewPaths(Main, [
+  "Commerce",
+  "Product",
+  "People",
+]);
 
 export const NavBar = observer(() => {
   const [open, setOpen] = useState(false);

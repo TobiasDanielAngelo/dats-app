@@ -15,8 +15,8 @@ import { LocationIdMap } from "../product/LocationStore";
 import { LOG_TYPE_CHOICES } from "./_AllChoices";
 import { Commerce } from "./_AllComponents";
 import { Sale, SaleFields } from "./SaleStore";
+import moment from "moment";
 
-// Action Icons Component
 interface ActionIconsProps {
   theItem: Sale;
   handlers: {
@@ -25,6 +25,7 @@ interface ActionIconsProps {
     onAddLabor: () => void;
     onAddPayment: () => void;
     onAddChange: () => void;
+    onAddLoan: () => void;
   };
 }
 
@@ -41,8 +42,24 @@ const ActionIcons = ({ theItem, handlers }: ActionIconsProps) => {
       label: "Add Labor",
       onClick: handlers.onAddLabor,
     },
-    { icon: "Payment", label: "Add Payment", onClick: handlers.onAddPayment },
-    { icon: "Toll", label: "Change", onClick: handlers.onAddChange },
+    {
+      icon: "Payment",
+      label: "Add Payment",
+      onClick: handlers.onAddPayment,
+      hidden: theItem.amountPayable <= 0,
+    },
+    {
+      icon: "Toll",
+      label: "Change",
+      onClick: handlers.onAddChange,
+      hidden: theItem.change <= 0,
+    },
+    {
+      icon: "Payment",
+      label: "Promissory",
+      onClick: handlers.onAddLoan,
+      hidden: theItem.amountPayable <= 0,
+    },
   ];
 
   return (
@@ -50,14 +67,14 @@ const ActionIcons = ({ theItem, handlers }: ActionIconsProps) => {
       className="absolute flex flex-row gap-3"
       style={{ top: 10, right: 10 }}
     >
-      {iconConfig.map(({ icon, label, onClick }) => (
+      {iconConfig.map(({ icon, label, onClick, hidden }) => (
         <MyIcon
           key={label}
           icon={icon as IconName}
           label={label}
           fontSize="large"
           onClick={onClick}
-          hidden={!theItem}
+          hidden={!theItem || hidden}
         />
       ))}
     </div>
@@ -67,40 +84,23 @@ const ActionIcons = ({ theItem, handlers }: ActionIconsProps) => {
 const useFetchItemData = (theItem: Sale | undefined, stores: Store) => {
   const { commerceStore, financeStore } = stores;
 
-  useEffect(() => {
-    if (theItem?.laborItems.length) {
-      commerceStore.laborStore.fetchAll(
-        `page=1&id__in=${theItem.laborItems.join(",")}`
-      );
-    }
-  }, [theItem?.laborItems.length, commerceStore.saleStore.lastUpdated]);
+  function useFetchOnChange(
+    items: number[] | undefined,
+    fetch: { fetchAll: (query: string) => void }
+  ) {
+    useEffect(() => {
+      if (items?.length) {
+        fetch.fetchAll(`page=1&id__in=${items.join(",")}`);
+      }
+    }, [items?.length, commerceStore.saleStore.lastUpdated]);
+  }
 
-  useEffect(() => {
-    if (theItem?.salesItems.length) {
-      commerceStore.inventoryLogStore.fetchAll(
-        `id__in=${theItem.salesItems.join(",")}`
-      );
-    }
-  }, [theItem?.salesItems.length, commerceStore.saleStore.lastUpdated]);
-
-  useEffect(() => {
-    if (theItem?.tempSalesItems.length) {
-      commerceStore.temporarySaleStore.fetchAll(
-        `page=1&id__in=${theItem.tempSalesItems.join(",")}`
-      );
-    }
-  }, [theItem?.tempSalesItems.length, commerceStore.saleStore.lastUpdated]);
-
-  useEffect(() => {
-    if (theItem?.transactionItems.length) {
-      financeStore.transactionStore.fetchAll(
-        `page=1&id__in=${theItem.transactionItems.join(",")}`
-      );
-    }
-  }, [theItem?.transactionItems.length, commerceStore.saleStore.lastUpdated]);
+  useFetchOnChange(theItem?.laborItems, commerceStore.laborStore);
+  useFetchOnChange(theItem?.salesItems, commerceStore.inventoryLogStore);
+  useFetchOnChange(theItem?.tempSalesItems, commerceStore.temporarySaleStore);
+  useFetchOnChange(theItem?.transactionItems, financeStore.transactionStore);
 };
 
-// Main Items Form Component
 interface ItemsFormProps {
   item?: Sale;
   setVisible?: (t: boolean) => void;
@@ -122,6 +122,8 @@ const ItemsForm = observer(({ item }: ItemsFormProps) => {
     setVisible4,
     isVisible5,
     setVisible5,
+    isVisible6,
+    setVisible6,
   } = useVisible();
 
   const currentItem = context.value
@@ -130,10 +132,8 @@ const ItemsForm = observer(({ item }: ItemsFormProps) => {
 
   const theItem = currentItem ?? item;
 
-  // Fetch related data
   useFetchItemData(theItem, store);
 
-  // Filter related items
   const salesItems = commerceStore.inventoryLogStore.items.filter((s) =>
     theItem?.salesItems.includes(s.id as number)
   );
@@ -163,19 +163,42 @@ const ItemsForm = observer(({ item }: ItemsFormProps) => {
     commerceStore.saleStore.fetchUpdated();
   };
 
+  const handleAddLoan = async () => {
+    try {
+      const resp = await financeStore.transactionStore.addItem({
+        sale: theItem!.id as number,
+        comingFrom: AccountIdMap["Stocks"],
+        category: CategoryIdMap["Product Sales"],
+        description: `Promissory Payment for C#${theItem!.id}`,
+        amount: theItem?.amountPayable,
+      });
+      if (!resp.data) return;
+      financeStore.receivableStore.addItem({
+        charge: resp.data.id as number,
+        amount: theItem?.amountPayable,
+        dateDue: moment(new Date()).add(1, "month").format("YYYY-MM-DD"),
+        name: item?.customer,
+      });
+    } catch (e) {
+      console.error(e);
+    }
+    setVisible6(false);
+    commerceStore.saleStore.fetchUpdated();
+  };
+
   const actionHandlers = {
     onAddSales: () => setVisible1(true),
     onAddTempSales: () => setVisible5(true),
     onAddLabor: () => setVisible2(true),
     onAddPayment: () => setVisible3(true),
     onAddChange: () => setVisible4(true),
+    onAddLoan: () => setVisible6(true),
   };
 
   if (!theItem) return <></>;
 
   return (
     <div className="dark:text-white text-teal-700 relative">
-      {/* Add Sales Modal */}
       <MyModal isVisible={isVisible1} setVisible={setVisible1}>
         <Commerce.InventoryLog.Form
           item={{
@@ -189,7 +212,6 @@ const ItemsForm = observer(({ item }: ItemsFormProps) => {
         />
       </MyModal>
 
-      {/* Add Labor Modal */}
       <MyModal isVisible={isVisible2} setVisible={setVisible2}>
         <Commerce.Labor.Form
           item={{ sale: theItem.id as number }}
@@ -199,7 +221,6 @@ const ItemsForm = observer(({ item }: ItemsFormProps) => {
         />
       </MyModal>
 
-      {/* Add Transaction Modal */}
       <MyModal isVisible={isVisible3} setVisible={setVisible3}>
         <Finance.Transaction.Form
           item={{
@@ -214,6 +235,7 @@ const ItemsForm = observer(({ item }: ItemsFormProps) => {
           hiddenFields={[
             "sale",
             "purchase",
+            "labor",
             "comingFrom",
             "description",
             "category",
@@ -221,7 +243,6 @@ const ItemsForm = observer(({ item }: ItemsFormProps) => {
         />
       </MyModal>
 
-      {/* Change Confirmation Modal */}
       <MyConfirmModal
         statement={`Dispense change of ${toMoney(theItem.change)}?`}
         isVisible={isVisible4}
@@ -229,7 +250,6 @@ const ItemsForm = observer(({ item }: ItemsFormProps) => {
         onClickCheck={handleDispenseChange}
       />
 
-      {/* Add Temporary Sale Modal */}
       <MyModal isVisible={isVisible5} setVisible={setVisible5}>
         <Commerce.TemporarySale.Form
           item={{ sale: theItem.id as number }}
@@ -238,6 +258,17 @@ const ItemsForm = observer(({ item }: ItemsFormProps) => {
           hiddenFields={["sale"]}
         />
       </MyModal>
+
+      <MyConfirmModal
+        statement={`Create a Promissory Note of ${toMoney(
+          item?.amountPayable
+        )} (Receivable on ${moment(new Date())
+          .add(1, "month")
+          .format("MMM D, YYYY")})?`}
+        isVisible={isVisible6}
+        setVisible={setVisible6}
+        onClickCheck={handleAddLoan}
+      />
 
       <div className="p-4">{theItem.displayName}</div>
 
@@ -260,19 +291,16 @@ const ItemsForm = observer(({ item }: ItemsFormProps) => {
           "unitAmount",
           "subtotalAmount",
         ]}
-        // renderActions={(item) => <TempSalesItemRow item={item} />}
       />
 
       <Commerce.Labor.Table
         items={laborItems}
         shownFields={["laborType", "employees", "cost", "compensationAmount"]}
-        // renderActions={(item) => <LaborItemRow item={item} />}
       />
 
       <Finance.Transaction.Table
         items={transactionItems}
         shownFields={["description", "amount"]}
-        // renderActions={(item) => <TransactionItemRow item={item} />}
       />
 
       <ActionIcons theItem={theItem} handlers={actionHandlers} />
@@ -280,7 +308,6 @@ const ItemsForm = observer(({ item }: ItemsFormProps) => {
   );
 });
 
-// Supporting components and exports
 const SideB = <ItemsForm />;
 
 type MoreSaleInterface = {

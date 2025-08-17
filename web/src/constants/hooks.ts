@@ -224,7 +224,7 @@ export function useLoadingAlert(
   callbackFcn: () => Promise<any>
 ) {
   useEffect(() => {
-    if (countToUpdate > 0) {
+    if (countToUpdate !== 0) {
       Swal.fire({
         title: "Updating...",
         text: "Please wait while data updates.",
@@ -235,6 +235,7 @@ export function useLoadingAlert(
       });
 
       (async () => {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         await callbackFcn();
       })();
     } else {

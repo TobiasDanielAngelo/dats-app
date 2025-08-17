@@ -1,4 +1,4 @@
-import { HTMLInputTypeAttribute, useState } from "react";
+import { useState } from "react";
 import {
   correctNumberInput,
   keyListToObject,
@@ -22,8 +22,7 @@ export const MyInput = (props: {
   isPassword?: boolean;
   optional?: boolean;
   msg?: string;
-  type?: HTMLInputTypeAttribute;
-  noCalc?: boolean;
+  type?: string;
 }) => {
   const {
     hidden,
@@ -35,7 +34,6 @@ export const MyInput = (props: {
     pattern,
     isPassword,
     optional,
-    noCalc,
     msg,
     type,
   } = props;
@@ -66,7 +64,7 @@ export const MyInput = (props: {
   const onChangeCorrect = (t: string) => {
     let newVal = corrector
       ? corrector(t)
-      : type === "number"
+      : ["number", "amount"].includes(type ?? "")
       ? correctNumberInput(t)
       : t;
     onChangeValue?.(newVal);
@@ -108,7 +106,10 @@ export const MyInput = (props: {
           type={isPassword ? "password" : undefined}
           name={label}
           style={{
-            textAlign: centered || type === "number" ? "center" : undefined,
+            textAlign:
+              centered || type === "number" || type === "amount"
+                ? "center"
+                : undefined,
           }}
           className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-teal-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
           placeholder=" "
@@ -117,7 +118,7 @@ export const MyInput = (props: {
           value={value}
           onChange={(e) => onChangeCorrect(e.target.value)}
         />
-        {type === "number" && !noCalc ? (
+        {type === "amount" ? (
           <MyIcon icon="Calculate" onClick={() => setVisible1(true)} />
         ) : (
           <></>

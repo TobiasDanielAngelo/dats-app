@@ -5,12 +5,13 @@
   font-weight: 400;
 
   /* color-scheme: light dark; */
-  color: rgba(255, 255, 255, 0.87);
+  color: teal;
   background-color: rgb(204 251 241);
   transition: background-color 0.5s, color 0.5s;
 }
 
 .dark:root {
+  color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
 }
 

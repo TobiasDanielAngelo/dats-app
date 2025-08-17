@@ -22,7 +22,7 @@ export const AccountIdMap = {
   Untracked: -2,
   Assets: -3,
   Liabilities: -4,
-  Loan: -5,
+  Checking: -5,
   Mortgage: -6,
   Stocks: -7,
   "Cash Box": -8,

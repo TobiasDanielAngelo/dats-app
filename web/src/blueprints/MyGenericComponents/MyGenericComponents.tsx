@@ -291,7 +291,9 @@ export const MyGenericComponents = <
     );
 
     const location = useLocation();
-    const match = props.routePath === location.pathname;
+    const match =
+      props.routePath.replaceAll("/", "") ===
+      location.pathname.replaceAll("/", "");
 
     const itemMap = useMemo(() => [] satisfies KV<any>[], []);
 

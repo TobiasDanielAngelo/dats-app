@@ -1013,10 +1013,11 @@ export function buildRoutes(obj: any, basePath = "") {
   return routes;
 }
 
-export function buildViewPaths(obj: any): ViewPath[] {
+export function buildViewPaths(obj: any, hiddenModule?: string[]): ViewPath[] {
   const viewPaths: ViewPath[] = [];
 
   for (const moduleName in obj) {
+    if (hiddenModule?.includes(moduleName)) continue;
     const moduleValue = obj[moduleName];
     const subKeys = Object.keys(moduleValue);
 

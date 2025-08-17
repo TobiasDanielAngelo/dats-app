@@ -1,7 +1,7 @@
 from my_django_app import fields
 from product.models import Location, Article
 from people.models import Supplier, Employee
-from django.db.models import Sum
+from django.db.models import Sum, F, Value, BooleanField, Case, When
 from my_django_app.utils import SumProduct, to_money, CannotEqual
 from django.core.exceptions import ValidationError
 from product.models import Unit
@@ -38,7 +38,7 @@ class InventoryLog(fields.CustomModel):
 
     def save(self, *args, **kwargs):
         # Try to find duplicate before saving
-        qs = InventoryLog.objects.filter(product=self.product)
+        qs = InventoryLog.objects.filter(product=self.product, log_type=self.log_type)
         if self.sale:
             qs = qs.filter(sale=self.sale)
         elif self.purchase:
@@ -88,9 +88,27 @@ class Sale(fields.CustomModel):
             statements.append(
                 f"The customer has {self.unclaimed_items} unclaimed items."
             )
+        if self.has_unpaid_due:
+            statements.append(f"The customer has an unpaid receivable.")
         return (
             "☆☆☆ SALE COMPLETE ☆☆☆" if len(statements) == 0 else "\n".join(statements)
         )
+
+    @property
+    def has_unpaid_due(self):
+        qs = self.transaction_sale.filter(receivable_charge__isnull=False).annotate(
+            payment_total=Sum("receivable_charge__payments__amount"),
+            receivable_is_paid=Case(
+                When(
+                    payment_total__gte=F("receivable_charge__charge__amount"),
+                    then=Value(True),
+                ),
+                default=Value(False),
+                output_field=BooleanField(),
+            ),
+        )
+
+        return qs.filter(receivable_is_paid=False).exists()
 
     @property
     def amount_payable(self):
@@ -172,6 +190,66 @@ class Purchase(fields.CustomModel):
     status = fields.ChoiceIntegerField(STATUS_CHOICES, display=True)
     supplier = fields.SetNullOptionalForeignKey(Supplier, display=True)
 
+    @property
+    def current_status(self):
+        statements = []
+        if self.amount_payable > 0:
+            statements.append(
+                f"We have {to_money(self.amount_payable)} unpaid balance."
+            )
+        if (len(self.purchase_items) + len(self.temp_purchase_items)) == 0:
+            statements.append("This purchase has no items.")
+        if self.unclaimed_items > 0:
+            statements.append(f"This list has {self.unclaimed_items} unclaimed items.")
+        return (
+            "☆☆☆ PURCHASE COMPLETE ☆☆☆"
+            if len(statements) == 0
+            else "\n".join(statements)
+        )
+
+    @property
+    def amount_payable(self):
+        return self.total_cost - self.amount_paid
+
+    @property
+    def unclaimed_items(self):
+        unclaimed = self.inventorylog_purchase.filter(is_collected=0).aggregate(
+            total=Sum("quantity")
+        )["total"]
+        return unclaimed if unclaimed is not None else 0
+
+    @property
+    def amount_paid(self):
+        value = self.transaction_purchase.filter(amount__gte=0).aggregate(
+            total=Sum("amount")
+        )["total"]
+        value = float(value if value is not None else 0)
+        return value
+
+    @property
+    def total_cost(self):
+        value = self.inventorylog_purchase.aggregate(
+            total=SumProduct("quantity", "product__purchase_price")
+        )["total"]
+        value2 = self.temporarypurchase_purchase.aggregate(
+            total=SumProduct("quantity", "unit_amount")
+        )["total"]
+        value = float(value if value is not None else 0)
+        value2 = float(value2 if value2 is not None else 0)
+        return value + value2
+
+    @property
+    def temp_purchase_items(self):
+        return list(self.temporarypurchase_purchase.values_list("pk", flat=True))
+
+    @property
+    def purchase_items(self):
+        return list(self.inventorylog_purchase.values_list("pk", flat=True))
+
+    @property
+    def transaction_items(self):
+        return list(self.transaction_purchase.values_list("pk", flat=True))
+
 
 class TemporarySale(fields.CustomModel):
     product = fields.MediumCharField(display=True)
@@ -186,11 +264,15 @@ class TemporarySale(fields.CustomModel):
 
 
 class TemporaryPurchase(fields.CustomModel):
-    product = fields.MediumCharField()
+    product = fields.MediumCharField(display=True)
     unit = fields.SetNullOptionalForeignKey(Unit)
-    quantity = fields.AmountField()
+    quantity = fields.LimitedDecimalField()
     unit_amount = fields.AmountField()
     purchase = fields.CascadeRequiredForeignKey(Purchase)
+
+    @property
+    def subtotal_amount(self):
+        return self.unit_amount * self.quantity
 
 
 class PrintJob(fields.CustomModel):

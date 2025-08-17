@@ -83,6 +83,7 @@ export const MyGenericRow = observer(
                 S.onClick?.();
                 setVisible(ind + 3, true);
               }}
+              hidden={S.hidden}
             />
           </div>
         ))}

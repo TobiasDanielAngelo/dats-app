@@ -28,8 +28,30 @@ export const PurchaseFields = {
     field: "AnyListField",
     readOnly: true,
   },
+  tempPurchaseItems: {
+    field: "AnyListField",
+    readOnly: true,
+  },
   transactionItems: {
     field: "AnyListField",
+    readOnly: true,
+  },
+
+  totalCost: {
+    field: "AmountField",
+    readOnly: true,
+  },
+
+  amountPaid: {
+    field: "AmountField",
+    readOnly: true,
+  },
+  amountPayable: {
+    field: "AmountField",
+    readOnly: true,
+  },
+  currentStatus: {
+    field: "MediumCharField",
     readOnly: true,
   },
 } satisfies Record<string, DjangoModelField>;

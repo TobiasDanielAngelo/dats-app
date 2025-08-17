@@ -151,6 +151,7 @@ export const MyGenericCard = observer(
                         setVisible(ind + 4, true);
                       })
                     }
+                    hidden={s.hidden}
                     fontSize="small"
                   />
                   <MyModal

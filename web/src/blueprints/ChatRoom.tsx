@@ -5,19 +5,23 @@ interface ChatProps {
 }
 
 interface WSMessage {
-  message: string;
+  latest_updated: string;
 }
 
 const Chat: React.FC<ChatProps> = ({ room }) => {
   const [msg, setMsg] = useState<string>("");
+  const [recv, setRecv] = useState<string>("");
   const [socket, setSocket] = useState<WebSocket | null>(null);
 
   useEffect(() => {
-    const ws = new WebSocket(`ws://localhost:8000/ws/chat/${room}/`);
+    const ws = new WebSocket(
+      `ws://localhost:8000/ws/counts/${new Date().toISOString()}/`
+    );
 
     ws.onmessage = (e: MessageEvent) => {
       const data: WSMessage = JSON.parse(e.data);
-      console.log("Received:", data.message);
+      console.log(data);
+      // setRecv(data.message);
     };
 
     ws.onopen = () => {
@@ -35,7 +39,7 @@ const Chat: React.FC<ChatProps> = ({ room }) => {
 
   const sendMsg = () => {
     if (socket && socket.readyState === WebSocket.OPEN) {
-      const payload: WSMessage = { message: msg };
+      const payload: WSMessage = { latest_updated: new Date().toISOString() };
       socket.send(JSON.stringify(payload));
       setMsg("");
     }
@@ -49,6 +53,7 @@ const Chat: React.FC<ChatProps> = ({ room }) => {
         placeholder="Type message"
       />
       <button onClick={sendMsg}>Send</button>
+      <div>{recv}</div>
     </div>
   );
 };

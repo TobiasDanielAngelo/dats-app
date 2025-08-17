@@ -1,231 +1,218 @@
 import { observer } from "mobx-react-lite";
+import { useContext, useEffect } from "react";
 import { MyGenericComponents } from "../../blueprints/MyGenericComponents/MyGenericComponents";
-import { getPathParts, toMoney } from "../../constants/helpers";
-import { Purchase, PurchaseFields } from "./PurchaseStore";
-import { useStore } from "../core/Store";
-import { useContext, useEffect, useState } from "react";
-import { useVisible } from "../../constants/hooks";
-import { InventoryLog } from "./InventoryLogStore";
-import { MyConfirmModal, MyInput } from "../../blueprints";
+import { IconName, MyIcon } from "../../blueprints/MyIcon";
 import { MyModal } from "../../blueprints/MyModal";
-import { MyIcon } from "../../blueprints/MyIcon";
-import { Transaction } from "../finance/TransactionStore";
-import { Commerce } from "./_AllComponents";
-import { LOG_TYPE_CHOICES } from "./_AllChoices";
-import { LocationIdMap } from "../product/LocationStore";
+import { getPathParts } from "../../constants/helpers";
+import { useVisible } from "../../constants/hooks";
+import { ActionModalDef } from "../../constants/interfaces";
+import { Store, useStore } from "../core/Store";
 import { Finance } from "../finance/_AllComponents";
 import { AccountIdMap } from "../finance/AccountStore";
 import { CategoryIdMap } from "../finance/CategoryStore";
-import { ActionModalDef } from "../../constants/interfaces";
+import { LocationIdMap } from "../product/LocationStore";
+import { LOG_TYPE_CHOICES } from "./_AllChoices";
+import { Commerce } from "./_AllComponents";
+import { Purchase, PurchaseFields } from "./PurchaseStore";
 
-const ItemsForm = observer(
-  (props: { item?: Purchase; setVisible?: (t: boolean) => void }) => {
-    const { item } = props;
-    const { commerceStore, financeStore } = useStore();
+interface ActionIconsProps {
+  theItem: Purchase;
+  handlers: {
+    onAddPurchases: () => void;
+    onAddTempPurchases: () => void;
+    onAddPayment: () => void;
+  };
+}
 
-    const context = useContext(PurchaseComponents.MoreContext);
+const ActionIcons = ({ theItem, handlers }: ActionIconsProps) => {
+  const iconConfig = [
+    { icon: "Inbox", label: "Add Purchases", onClick: handlers.onAddPurchases },
+    {
+      icon: "Inbox",
+      label: "Add Temp. Purchases",
+      onClick: handlers.onAddTempPurchases,
+    },
 
-    const {
-      isVisible1,
-      setVisible1,
-      isVisible2,
-      setVisible2,
-      isVisible3,
-      setVisible3,
-      isVisible4,
-      setVisible4,
-    } = useVisible();
-    const currentItem = context.value
-      ? commerceStore.purchaseStore.allItems.get(context.value.itemId)
-      : undefined;
+    { icon: "Payment", label: "Add Payment", onClick: handlers.onAddPayment },
+  ];
 
-    const theItem = currentItem ?? item;
+  return (
+    <div
+      className="absolute flex flex-row gap-3"
+      style={{ top: 10, right: 10 }}
+    >
+      {iconConfig.map(({ icon, label, onClick }) => (
+        <MyIcon
+          key={label}
+          icon={icon as IconName}
+          label={label}
+          fontSize="large"
+          onClick={onClick}
+          hidden={!theItem}
+        />
+      ))}
+    </div>
+  );
+};
 
-    const purchaseItems = commerceStore.inventoryLogStore.items.filter((s) =>
-      theItem?.purchaseItems.includes(s.id as number)
-    );
+const useFetchItemData = (theItem: Purchase | undefined, stores: Store) => {
+  const { commerceStore, financeStore } = stores;
 
-    const transactionItems = financeStore.transactionStore.items.filter((s) =>
-      theItem?.transactionItems.includes(s.id as number)
-    );
-
-    const PurchaseItemRow = (props: { item: InventoryLog }) => {
-      const { item } = props;
-      const { isVisible1, setVisible1, isVisible2, setVisible2 } = useVisible();
-      const [amt, setAmt] = useState(item.quantity.toString());
-      return (
-        <div className="flex flex-row">
-          <MyConfirmModal
-            isVisible={isVisible2}
-            setVisible={setVisible2}
-            onClickCheck={() => {
-              commerceStore.purchaseStore.fetchUpdated();
-              commerceStore.inventoryLogStore.deleteItem(item.id);
-            }}
-            objectName={"Purchase Item"}
-            actionName="Delete"
-          />
-          <MyModal isVisible={isVisible1} setVisible={setVisible1}>
-            <div className="flex flex-row justify-center items-center">
-              <MyInput
-                type="number"
-                onChangeValue={setAmt}
-                value={amt}
-                noCalc
-              />
-              <MyIcon
-                icon="Check"
-                onClick={() => {
-                  commerceStore.inventoryLogStore.updateItem(item.id, {
-                    quantity: parseFloat(amt),
-                  });
-                  setVisible1(false);
-                  commerceStore.purchaseStore.fetchUpdated();
-                }}
-              />
-            </div>
-          </MyModal>
-          <MyIcon icon="Edit" onClick={() => setVisible1(true)} />
-          <MyIcon icon="Close" onClick={() => setVisible2(true)} />
-        </div>
+  useEffect(() => {
+    if (theItem?.purchaseItems.length) {
+      commerceStore.inventoryLogStore.fetchAll(
+        `id__in=${theItem.purchaseItems.join(",")}`
       );
-    };
+    }
+  }, [theItem?.purchaseItems.length, commerceStore.purchaseStore.lastUpdated]);
 
-    const TransactionItemRow = (props: { item: Transaction }) => {
-      const { item } = props;
-      const { isVisible1, setVisible1, isVisible2, setVisible2 } = useVisible();
-      const [values, setValues] = useState({
-        amount: item.amount.toString(),
-      });
-
-      return (
-        <div className="flex flex-row">
-          <MyConfirmModal
-            isVisible={isVisible2}
-            setVisible={setVisible2}
-            onClickCheck={() => {
-              commerceStore.saleStore.fetchUpdated();
-              financeStore.transactionStore.deleteItem(item.id);
-            }}
-            objectName={"Transaction Item"}
-            actionName="Delete"
-          />
-          <MyModal isVisible={isVisible1} setVisible={setVisible1}>
-            <div className="flex flex-row justify-center items-center gap-2">
-              <MyInput
-                type="number"
-                onChangeValue={(t) => setValues({ ...values, amount: t })}
-                value={values.amount}
-                label="Amount"
-                noCalc
-              />
-              <MyIcon
-                icon="Check"
-                onClick={() => {
-                  financeStore.transactionStore.updateItem(item.id, {
-                    amount: Math.round(parseFloat(values.amount)),
-                  });
-                  setVisible1(false);
-                  commerceStore.saleStore.fetchUpdated();
-                }}
-              />
-            </div>
-          </MyModal>
-          <MyIcon icon="Edit" onClick={() => setVisible1(true)} />
-          <MyIcon icon="Close" onClick={() => setVisible2(true)} />
-        </div>
+  useEffect(() => {
+    if (theItem?.tempPurchaseItems.length) {
+      commerceStore.temporaryPurchaseStore.fetchAll(
+        `page=1&id__in=${theItem.tempPurchaseItems.join(",")}`
       );
-    };
+    }
+  }, [
+    theItem?.tempPurchaseItems.length,
+    commerceStore.purchaseStore.lastUpdated,
+  ]);
 
-    useEffect(() => {
-      if (theItem) {
-        commerceStore.inventoryLogStore.fetchAll(
-          `page=1&id__in=${theItem?.purchaseItems.join(",")}`
-        );
-      }
-    }, [theItem?.purchaseItems.length, purchaseItems.length]);
+  useEffect(() => {
+    if (theItem?.transactionItems.length) {
+      financeStore.transactionStore.fetchAll(
+        `page=1&id__in=${theItem.transactionItems.join(",")}`
+      );
+    }
+  }, [
+    theItem?.transactionItems.length,
+    commerceStore.purchaseStore.lastUpdated,
+  ]);
+};
 
-    useEffect(() => {
-      if (theItem) {
-        financeStore.transactionStore.fetchAll(
-          `page=1&id__in=${theItem?.transactionItems.join(",")}`
-        );
-      }
-    }, [theItem?.transactionItems.length, transactionItems.length]);
+interface ItemsFormProps {
+  item?: Purchase;
+  setVisible?: (t: boolean) => void;
+}
 
-    if (!theItem) return <></>;
-    return (
-      <div className="dark:text-white text-teal-700 relative">
-        <MyModal isVisible={isVisible1} setVisible={setVisible1}>
-          <Commerce.InventoryLog.Form
-            item={{
-              purchase: (theItem?.id ?? -1) as number,
-              logType: LOG_TYPE_CHOICES.findIndex((t) => t === "Purchase"),
-              goingTo: LocationIdMap["Gen Luna Main"],
-            }}
-            setVisible={setVisible1}
-            hiddenFields={["logType", "purchase", "sale", "comingFrom"]}
-            fetchFcn={commerceStore.purchaseStore.fetchUpdated}
-          />
-        </MyModal>
-        <MyModal isVisible={isVisible3} setVisible={setVisible3}>
-          <Finance.Transaction.Form
-            item={{
-              sale: (theItem?.id ?? -1) as number,
-              goingTo: AccountIdMap["Stocks"],
-              category: CategoryIdMap["Supplies"],
-              description: `Payment for P#${theItem.id}`,
-            }}
-            setVisible={setVisible3}
-            fetchFcn={commerceStore.purchaseStore.fetchUpdated}
-            hiddenFields={[
-              "sale",
-              "purchase",
-              "goingTo",
-              "description",
-              "category",
-            ]}
-          />
-        </MyModal>
-        <div className="p-4">{theItem?.displayName}</div>
-        <Commerce.InventoryLog.Table
-          items={purchaseItems}
-          shownFields={[
-            "displayName",
-            "quantity",
-            "unitAmount",
-            "subtotalAmount",
+const ItemsForm = observer(({ item }: ItemsFormProps) => {
+  const store = useStore();
+  const { commerceStore, financeStore } = store;
+  const context = useContext(PurchaseComponents.MoreContext);
+
+  const {
+    isVisible1,
+    setVisible1,
+    isVisible3,
+    setVisible3,
+    isVisible2,
+    setVisible2,
+  } = useVisible();
+
+  const currentItem = context.value
+    ? commerceStore.purchaseStore.allItems.get(context.value.itemId)
+    : undefined;
+
+  const theItem = currentItem ?? item;
+
+  useFetchItemData(theItem, store);
+
+  const purchaseItems = commerceStore.inventoryLogStore.items.filter((s) =>
+    theItem?.purchaseItems.includes(s.id as number)
+  );
+
+  const tempPurchaseItems = commerceStore.temporaryPurchaseStore.items.filter(
+    (s) => theItem?.tempPurchaseItems.includes(s.id as number)
+  );
+
+  const transactionItems = financeStore.transactionStore.items.filter((s) =>
+    theItem?.transactionItems.includes(s.id as number)
+  );
+
+  const actionHandlers = {
+    onAddPurchases: () => setVisible1(true),
+    onAddTempPurchases: () => setVisible2(true),
+    onAddPayment: () => setVisible3(true),
+  };
+
+  if (!theItem) return <></>;
+
+  return (
+    <div className="dark:text-white text-teal-700 relative">
+      <MyModal isVisible={isVisible1} setVisible={setVisible1}>
+        <Commerce.InventoryLog.Form
+          item={{
+            purchase: theItem.id as number,
+            logType: LOG_TYPE_CHOICES.findIndex((t) => t === "Purchase"),
+            goingTo: LocationIdMap["Gen Luna Main"],
+          }}
+          setVisible={setVisible1}
+          hiddenFields={["logType", "purchase", "sale", "comingFrom"]}
+          fetchFcn={commerceStore.purchaseStore.fetchUpdated}
+        />
+      </MyModal>
+
+      <MyModal isVisible={isVisible2} setVisible={setVisible2}>
+        <Commerce.TemporaryPurchase.Form
+          item={{ purchase: theItem.id as number }}
+          setVisible={setVisible2}
+          fetchFcn={commerceStore.purchaseStore.fetchUpdated}
+          hiddenFields={["purchase"]}
+        />
+      </MyModal>
+
+      <MyModal isVisible={isVisible3} setVisible={setVisible3}>
+        <Finance.Transaction.Form
+          item={{
+            purchase: theItem.id as number,
+            goingTo: AccountIdMap["Stocks"],
+            category: CategoryIdMap["Supplies"],
+            description: `Payment for C#${theItem.id}`,
+          }}
+          setVisible={setVisible3}
+          fetchFcn={commerceStore.purchaseStore.fetchUpdated}
+          hiddenFields={[
+            "sale",
+            "purchase",
+            "labor",
+            "goingTo",
+            "description",
+            "category",
           ]}
-          renderActions={(item) => <PurchaseItemRow item={item} />}
         />
-        <Finance.Transaction.Table
-          items={transactionItems}
-          shownFields={["description", "amount"]}
-          renderActions={(item) => <TransactionItemRow item={item} />}
-        />
-        <div
-          className="absolute flex flex-row gap-3"
-          style={{ top: 10, right: 10 }}
-        >
-          <MyIcon
-            icon="Inbox"
-            label="Add Purchase Item"
-            fontSize="large"
-            onClick={() => setVisible1(true)}
-            hidden={!theItem}
-          />
-          <MyIcon
-            icon="Payment"
-            label="Add Payment"
-            fontSize="large"
-            onClick={() => setVisible3(true)}
-            hidden={!theItem}
-          />
-        </div>
-      </div>
-    );
-  }
-);
+      </MyModal>
+
+      <div className="p-4">{theItem.displayName}</div>
+
+      <Commerce.InventoryLog.Table
+        items={purchaseItems}
+        shownFields={[
+          "displayName",
+          "quantity",
+          "unitAmount",
+          "subtotalAmount",
+          "isCollected",
+        ]}
+      />
+
+      <Commerce.TemporaryPurchase.Table
+        items={tempPurchaseItems}
+        shownFields={[
+          "displayName",
+          "quantity",
+          "unitAmount",
+          "subtotalAmount",
+        ]}
+      />
+
+      <Finance.Transaction.Table
+        items={transactionItems}
+        shownFields={["description", "amount"]}
+      />
+
+      <ActionIcons theItem={theItem} handlers={actionHandlers} />
+    </div>
+  );
+});
 
 const SideB = <ItemsForm />;
 
@@ -244,8 +231,8 @@ const MoreModals = (
   return [
     {
       icon: "RemoveRedEye",
-      name: "Sales",
-      label: "Sales",
+      name: "Purchases",
+      label: "Purchases",
       modal: ItemsForm,
       onClick: () => setValue({ ...value, itemId: item.id }),
     },

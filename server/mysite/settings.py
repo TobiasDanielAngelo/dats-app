@@ -22,7 +22,6 @@ SECRET_KEY = GET_ENV("SECRET_KEY")
 DEBUG = GET_BOOL("DEBUG", "True")
 
 INSTALLED_APPS = [
-    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -166,3 +165,24 @@ KNOX_COOKIE_EXPIRE_DAYS = COOKIE_EXPIRE_DAYS
 
 ASGI_APPLICATION = "mysite.asgi.application"
 CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {
+        "skip_polling": {"()": "core.filters.SkipPollingFilter"},
+    },
+    "handlers": {
+        "server_console": {
+            "class": "logging.StreamHandler",
+            "filters": ["skip_polling"],
+        },
+    },
+    "loggers": {
+        "django.server": {
+            "handlers": ["server_console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+}
