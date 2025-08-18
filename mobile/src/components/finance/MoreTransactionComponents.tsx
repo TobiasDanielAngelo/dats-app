@@ -309,7 +309,7 @@ export const TransactionQuickView = observer(() => {
           <View style={{ flexDirection: "row", gap: 10, alignItems: "center" }}>
             <MyIcon
               icon="chevron-left"
-              size={12}
+              size={20}
               color="blue"
               onPress={() =>
                 setDate(
@@ -331,7 +331,7 @@ export const TransactionQuickView = observer(() => {
             </Text>
             <MyIcon
               icon="chevron-right"
-              size={12}
+              size={20}
               color="blue"
               onPress={() =>
                 setDate(
