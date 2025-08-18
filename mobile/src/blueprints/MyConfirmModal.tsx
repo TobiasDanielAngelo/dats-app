@@ -6,6 +6,7 @@ import { MyModal } from "./MyModal";
 export const MyConfirmModal = (props: {
   isVisible: boolean;
   setVisible: StateSetter<boolean>;
+  statement?: string;
   onPressCheck: () => void;
   objectName?: string;
   actionName?: string;
@@ -20,6 +21,7 @@ export const MyConfirmModal = (props: {
     actionName,
     msg,
     isLoading,
+    statement,
   } = props;
 
   return (
@@ -33,9 +35,10 @@ export const MyConfirmModal = (props: {
         style={{ height: 200, justifyContent: "center", alignItems: "center" }}
       >
         <Text>
-          {objectName
-            ? `${actionName ?? "Confirm"} this ${objectName}?`
-            : `${actionName ?? "Confirm"} this item?`}
+          {statement ??
+            (objectName
+              ? `${actionName ?? "Confirm"} this ${objectName}?`
+              : `${actionName ?? "Confirm"} this item?`)}
         </Text>
       </View>
       <View>

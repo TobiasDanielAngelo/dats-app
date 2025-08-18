@@ -41,7 +41,5 @@ export const LaborComponents = MyGenericComponents(
   Labor,
   LaborFields,
   getPathParts("commerce", "Labor"),
-  <></>,
-  [],
-  MoreModals
+  { MoreModals }
 );

@@ -101,6 +101,7 @@ const renderField = (
           {...commonProps}
           value={details[t.name] ?? ""}
           centered={t.centered}
+          type={t.type}
         />
       );
     default:
@@ -119,7 +120,7 @@ type FormProps = {
   details: any;
   setDetails: (t: any) => void;
   onPressSubmit: () => void;
-  onPressSubmitAdd: () => void;
+  onPressSubmitAdd?: () => void;
   hasDelete?: boolean;
   onDelete?: () => Promise<void>;
   msg?: Object;
@@ -187,10 +188,22 @@ export const MyForm = observer(
             )}
           </View>
         ))}
-        <Text style={{ color: "darkred" }}>
+        <Text
+          style={{
+            color: "darkred",
+            display: getMsg(msg, "nonFieldErrors") ? "contents" : "none",
+          }}
+        >
           {getMsg(msg, "nonFieldErrors")}
         </Text>
-        <Text style={{ color: "red" }}>{getMsg(msg, "detail")}</Text>
+        <Text
+          style={{
+            color: "red",
+            display: getMsg(msg, "detail") ? "contents" : "none",
+          }}
+        >
+          {getMsg(msg, "detail")}
+        </Text>
         <View
           style={{
             flexDirection: "row-reverse",
@@ -207,6 +220,7 @@ export const MyForm = observer(
               onPress={onPressSubmitAdd}
               isLoading={isLoading}
               label="Save and Add"
+              hidden={!onPressSubmitAdd}
             />
           ) : (
             <MyIcon icon="trash" onPress={onPressDelete} />

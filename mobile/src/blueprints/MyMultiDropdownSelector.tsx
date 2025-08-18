@@ -17,6 +17,7 @@ export const MyMultiDropdownSelector = (props: {
   fetchFcn?: (t: string) => void;
   searchFcn?: (t: string) => void;
   onPressAdd?: () => void;
+  flex?: number;
 }) => {
   const {
     label,
@@ -30,6 +31,7 @@ export const MyMultiDropdownSelector = (props: {
     isAll,
     fetchFcn,
     onPressAdd,
+    flex,
     searchFcn,
   } = props;
   const [isOpen, setOpen] = useState(open ?? false);
@@ -47,7 +49,7 @@ export const MyMultiDropdownSelector = (props: {
   };
 
   useEffect(() => {
-    onChangeValue(selectAll ? options.map((s) => s.id) : []);
+    onChangeValue(selectAll ? options.map((s) => s.id) : value);
   }, [selectAll, options.length]);
 
   useEffect(() => {
@@ -70,7 +72,7 @@ export const MyMultiDropdownSelector = (props: {
   }, [value]);
 
   return (
-    <View style={{ position: "relative", paddingHorizontal: 2 }}>
+    <View style={{ position: "relative", paddingHorizontal: 2, flex: flex }}>
       {label && (
         <Text style={{ fontSize: 15, color: "blue", marginBottom: 5 }}>
           {label}

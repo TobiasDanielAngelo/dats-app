@@ -8,6 +8,7 @@ import { useSettings, VisibleMap } from "../../constants/hooks";
 import {
   ActionModalDef,
   GraphType,
+  IView,
   KV,
   PaginatedDetails,
   Related,
@@ -69,7 +70,7 @@ export const useViewValues = <
 
 export const MyGenericView = observer(
   (props: {
-    fetchFcn: () => void;
+    fetchFcn: (params?: string) => void;
     Context: React.Context<GenericViewProps | null>;
     CollectionComponent: React.FC;
     TableComponent: React.FC;
@@ -87,6 +88,8 @@ export const MyGenericView = observer(
     graph: GraphType;
     setGraph: StateSetter<GraphType>;
     availableGraphs: GraphType[];
+    availableViews: string[];
+    hiddenSpeedDials: string[];
     actionModalDefs?: readonly ActionModalDef[];
     pageDetails: PaginatedDetails | undefined;
     setPageDetails: StateSetter<PaginatedDetails | undefined>;
@@ -96,6 +99,7 @@ export const MyGenericView = observer(
     setParams: SetURLSearchParams;
     itemMap: KV<any>[];
     title: string;
+    MoreViews?: IView[];
   }) => {
     const {
       objWithFields,
@@ -107,9 +111,11 @@ export const MyGenericView = observer(
       FilterComponent,
       actionModalDefs,
       isVisible,
+      availableViews,
       setVisible,
       shownFields,
       setShownFields,
+      hiddenSpeedDials,
       availableGraphs,
       pageDetails,
       setPageDetails,
@@ -121,6 +127,7 @@ export const MyGenericView = observer(
       graph,
       setGraph,
       title,
+      MoreViews,
     } = props;
     const { width, height } = useWindowDimensions();
     const isPortrait = height >= width;
@@ -181,7 +188,9 @@ export const MyGenericView = observer(
         return acc;
       }, {} as Record<GraphType, { icon: string; label: string }>);
 
-    const [view, setView] = useState("table");
+    const [view, setView] = useState(
+      availableViews ? availableViews[0] : "table"
+    );
 
     const toggleGraph = () => {
       setGraph((prev) => {
@@ -214,8 +223,18 @@ export const MyGenericView = observer(
       />
     );
 
+    const allViews = [
+      { icon: "id-card", name: "card", view: <CollectionComponent /> },
+      { icon: "table", name: "table", view: <TableComponent /> },
+      ...(MoreViews ?? []),
+    ].filter((s) => availableViews.includes(s.name));
+
     const toggleView = () => {
-      setView((prev) => (prev === "card" ? "table" : "card"));
+      setView((prev) => {
+        const currentIndex = allViews.map((s) => s.name).indexOf(prev);
+        const nextIndex = (currentIndex + 1) % availableViews.length;
+        return allViews[nextIndex].name;
+      });
     };
 
     const Modals = [...defaultActionModalDefs, ...(actionModalDefs ?? [])].map(
@@ -225,8 +244,8 @@ export const MyGenericView = observer(
     const views = useMemo(
       () => [
         {
-          icon: view === "card" ? "id-card" : "table",
-          name: "Toggle View",
+          icon: allViews.find((s) => s.name === view)?.icon,
+          name: toTitleCase(view),
           onPress: toggleView,
         },
         {
@@ -267,9 +286,13 @@ export const MyGenericView = observer(
       setSortFields,
     };
 
+    useEffect(() => {
+      fetchFcn(params.toString());
+    }, [params]);
+
     return (
       <Context.Provider value={value}>
-        {view === "card" ? <CollectionComponent /> : <TableComponent />}
+        {allViews.find((s) => s.name === view)?.view}
         {Modals.map((S, ind) => (
           <MyModal
             key={ind}
@@ -287,11 +310,22 @@ export const MyGenericView = observer(
           </MyModal>
         ))}
         {isPortrait ? (
-          <MySpeedDial actions={[...actions, ...views]} />
+          <MySpeedDial
+            actions={[...actions, ...views].filter(
+              (s) => !hiddenSpeedDials.includes(s.name)
+            )}
+          />
         ) : (
           <>
-            <MySpeedDial actions={actions} />
-            <MySpeedDial actions={views} leftSide />
+            <MySpeedDial
+              actions={actions.filter(
+                (s) => !hiddenSpeedDials.includes(s.name)
+              )}
+            />
+            <MySpeedDial
+              actions={views.filter((s) => !hiddenSpeedDials.includes(s.name))}
+              leftSide
+            />
           </>
         )}
       </Context.Provider>

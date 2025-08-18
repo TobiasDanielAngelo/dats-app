@@ -1,5 +1,12 @@
 import React from "react";
-import { FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  DimensionValue,
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 function getDimensions(matrix: any[][]): { width: number[]; height: number[] } {
   const colCount = matrix[0]?.length || 0;
@@ -20,7 +27,7 @@ function getDimensions(matrix: any[][]): { width: number[]; height: number[] } {
       }
     }
 
-    height[row] = Math.max(maxLines * 40, 40); // estimate height
+    height[row] = Math.max(maxLines * 50, 50); // estimate height
   }
 
   return { width, height };
@@ -29,11 +36,12 @@ function getDimensions(matrix: any[][]): { width: number[]; height: number[] } {
 export const MyTable = (props: {
   matrix: React.ReactNode[][];
   hidden?: boolean;
+  widths?: DimensionValue[];
 }) => {
-  const { matrix, hidden } = props;
+  const { matrix, hidden, widths } = props;
 
-  const { width: colWidths, height: rowHeights } = getDimensions(matrix);
-
+  const { width: compWidths, height: rowHeights } = getDimensions(matrix);
+  const colWidths = widths ?? compWidths;
   return hidden ? (
     <></>
   ) : matrix.length < 2 ? (

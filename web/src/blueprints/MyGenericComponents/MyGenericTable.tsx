@@ -135,7 +135,7 @@ export const MyGenericTable = observer(
       JSON.stringify(related),
       getStoreSignature(items.map((s) => s.$)),
       shownFields.length,
-      Number(pageIds?.map(String).join("")),
+      pageIds?.map(String).join(""),
       itemMap,
     ]);
 

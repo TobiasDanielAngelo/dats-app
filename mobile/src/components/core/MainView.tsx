@@ -1,16 +1,16 @@
 import { observer } from "mobx-react-lite";
+import { useEffect } from "react";
 import { ImageBackground, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Route, Routes, useNavigate } from "react-router-native";
-import { MenuBar } from "../../blueprints/MenuBar";
 import { Menu } from "../../blueprints/MenuCard";
 import { buildRoutes } from "../../constants/helpers";
 import { useVisible } from "../../constants/hooks";
-import { Main } from "./_AllComponents";
-import { NavBar } from "./NavigationBar";
-import { useStore } from "./Store";
-import { useEffect } from "react";
+import { TransactionQuickView } from "../finance/MoreTransactionComponents";
 import { ModularView } from "./ModularView";
+import { useStore } from "./Store";
+import { Main } from "./_AllComponents";
+import { MenuBar } from "../../blueprints/MenuBar";
 
 export const MainView = observer(() => {
   const navigate = useNavigate();
@@ -20,7 +20,16 @@ export const MainView = observer(() => {
   const { settingStore } = useStore();
 
   const menuItems = [
-    { name: "bars", label: "Modular", onPress: () => navigate("/menu") },
+    {
+      name: "money-bill-wave",
+      label: "Expenses",
+      onPress: () => navigate("/transaction-quick"),
+    },
+    {
+      name: "file-signature",
+      label: "Report",
+      onPress: () => navigate("/reports"),
+    },
     { name: "bars", label: "Menu", onPress: () => setVisible1(true) },
     // { name: "star", label: "Testing", onPress: () => navigate("/testing") },
   ] satisfies Menu[];
@@ -55,7 +64,7 @@ export const MainView = observer(() => {
       >
         <Routes>
           <Route path="menu" element={<ModularView />} />
-          <Route path="" element={<ModularView />} />
+          <Route path="/" element={<TransactionQuickView />} />
           {routes.map(({ path, component: Component }) => (
             <Route
               key={path}
@@ -65,8 +74,8 @@ export const MainView = observer(() => {
           ))}
         </Routes>
       </ImageBackground>
-      <NavBar drawerOpen={isVisible1} setDrawerOpen={setVisible1} />
-      <MenuBar items={menuItems} />
+      {/* <NavBar drawerOpen={isVisible1} setDrawerOpen={setVisible1} /> */}
+      {/* <MenuBar items={menuItems} /> */}
     </View>
   );
 });

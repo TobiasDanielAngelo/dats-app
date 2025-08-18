@@ -56,6 +56,10 @@ class Transaction(fields.CustomModel):
     going_to = fields.SetNullOptionalForeignKey(Account, display=True)
     amount = fields.AmountField()
 
+    @property
+    def nature(self):
+        return self.category.get_nature_display()
+
     class Meta:
         constraints = [CannotEqual("coming_from", "going_to", "Transaction")]
 

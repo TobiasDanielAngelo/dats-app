@@ -21,9 +21,10 @@ type MyGenericTableProps<T extends object> = {
   pageIds?: number[];
   setParams: (updater: (params: URLSearchParams) => URLSearchParams) => void;
   params: URLSearchParams;
-  PageBar: React.FC;
+  PageBar: React.ComponentType<{ title?: string }>;
   related: Related[];
   renderActions?: (item: T) => React.ReactNode;
+  title?: string;
 };
 
 export const MyGenericTable = observer(
@@ -40,6 +41,7 @@ export const MyGenericTable = observer(
     params,
     PageBar,
     renderActions,
+    title,
   }: MyGenericTableProps<T>) => {
     const HeaderWithSort = ({ k }: { k: string }) => {
       const orderByParams = params.getAll("order_by");
@@ -145,7 +147,7 @@ export const MyGenericTable = observer(
 
     return (
       <View style={{ flex: 1 }}>
-        <PageBar />
+        <PageBar title={title} />
         <MyTable matrix={matrix} hidden={!shownFields.length} />
       </View>
     );

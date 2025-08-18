@@ -26,14 +26,14 @@ interface ActionIconsProps {
 
 const ActionIcons = ({ theItem, handlers }: ActionIconsProps) => {
   const iconConfig = [
-    { icon: "Inbox", label: "Add Purchases", onClick: handlers.onAddPurchases },
+    { icon: "Inbox", label: "Add Purchases", onPress: handlers.onAddPurchases },
     {
       icon: "Inbox",
       label: "Add Temp. Purchases",
-      onClick: handlers.onAddTempPurchases,
+      onPress: handlers.onAddTempPurchases,
     },
 
-    { icon: "Payment", label: "Add Payment", onClick: handlers.onAddPayment },
+    { icon: "Payment", label: "Add Payment", onPress: handlers.onAddPayment },
   ];
 
   return (
@@ -41,13 +41,13 @@ const ActionIcons = ({ theItem, handlers }: ActionIconsProps) => {
       className="absolute flex flex-row gap-3"
       style={{ top: 10, right: 10 }}
     >
-      {iconConfig.map(({ icon, label, onClick }) => (
+      {iconConfig.map(({ icon, label, onPress }) => (
         <MyIcon
           key={label}
           icon={icon as IconName}
           label={label}
-          fontSize="large"
-          onClick={onClick}
+          size={20}
+          onPress={onPress}
           hidden={!theItem}
         />
       ))}
@@ -234,7 +234,7 @@ const MoreModals = (
       name: "Purchases",
       label: "Purchases",
       modal: ItemsForm,
-      onClick: () => setValue({ ...value, itemId: item.id }),
+      onPress: () => setValue({ ...value, itemId: item.id }),
     },
   ] satisfies ActionModalDef[];
 };
@@ -245,7 +245,9 @@ export const PurchaseComponents = MyGenericComponents(
   Purchase,
   PurchaseFields,
   getPathParts("commerce", "Purchase"),
-  SideB,
-  MainModals,
-  MoreModals
+  {
+    SideB,
+    MainModals,
+    MoreModals,
+  }
 );

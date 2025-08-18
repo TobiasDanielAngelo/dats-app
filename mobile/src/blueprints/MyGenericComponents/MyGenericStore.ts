@@ -269,6 +269,8 @@ export type KeystoneModel<U> = {
   id: number | string | null;
   $view: Required<U>;
   displayName: string;
+  createdAt: string;
+  updatedAt: string;
   update: (details: Partial<U>) => void;
 };
 

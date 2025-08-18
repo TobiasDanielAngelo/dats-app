@@ -8,7 +8,6 @@ import { getPathParts, toMoney } from "../../constants/helpers";
 import { useVisible } from "../../constants/hooks";
 import { ActionModalDef } from "../../constants/interfaces";
 import { Store, useStore } from "../core/Store";
-import { Finance } from "../finance/_AllComponents";
 import { AccountIdMap } from "../finance/AccountStore";
 import { CategoryIdMap } from "../finance/CategoryStore";
 import { LocationIdMap } from "../product/LocationStore";
@@ -16,6 +15,7 @@ import { LOG_TYPE_CHOICES } from "./_AllChoices";
 import { Commerce } from "./_AllComponents";
 import { Sale, SaleFields } from "./SaleStore";
 import moment from "moment";
+import { Finance } from "../finance/_AllComponents";
 
 interface ActionIconsProps {
   theItem: Sale;
@@ -31,33 +31,33 @@ interface ActionIconsProps {
 
 const ActionIcons = ({ theItem, handlers }: ActionIconsProps) => {
   const iconConfig = [
-    { icon: "Inbox", label: "Add Sales", onClick: handlers.onAddSales },
+    { icon: "Inbox", label: "Add Sales", onPress: handlers.onAddSales },
     {
       icon: "Inbox",
       label: "Add Temp. Sales",
-      onClick: handlers.onAddTempSales,
+      onPress: handlers.onAddTempSales,
     },
     {
       icon: "PrecisionManufacturing",
       label: "Add Labor",
-      onClick: handlers.onAddLabor,
+      onPress: handlers.onAddLabor,
     },
     {
       icon: "Payment",
       label: "Add Payment",
-      onClick: handlers.onAddPayment,
+      onPress: handlers.onAddPayment,
       hidden: theItem.amountPayable <= 0,
     },
     {
       icon: "Toll",
       label: "Change",
-      onClick: handlers.onAddChange,
+      onPress: handlers.onAddChange,
       hidden: theItem.change <= 0,
     },
     {
       icon: "Payment",
       label: "Promissory",
-      onClick: handlers.onAddLoan,
+      onPress: handlers.onAddLoan,
       hidden: theItem.amountPayable <= 0,
     },
   ];
@@ -67,13 +67,13 @@ const ActionIcons = ({ theItem, handlers }: ActionIconsProps) => {
       className="absolute flex flex-row gap-3"
       style={{ top: 10, right: 10 }}
     >
-      {iconConfig.map(({ icon, label, onClick, hidden }) => (
+      {iconConfig.map(({ icon, label, onPress, hidden }) => (
         <MyIcon
           key={label}
           icon={icon as IconName}
           label={label}
-          fontSize="large"
-          onClick={onClick}
+          size={20}
+          onPress={onPress}
           hidden={!theItem || hidden}
         />
       ))}
@@ -247,7 +247,7 @@ const ItemsForm = observer(({ item }: ItemsFormProps) => {
         statement={`Dispense change of ${toMoney(theItem.change)}?`}
         isVisible={isVisible4}
         setVisible={setVisible4}
-        onClickCheck={handleDispenseChange}
+        onPressCheck={handleDispenseChange}
       />
 
       <MyModal isVisible={isVisible5} setVisible={setVisible5}>
@@ -267,7 +267,7 @@ const ItemsForm = observer(({ item }: ItemsFormProps) => {
           .format("MMM D, YYYY")})?`}
         isVisible={isVisible6}
         setVisible={setVisible6}
-        onClickCheck={handleAddLoan}
+        onPressCheck={handleAddLoan}
       />
 
       <div className="p-4">{theItem.displayName}</div>
@@ -328,7 +328,7 @@ const MoreModals = (
       name: "Sales",
       label: "Sales",
       modal: ItemsForm,
-      onClick: () => setValue({ ...value, itemId: item.id }),
+      onPress: () => setValue({ ...value, itemId: item.id }),
     },
   ] satisfies ActionModalDef[];
 };
@@ -339,7 +339,9 @@ export const SaleComponents = MyGenericComponents(
   Sale,
   SaleFields,
   getPathParts("commerce", "Sale"),
-  SideB,
-  MainModals,
-  MoreModals
+  {
+    SideB: SideB,
+    MainModals: MainModals,
+    MoreModals: MoreModals,
+  }
 );

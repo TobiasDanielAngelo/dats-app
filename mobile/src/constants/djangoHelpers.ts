@@ -180,6 +180,8 @@ type FieldToProp<F extends FieldsInput> = {
 export function fieldToProps<F extends FieldsInput>(fields: F): FieldToProp<F> {
   const result: any = {
     displayName: prop<string>(""),
+    createdAt: prop<string>(""),
+    updatedAt: prop<string>(""),
   };
 
   for (const key in fields) {

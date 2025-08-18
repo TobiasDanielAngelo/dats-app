@@ -4,6 +4,7 @@ import { sortAndFilterByIds } from "../../constants/helpers";
 import { useVisible } from "../../constants/hooks";
 import { PaginatedDetails } from "../../constants/interfaces";
 import { MyIcon } from "../MyIcon";
+import { useEffect } from "react";
 
 export const MyGenericCollection = observer(
   <T extends { id: number | string /* & object */ }>(props: {
@@ -17,6 +18,10 @@ export const MyGenericCollection = observer(
   }) => {
     const { PageBar, items, pageDetails, CardComponent, title } = props;
     const { isVisible1, setVisible1 } = useVisible();
+
+    useEffect(() => {
+      setVisible1(true);
+    }, []);
 
     return (
       <View style={{ flex: 1 }}>

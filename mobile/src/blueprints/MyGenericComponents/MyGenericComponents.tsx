@@ -1,5 +1,12 @@
 import { observer } from "mobx-react-lite";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useLocation, useSearchParams } from "react-router-native";
 import { Store, useStore } from "../../components/core/Store";
 import {
@@ -9,7 +16,7 @@ import {
 } from "../../constants/djangoHelpers";
 import { PathParts } from "../../constants/helpers";
 import { useLoadingAlert, useVisible } from "../../constants/hooks";
-import { ActionModalDef, KV } from "../../constants/interfaces";
+import { ActionModalDef, IView, KV } from "../../constants/interfaces";
 import { FieldToRelatedModals } from "../../constants/JSXHelpers";
 import { MyModal } from "../MyModal";
 import { MyPageBar } from "../MyPageBar";
@@ -33,17 +40,32 @@ export const MyGenericComponents = <
   },
   fields: Record<string, DjangoModelField>,
   modelNameParts: PathParts,
-  SideB?: React.ReactNode,
-  MainModals?: ActionModalDef[],
-  MoreModals?: (
-    item: any,
-    context: {
-      value: V;
-      setValue: (t: V) => void;
-    },
-    store?: Store
-  ) => ActionModalDef[]
+  args?: {
+    SideB?: React.ReactNode;
+    MainModals?: ActionModalDef[];
+    MoreModals?: (
+      item: any,
+      context: {
+        value: V;
+        setValue: (t: V) => void;
+      },
+      store?: Store
+    ) => ActionModalDef[];
+    MoreViews?: () => IView[];
+    availableViews?: string[];
+    hiddenFormFields?: string[];
+    hiddenSpeedDials?: string[];
+  }
 ) => {
+  const {
+    SideB,
+    MainModals,
+    MoreModals,
+    MoreViews,
+    availableViews,
+    hiddenFormFields,
+    hiddenSpeedDials,
+  } = args ?? {};
   type ExtractModelArg<U> = U extends KeystoneModel<infer X> ? X : never;
 
   type NonNullableFields<T> = {
@@ -74,7 +96,7 @@ export const MyGenericComponents = <
       fields,
       modelNameParts.folder,
       modelNameParts.rawName,
-      hiddenFields as string[],
+      (hiddenFields as string[]) ?? hiddenFormFields,
       store,
       setKey
     );
@@ -98,7 +120,7 @@ export const MyGenericComponents = <
           ) : null}
         </MyModal>
         <MyGenericForm
-          item={item ?? defaultItem}
+          item={item ? ("$" in item ? item.$ : item) : defaultItem}
           fields={allFields}
           objectName={modelNameParts.titleCase}
           store={(store as any)[selectedStore1][selectedStore2]}
@@ -149,10 +171,16 @@ export const MyGenericComponents = <
     shownFields?: (keyof T)[];
     items?: ModelInstance[];
     renderActions?: (item: ModelInstance) => React.ReactNode;
+    title?: string;
   }) => {
     const store = useStore();
     const theStore = (store as any)[selectedStore1][selectedStore2] as IStore;
     const values = useGenericView();
+
+    const RenderPageBar = useCallback(
+      () => <PageBar title={props.title} />,
+      [props.title]
+    );
 
     return (
       <MyGenericTable
@@ -168,19 +196,25 @@ export const MyGenericComponents = <
         sortFields={
           values.sortFields.length ? values.sortFields : ["-created_at"]
         }
-        PageBar={PageBar}
+        PageBar={RenderPageBar}
       />
     );
   };
 
   const CardComponent = (props: {
     item: NonNullableModelData & { $view: Required<ModelData> };
+    shownFields?: string[];
+    hiddenFormFields?: string[];
   }) => {
-    const { item } = props;
+    const { item, shownFields, hiddenFormFields } = props;
     const store = useStore();
     const theStore = (store as any)[selectedStore1][selectedStore2];
     const values = useGenericView();
     const context = useContext(SomeContext);
+    const RenderForm = useCallback(
+      (props: any) => <Form {...props} hiddenFields={hiddenFormFields} />,
+      []
+    );
 
     return (
       <MyGenericCard
@@ -188,8 +222,9 @@ export const MyGenericComponents = <
         {...values}
         header={["id", "createdAt"]}
         important={["displayName"]}
+        shownFields={shownFields ?? values.shownFields}
         prices={[...theStore.priceFields, ...morePriceFields]}
-        FormComponent={Form}
+        FormComponent={RenderForm}
         deleteItem={theStore.deleteItem}
         fetchFcn={theStore.fetchAll}
         related={theStore.related}
@@ -198,7 +233,7 @@ export const MyGenericComponents = <
     );
   };
 
-  const PageBar = observer(() => {
+  const PageBar = ({ title }: any) => {
     const store = useStore();
     const theStore = (store as any)[selectedStore1][selectedStore2] as IStore;
     const [params, setParams] = useSearchParams();
@@ -213,12 +248,6 @@ export const MyGenericComponents = <
       });
     };
 
-    useEffect(() => {
-      if (params.toString()) {
-        theStore.fetchAll(params.toString());
-      }
-    }, [params.toString()]);
-
     return (
       <MyPageBar
         pageDetails={theStore.pageDetails}
@@ -229,29 +258,37 @@ export const MyGenericComponents = <
           )
         }
         onPressPage={(n: number) => updatePage(() => n)}
-        title={modelNameParts.titleCasePlural}
+        title={title ?? modelNameParts.titleCasePlural}
       />
     );
-  });
+  };
 
   const SomeContext = createContext<{ value: V; setValue: (t: V) => void }>({
     value: {} as V,
     setValue: () => {},
   });
 
-  const CollectionComponent = () => {
+  const CollectionComponent = ({
+    title,
+    items,
+  }: {
+    title?: string;
+    items?: ModelInstance[];
+  }) => {
     const store = useStore();
     const theStore = (store as any)[selectedStore1][selectedStore2] as IStore;
+
+    const RenderPageBar = useCallback(() => <PageBar title={title} />, [title]);
 
     return (
       <SideBySideView
         SideA={
           <MyGenericCollection
             CardComponent={Card}
-            title={modelNameParts.titleCase}
+            title={title ?? modelNameParts.titleCase}
             pageDetails={theStore.pageDetails}
-            PageBar={PageBar}
-            items={theStore.items}
+            PageBar={RenderPageBar}
+            items={items ?? theStore.items}
           />
         }
         SideB={SideB}
@@ -325,8 +362,17 @@ export const MyGenericComponents = <
           isVisible={isVisible}
           setVisible={setVisible}
           itemMap={itemMap}
+          hiddenSpeedDials={hiddenSpeedDials ?? []}
           {...values}
           pageDetails={theStore.pageDetails}
+          MoreViews={MoreViews?.()}
+          availableViews={
+            availableViews ?? [
+              "table",
+              "card",
+              ...(MoreViews?.() ?? []).map((s) => s.name),
+            ]
+          }
         />
       </SomeContext.Provider>
     );

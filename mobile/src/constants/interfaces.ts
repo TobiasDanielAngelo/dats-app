@@ -80,6 +80,12 @@ export type ViewPath = {
   parent?: string;
 };
 
+export type IView = {
+  icon: string;
+  view: React.ReactNode;
+  name: Exclude<string, "table" | "card">;
+};
+
 export interface ItemDetailsProps<T> {
   item: T;
   shownFields?: string[];

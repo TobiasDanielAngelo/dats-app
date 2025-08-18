@@ -40,7 +40,7 @@ const ReceivablePaymentForm = ({ item }: { item: Receivable }) => {
     ],
   ] satisfies Field[][];
 
-  const onClickSubmit = async () => {
+  const onPressSubmit = async () => {
     const resp = await financeStore.transactionStore.addItem(details);
     if (!resp.ok && !resp.data) return;
     financeStore.receivableStore.updateItem(item.id, {
@@ -53,7 +53,7 @@ const ReceivablePaymentForm = ({ item }: { item: Receivable }) => {
       title="Receivable Payment"
       details={details}
       setDetails={setDetails}
-      onClickSubmit={onClickSubmit}
+      onPressSubmit={onPressSubmit}
     />
   );
 };
@@ -74,7 +74,5 @@ export const ReceivableComponents = MyGenericComponents(
   Receivable,
   ReceivableFields,
   getPathParts("finance", "Receivable"),
-  undefined,
-  undefined,
-  MoreModals
+  { MoreModals }
 );

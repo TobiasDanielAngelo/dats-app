@@ -46,7 +46,10 @@ export const MySpeedDial = (props: {
             size: 20,
           }}
           title={s.name}
-          onPress={s.onPress}
+          onPress={() => {
+            s.onPress?.();
+            setOpen(false);
+          }}
           key={ind}
           style={{ top: -50, right: -20 }}
           titleStyle={{ top: -50, right: -20 }}

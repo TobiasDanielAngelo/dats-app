@@ -39,6 +39,10 @@ export const TransactionFields = {
     fk: "Labor",
     appFK: "Commerce",
   },
+  nature: {
+    field: "ShortCharField",
+    readOnly: true,
+  },
   amount: { field: "AmountField" },
 } satisfies Record<string, DjangoModelField>;
 
