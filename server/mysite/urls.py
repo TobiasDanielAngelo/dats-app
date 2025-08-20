@@ -14,8 +14,9 @@ urlpatterns = [
     path("product/", include("product.urls")),
     path("finance/", include("finance.urls")),
     path("commerce/", include("commerce.urls")),
-    re_path(r"^uploads/(?P<file_path>.+)$", views.serve_upload),
 ] + auth_url_patterns()
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+else:
+    urlpatterns += (re_path(r"^uploads/(?P<file_path>.+)$", views.serve_upload),)
