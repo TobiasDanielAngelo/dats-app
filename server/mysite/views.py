@@ -13,7 +13,7 @@ def serve_upload(request, file_path):
         return HttpResponseForbidden("Access denied")
 
     # Build safe file path
-    full_path = os.path.join(settings.MEDIA_ROOT, "uploads", file_path)
+    full_path = os.path.join(settings.MEDIA_ROOT, file_path)
 
     # Security check
     if not os.path.exists(full_path):
