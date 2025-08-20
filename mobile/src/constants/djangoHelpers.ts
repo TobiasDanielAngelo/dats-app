@@ -14,11 +14,11 @@ export const DjangoFields = {
     type: "check",
   },
   FileField: {
-    prop: prop<File | null>(null),
+    prop: prop<File | string | null>(null),
     type: "file",
   },
   ImageField: {
-    prop: prop<File | null>(null),
+    prop: prop<File | string | null>(null),
     type: "file",
   },
   CascadeOptionalForeignKey: {

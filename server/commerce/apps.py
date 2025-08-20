@@ -7,3 +7,4 @@ class CommerceConfig(AppConfig):
 
     def ready(self):
         from . import signals
+        from . import image_signals

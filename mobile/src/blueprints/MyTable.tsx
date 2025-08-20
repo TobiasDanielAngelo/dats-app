@@ -27,7 +27,7 @@ function getDimensions(matrix: any[][]): { width: number[]; height: number[] } {
       }
     }
 
-    height[row] = Math.max(maxLines * 50, 50); // estimate height
+    height[row] = Math.max(maxLines * 20 + 20, 40); // estimate height
   }
 
   return { width, height };
@@ -97,7 +97,13 @@ export const MyTable = (props: {
                     padding: 10,
                   }}
                 >
-                  <Text>{t}</Text>
+                  <Text
+                    style={{ flexWrap: "wrap" }}
+                    ellipsizeMode="tail"
+                    numberOfLines={t?.toString().split("\n").length}
+                  >
+                    {t}
+                  </Text>
                 </View>
               ))}
             </View>

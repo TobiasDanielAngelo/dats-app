@@ -11,6 +11,8 @@ import { ModularView } from "./ModularView";
 import { useStore } from "./Store";
 import { Main } from "./_AllComponents";
 import { MenuBar } from "../../blueprints/MenuBar";
+import { PurchaseQuickView } from "../commerce/MorePurchaseComponents";
+import { TestingView } from "./TestingView";
 
 export const MainView = observer(() => {
   const navigate = useNavigate();
@@ -22,15 +24,15 @@ export const MainView = observer(() => {
   const menuItems = [
     {
       name: "money-bill-wave",
-      label: "Expenses",
-      onPress: () => navigate("/transaction-quick"),
+      label: "Finance Report",
+      onPress: () => navigate("/"),
     },
     {
       name: "file-signature",
-      label: "Report",
-      onPress: () => navigate("/reports"),
+      label: "Purchase Order",
+      onPress: () => navigate("/purchase"),
     },
-    { name: "bars", label: "Menu", onPress: () => setVisible1(true) },
+    // { name: "bars", label: "Menu", onPress: () => setVisible1(true) },
     // { name: "star", label: "Testing", onPress: () => navigate("/testing") },
   ] satisfies Menu[];
 
@@ -65,6 +67,7 @@ export const MainView = observer(() => {
         <Routes>
           <Route path="menu" element={<ModularView />} />
           <Route path="/" element={<TransactionQuickView />} />
+          <Route path="/purchase" element={<PurchaseQuickView />} />
           {routes.map(({ path, component: Component }) => (
             <Route
               key={path}
@@ -72,10 +75,11 @@ export const MainView = observer(() => {
               element={<Component routePath={path} />}
             />
           ))}
+          <Route path="/testing" element={<TestingView />} />
         </Routes>
       </ImageBackground>
       {/* <NavBar drawerOpen={isVisible1} setDrawerOpen={setVisible1} /> */}
-      {/* <MenuBar items={menuItems} /> */}
+      <MenuBar items={menuItems} />
     </View>
   );
 });

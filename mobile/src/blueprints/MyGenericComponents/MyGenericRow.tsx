@@ -66,7 +66,7 @@ export const MyGenericRow = observer(
         />
         <View style={{ flexDirection: "row", gap: 5, paddingHorizontal: 25 }}>
           {moreActions?.map((S, ind) => (
-            <div key={ind}>
+            <View key={ind}>
               <MyModal
                 isVisible={!!S.modal && isVisible[ind + 3]}
                 setVisible={setVisibleForIndex((ind + 3) as Index)}
@@ -90,7 +90,7 @@ export const MyGenericRow = observer(
                 }}
                 hidden={S.hidden}
               />
-            </div>
+            </View>
           ))}
           <MyIcon icon="edit" onPress={() => setVisible1(true)} size={20} />
           <MyIcon icon="times" onPress={() => setVisible2(true)} size={20} />

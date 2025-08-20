@@ -189,6 +189,7 @@ class Sale(fields.CustomModel):
 class Purchase(fields.CustomModel):
     status = fields.ChoiceIntegerField(STATUS_CHOICES, display=True)
     supplier = fields.SetNullOptionalForeignKey(Supplier, display=True)
+    created_at = fields.AutoCreatedAtField(display=True)
 
     @property
     def current_status(self):
@@ -278,6 +279,7 @@ class TemporaryPurchase(fields.CustomModel):
 class PrintJob(fields.CustomModel):
     sale = fields.CascadeOptionalForeignKey(Sale, display=True)
     purchase = fields.CascadeOptionalForeignKey(Purchase, display=True)
+    image = fields.ImageField("prints")
 
 
 class LaborType(fields.CustomModel):

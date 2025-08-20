@@ -6,6 +6,7 @@ import { Main } from "./_AllComponents";
 import { NavBar } from "./NavigationBar";
 import { useStore } from "./Store";
 import Chat from "../../blueprints/ChatRoom";
+import { LandingView } from "./LandingView";
 
 export const MainView = observer(() => {
   const navigate = useNavigate();
@@ -18,9 +19,9 @@ export const MainView = observer(() => {
     }
   };
 
-  useEffect(() => {
-    fetchAll();
-  }, []);
+  // useEffect(() => {
+  //   fetchAll();
+  // }, []);
 
   const routes = buildRoutes(Main);
 
@@ -34,7 +35,7 @@ export const MainView = observer(() => {
 
   return (
     <div className="flex flex-col min-h-screen text-teal-700 dark:text-gray-400 dark:bg-[#242424]">
-      <NavBar />
+      {/* <NavBar /> */}
       <Routes>
         {routes.map(({ path, component: Component }) => (
           <Route
@@ -44,6 +45,7 @@ export const MainView = observer(() => {
           />
         ))}
         <Route path="/chat" element={<Chat room="room1" />} />
+        <Route path="/" element={<LandingView />} />
       </Routes>
     </div>
   );

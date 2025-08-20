@@ -147,7 +147,11 @@ export const MyInput = (props: MyInputProps) => {
               ]}
               editable={editable && !disabled}
               placeholder={placeholder ?? label}
-              keyboardType={numeric ? "numeric" : "default"}
+              keyboardType={
+                numeric || type === "amount" || type === "number"
+                  ? "numeric"
+                  : "default"
+              }
               maxLength={maxLength}
               autoCapitalize={autoCapitalize ? "characters" : undefined}
               secureTextEntry={isPassword}

@@ -14,6 +14,7 @@ import { LocationIdMap } from "../product/LocationStore";
 import { LOG_TYPE_CHOICES } from "./_AllChoices";
 import { Commerce } from "./_AllComponents";
 import { Purchase, PurchaseFields } from "./PurchaseStore";
+import { Text } from "react-native";
 
 interface ActionIconsProps {
   theItem: Purchase;
@@ -37,10 +38,7 @@ const ActionIcons = ({ theItem, handlers }: ActionIconsProps) => {
   ];
 
   return (
-    <div
-      className="absolute flex flex-row gap-3"
-      style={{ top: 10, right: 10 }}
-    >
+    <>
       {iconConfig.map(({ icon, label, onPress }) => (
         <MyIcon
           key={label}
@@ -51,7 +49,7 @@ const ActionIcons = ({ theItem, handlers }: ActionIconsProps) => {
           hidden={!theItem}
         />
       ))}
-    </div>
+    </>
   );
 };
 
@@ -137,7 +135,7 @@ const ItemsForm = observer(({ item }: ItemsFormProps) => {
   if (!theItem) return <></>;
 
   return (
-    <div className="dark:text-white text-teal-700 relative">
+    <>
       <MyModal isVisible={isVisible1} setVisible={setVisible1}>
         <Commerce.InventoryLog.Form
           item={{
@@ -181,7 +179,7 @@ const ItemsForm = observer(({ item }: ItemsFormProps) => {
         />
       </MyModal>
 
-      <div className="p-4">{theItem.displayName}</div>
+      <Text>{theItem.displayName}</Text>
 
       <Commerce.InventoryLog.Table
         items={purchaseItems}
@@ -210,7 +208,7 @@ const ItemsForm = observer(({ item }: ItemsFormProps) => {
       />
 
       <ActionIcons theItem={theItem} handlers={actionHandlers} />
-    </div>
+    </>
   );
 });
 
@@ -230,7 +228,7 @@ const MoreModals = (
   const { value, setValue } = context;
   return [
     {
-      icon: "RemoveRedEye",
+      icon: "eye",
       name: "Purchases",
       label: "Purchases",
       modal: ItemsForm,

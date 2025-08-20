@@ -87,9 +87,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.anonymous.mobile'
+    namespace 'com.dan6842.datsapp'
     defaultConfig {
-        applicationId 'com.anonymous.mobile'
+        applicationId 'com.dan6842.datsapp'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

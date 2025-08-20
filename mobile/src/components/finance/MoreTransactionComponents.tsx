@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import moment from "moment";
 import { useEffect, useState } from "react";
-import { FlatList, ScrollView, Text, View } from "react-native";
+import { StyleSheet, ScrollView, Text, View } from "react-native";
 import {
   MyConfirmModal,
   MyDateTimePicker,
@@ -12,7 +12,12 @@ import { MyModal } from "../../blueprints/MyModal";
 import { MySpeedDial } from "../../blueprints/MySpeedDial";
 import { MyTable } from "../../blueprints/MyTable";
 import { winWidth } from "../../constants/constants";
-import { mySum, toMoney, toOptions } from "../../constants/helpers";
+import {
+  mySum,
+  toMoney,
+  toMoneyShortened,
+  toOptions,
+} from "../../constants/helpers";
 import { useVisible } from "../../constants/hooks";
 import { ActionModalDef } from "../../constants/interfaces";
 import { Main } from "../core/_AllComponents";
@@ -69,11 +74,13 @@ const TransferTransactionTable = observer(
         !uneditable && <MyIcon icon="plus" onPress={() => setVisible1(true)} />,
       ],
       ...items.map((s) => [
-        financeStore.accountStore.allItems.get(s.comingFrom as number)
-          ?.displayName,
-        financeStore.accountStore.allItems.get(s.goingTo as number)
-          ?.displayName,
-        toMoney(s.amount),
+        financeStore.accountStore.allItems
+          .get(s.comingFrom as number)
+          ?.displayName.replaceAll(" ", "\n"),
+        financeStore.accountStore.allItems
+          .get(s.goingTo as number)
+          ?.displayName.replaceAll(" ", "\n"),
+        toMoneyShortened(s.amount),
         !uneditable && <AccountTransactionRow item={s} />,
       ]),
       ...Array.from(Array(Math.max(0, 3 - items.length)).keys()).map((s) => [
@@ -117,7 +124,7 @@ const TransferTransactionTable = observer(
       [
         {
           name: "goingTo",
-          label: "From",
+          label: "To",
           type: "select",
           options: toOptions(
             financeStore.accountStore.items.filter(
@@ -135,10 +142,14 @@ const TransferTransactionTable = observer(
 
     return (
       <View>
-        <MyModal isVisible={isVisible1} setVisible={setVisible1}>
+        <MyModal
+          isVisible={isVisible1}
+          setVisible={setVisible1}
+          title="New Transfer"
+        >
           <MyForm
             fields={fields}
-            title="New Transfer"
+            title=""
             details={details}
             setDetails={setDetails}
             onPressSubmit={onPressSubmit}
@@ -148,7 +159,7 @@ const TransferTransactionTable = observer(
         <View style={{ flex: 1 }}>
           <MyTable
             matrix={matrix}
-            widths={[0.25, 0.25, 0.15, 0.05].map((s) => winWidth * s)}
+            widths={[0.3, 0.3, 0.22, 0.1].map((s) => winWidth * s)}
           />
         </View>
       </View>
@@ -181,9 +192,11 @@ const AccountExpenseTable = observer(
         !uneditable && <MyIcon icon="plus" onPress={() => setVisible1(true)} />,
       ],
       ...items.map((s) => [
-        s.description,
-        financeStore.categoryStore.allItems.get(s.category as number)?.title,
-        toMoney(s.amount),
+        s.description.replaceAll(" ", "\n"),
+        financeStore.categoryStore.allItems
+          .get(s.category as number)
+          ?.title.replaceAll(" ", "\n"),
+        toMoneyShortened(s.amount),
         !uneditable && <AccountTransactionRow item={s} />,
       ]),
       ...Array.from(Array(Math.max(0, 3 - items.length)).keys()).map(() => [
@@ -209,7 +222,7 @@ const AccountExpenseTable = observer(
         <View style={{ flex: 1 }}>
           <MyTable
             matrix={matrix}
-            widths={[0.45, 0.2, 0.15, 0.05].map((s) => winWidth * s)}
+            widths={[0.3, 0.3, 0.22, 0.1].map((s) => winWidth * s)}
           />
           <Text style={{ textAlign: "right", paddingRight: 10 }}>
             Subtotal: ({toMoney(mySum(items.map((s) => s.amount)))})
@@ -325,9 +338,10 @@ export const TransactionQuickView = observer(() => {
                 fontSize: 15,
                 color: "blue",
                 textDecorationLine: "underline",
+                fontWeight: "bold",
               }}
             >
-              {moment(date, "MMM D, YYYY").format("MMMM D, YYYY")}
+              {moment(date, "MMM D, YYYY").format("ddd, MMMM D, YYYY")}
             </Text>
             <MyIcon
               icon="chevron-right"
@@ -354,9 +368,7 @@ export const TransactionQuickView = observer(() => {
             />
           ))}
           <TransferTransactionTable date={date} uneditable={!isWithin(date)} />
-          <View
-            style={{ flexDirection: "row", justifyContent: "space-evenly" }}
-          >
+          <View>
             <View>
               <Text>Today's Income (Gross)</Text>
               <Text>{toMoney(incomeGross)}</Text>

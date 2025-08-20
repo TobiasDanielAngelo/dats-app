@@ -1,4 +1,4 @@
-package com.anonymous.mobile
+package com.dan6842.datsapp
 
 import android.app.Application
 import android.content.res.Configuration
