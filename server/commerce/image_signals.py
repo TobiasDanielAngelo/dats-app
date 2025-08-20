@@ -71,9 +71,9 @@ def create_order_summary_image(purchase):
         small_font = ImageFont.truetype("arial.ttf", 10 * 4)
     except:
         # Fallback to default font
-        header_font = ImageFont.load_default()
-        normal_font = ImageFont.load_default()
-        small_font = ImageFont.load_default()
+        header_font = ImageFont.load_default(18 * 4)
+        normal_font = ImageFont.load_default(12 * 4)
+        small_font = ImageFont.load_default(10 * 4)
 
     # Colors
     BLACK = "#000000"
