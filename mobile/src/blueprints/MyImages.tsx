@@ -35,6 +35,16 @@ const imageMap = {
   productUnit: require("../../assets/images/product_unit.png"),
   setting: require("../../assets/images/setting.png"),
   logout: require("../../assets/images/logout.png"),
+
+  ordnut: require("../../assets/images/ord-nut.png"),
+  stsnut: require("../../assets/images/stainless-nut.jpg"),
+  flangenut: require("../../assets/images/flange-nut.jpg"),
+  ordbolt: require("../../assets/images/rough-bolt.png"),
+  stsbolt: require("../../assets/images/stainless-bolt.png"),
+  boltbh: require("../../assets/images/bh-bolt.jpg"),
+  boltjp: require("../../assets/images/jp-bolt.jpg"),
+  allenbolt: require("../../assets/images/allen-bolt.png"),
+  washer: require("../../assets/images/washer.png"),
 };
 
 export type ImageNameType = keyof typeof imageMap;

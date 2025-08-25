@@ -1,15 +1,18 @@
 import { StyleSheet, TouchableOpacity } from "react-native";
 import { MyIcon } from "./MyIcon";
+import { useNavigate } from "react-router-native";
 
 export type Menu = {
   name: string;
   label: string;
-  onPress: () => void;
+  onPress?: () => void;
+  location?: string;
   selected?: boolean;
 };
 
 export const MenuCard = (props: Menu) => {
-  const { name, label, selected, onPress } = props;
+  const { name, label, onPress, location, selected } = props;
+  const navigate = useNavigate();
   return (
     <TouchableOpacity
       style={[
@@ -18,12 +21,12 @@ export const MenuCard = (props: Menu) => {
           backgroundColor: selected ? "lightseagreen" : "teal",
         },
       ]}
-      onPress={onPress}
+      onPress={onPress ? onPress : () => navigate(location ?? "/")}
     >
       <MyIcon
         icon={name}
         label={label}
-        onPress={onPress}
+        onPress={onPress ? onPress : () => navigate(location ?? "/")}
         color="white"
         size={15}
       />

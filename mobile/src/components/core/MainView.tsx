@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import { ImageBackground, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Route, Routes, useNavigate } from "react-router-native";
+import { Route, Routes, useLocation, useNavigate } from "react-router-native";
 import { Menu } from "../../blueprints/MenuCard";
 import { buildRoutes } from "../../constants/helpers";
 import { useVisible } from "../../constants/hooks";
@@ -13,6 +13,8 @@ import { Main } from "./_AllComponents";
 import { MenuBar } from "../../blueprints/MenuBar";
 import { PurchaseQuickView } from "../commerce/MorePurchaseComponents";
 import { TestingView } from "./TestingView";
+import { NavBar } from "./NavigationBar";
+import { FastenerView } from "../commerce/FastenerComponents";
 
 export const MainView = observer(() => {
   const navigate = useNavigate();
@@ -24,16 +26,26 @@ export const MainView = observer(() => {
   const menuItems = [
     {
       name: "money-bill-wave",
-      label: "Finance Report",
-      onPress: () => navigate("/"),
+      label: "Report",
+      location: "/",
     },
     {
       name: "file-signature",
-      label: "Purchase Order",
-      onPress: () => navigate("/purchase"),
+      label: "Order",
+      location: "/purchase",
     },
-    // { name: "bars", label: "Menu", onPress: () => setVisible1(true) },
-    // { name: "star", label: "Testing", onPress: () => navigate("/testing") },
+    {
+      name: "file-signature",
+      label: "Labor",
+      location: "/labor",
+    },
+    {
+      name: "file-signature",
+      label: "BNW",
+      location: "/fasteners",
+    },
+    { name: "bars", label: "Menu", onPress: () => setVisible1(true) },
+    { name: "star", label: "Testing", onPress: () => navigate("/testing") },
   ] satisfies Menu[];
 
   const fetchAll = async () => {
@@ -68,6 +80,7 @@ export const MainView = observer(() => {
           <Route path="menu" element={<ModularView />} />
           <Route path="/" element={<TransactionQuickView />} />
           <Route path="/purchase" element={<PurchaseQuickView />} />
+          <Route path="/fasteners" element={<FastenerView />} />
           {routes.map(({ path, component: Component }) => (
             <Route
               key={path}
@@ -78,7 +91,7 @@ export const MainView = observer(() => {
           <Route path="/testing" element={<TestingView />} />
         </Routes>
       </ImageBackground>
-      {/* <NavBar drawerOpen={isVisible1} setDrawerOpen={setVisible1} /> */}
+      <NavBar drawerOpen={isVisible1} setDrawerOpen={setVisible1} />
       <MenuBar items={menuItems} />
     </View>
   );

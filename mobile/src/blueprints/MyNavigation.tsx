@@ -78,11 +78,12 @@ export const MyNavBar = observer(
   }) => {
     const { paths, drawerOpen, setDrawerOpen } = props;
 
-    const {} = useStore();
+    const { userStore } = useStore();
     const navigate = useNavigate();
 
     const onPressLogout = async () => {
-      navigate("/login");
+      const resp = await userStore.logoutUser();
+      if (resp.ok) navigate("/login");
     };
 
     const leafPages = paths?.flatMap((p) => {

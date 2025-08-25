@@ -599,6 +599,7 @@ export function MyStore<
         return { details: "Network Error", ok: false, data: null };
       }
       if (!result.ok || !result.data) {
+        return { details: "Network Error", ok: false, data: null };
       }
       return { details: "", ok: true, data: null };
     });
