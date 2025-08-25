@@ -297,8 +297,21 @@ export const FastenerView = observer(() => {
   };
 
   const onPressPrint = async () => {
+    setPrint("");
     setVisible1(true);
-    const resp = await commerceStore.purchaseStore.addItem({});
+    const resp0 = await commerceStore.purchaseStore.fetchAll(
+      `page=all&supplier=2`
+    );
+    if (resp0.data && resp0.ok) {
+      resp0.data
+        .map((s) => s.id)
+        .forEach(async (s) => {
+          commerceStore.purchaseStore.deleteItem(s as number);
+        });
+    }
+    const resp = await commerceStore.purchaseStore.addItem({
+      supplier: 2,
+    });
     if (!resp.ok) return;
     list
       .filter((s) => s.qty > 0)
@@ -317,40 +330,13 @@ export const FastenerView = observer(() => {
     });
     if (resp2.ok) {
       setPrint(resp2.data?.image as string);
-
-      fetch(resp2.data?.image as string)
-        .then(async (res) => {
-          console.log("Status:", res.status);
-          console.log("Content-Type:", res.headers.get("content-type"));
-          const text = await res.text();
-          console.log("Body:", text.slice(0, 200)); // preview only
-        })
-        .catch((err) => console.log("Fetch failed", err));
     }
   };
 
-  const getSetToken = async () => {
-    const val = await AsyncStorage.getItem("token");
-    if (val) setToken(val);
-  };
-
-  useEffect(() => {
-    getSetToken();
-  }, []);
-
   return (
     <View style={{ flex: 1, padding: 10 }}>
-      {/* <MyDropdownSelector
-        value={value}
-        onChangeValue={setValue}
-        options={types.map((s) => ({
-          id: s,
-          name: s,
-        }))}
-      /> */}
-
       <AvatarSelector
-        options={types.map((s, ind) => ({
+        options={types.map((s) => ({
           id: s,
           name: s,
         }))}
@@ -361,31 +347,16 @@ export const FastenerView = observer(() => {
         {print === "" ? (
           <Text>Loading...{token}</Text>
         ) : (
-          <>
-            <Text>{print}</Text>
-            <Image
-              source={{
-                uri: print,
-                headers: { Authorization: `Bearer ${token}` },
-              }}
-              width={0.9 * winWidth}
-              height={1.2 * winHeight}
-              resizeMode="contain"
-              onError={(e) => console.log("Error", e.nativeEvent, print)}
-            />
-          </>
+          <Image
+            source={{
+              uri: print,
+            }}
+            height={1.2 * winHeight}
+            resizeMode="contain"
+          />
         )}
       </MyModal>
       <View style={{ flex: 1 }}>
-        {/* <Image
-          source={{
-            uri: "https://dats.mathiavelli.com/uploads/prints/order_52_20250825_201742.jpg",
-            headers: { Authorization: `Token ${token}` },
-          }}
-          height={1.2 * winHeight}
-          resizeMode="contain"
-          onError={(e) => console.log("Error", e.nativeEvent, print)}
-        /> */}
         <FlatList
           data={list.filter((s) => s.item.includes(`${value}`))}
           keyExtractor={(_, index) => index.toString()}
