@@ -12,9 +12,9 @@ export type ViewPath = {
 };
 
 export const allViewPaths = buildViewPaths(Main, [
-  "Commerce",
-  "Product",
-  "People",
+  // "Commerce",
+  // "Product",
+  // "People",
 ]);
 
 export const NavBar = observer(() => {

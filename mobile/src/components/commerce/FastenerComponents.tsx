@@ -1,13 +1,15 @@
 import { observer } from "mobx-react-lite";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FlatList, Image, Text, View } from "react-native";
 import AvatarSelector from "../../blueprints/AvatarSelector";
 import { MyIcon } from "../../blueprints/MyIcon";
 import { MyModal } from "../../blueprints/MyModal";
-import { winHeight } from "../../constants/constants";
+import { winHeight, winWidth } from "../../constants/constants";
 import { useVisible } from "../../constants/hooks";
 import { StateSetter } from "../../constants/interfaces";
 import { useStore } from "../core/Store";
+import { MyButton } from "../../blueprints";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const listBH = Array.from(Array(19).keys()).map((s) => 5 * (s + 2));
 const listBH6 = [...listBH, 12].sort((a, b) => (a > b ? 1 : -1));
@@ -20,7 +22,7 @@ const bhList = [
 const jpList = [4, 5, 6]
   .map((s) => listBH.map((t) => `Bolt JP${s}x${t}`))
   .flat(2);
-const bhStainlessList = listBH6.map((s) => `Bolt Sts BH6x${s}`);
+const bhStainlessList = listBH6.map((s) => `Sts Bolt BH6x${s}`);
 
 const roughDiamList = [
   "(3/16)",
@@ -251,6 +253,7 @@ const types = [
 ];
 export const FastenerView = observer(() => {
   const { isVisible1, setVisible1 } = useVisible();
+  const [token, setToken] = useState("");
   const { commerceStore } = useStore();
   const defaultList = [
     ...[
@@ -277,11 +280,8 @@ export const FastenerView = observer(() => {
     })),
   ];
   const [list, setList] = useState(defaultList);
-  const [print, setPrint] = useState(-1);
+  const [print, setPrint] = useState("");
   const [value, setValue] = useState<number | string | null>(null);
-
-  const currentPrintJob =
-    commerceStore.printJobStore.allItems.get(print)?.image;
 
   const setQty = (id: string, updater: React.SetStateAction<number>) => {
     setList((prev) =>
@@ -316,9 +316,27 @@ export const FastenerView = observer(() => {
       purchase: resp.data?.id as number,
     });
     if (resp2.ok) {
-      setPrint(resp2.data?.id as number);
+      setPrint(resp2.data?.image as string);
+
+      fetch(resp2.data?.image as string)
+        .then(async (res) => {
+          console.log("Status:", res.status);
+          console.log("Content-Type:", res.headers.get("content-type"));
+          const text = await res.text();
+          console.log("Body:", text.slice(0, 200)); // preview only
+        })
+        .catch((err) => console.log("Fetch failed", err));
     }
   };
+
+  const getSetToken = async () => {
+    const val = await AsyncStorage.getItem("token");
+    if (val) setToken(val);
+  };
+
+  useEffect(() => {
+    getSetToken();
+  }, []);
 
   return (
     <View style={{ flex: 1, padding: 10 }}>
@@ -330,6 +348,7 @@ export const FastenerView = observer(() => {
           name: s,
         }))}
       /> */}
+
       <AvatarSelector
         options={types.map((s, ind) => ({
           id: s,
@@ -339,13 +358,34 @@ export const FastenerView = observer(() => {
         onChangeValue={setValue}
       />
       <MyModal isVisible={isVisible1} setVisible={setVisible1}>
-        <Image
-          source={{ uri: currentPrintJob as string }}
-          height={1.2 * winHeight}
-          resizeMode="contain"
-        />
+        {print === "" ? (
+          <Text>Loading...{token}</Text>
+        ) : (
+          <>
+            <Text>{print}</Text>
+            <Image
+              source={{
+                uri: print,
+                headers: { Authorization: `Bearer ${token}` },
+              }}
+              width={0.9 * winWidth}
+              height={1.2 * winHeight}
+              resizeMode="contain"
+              onError={(e) => console.log("Error", e.nativeEvent, print)}
+            />
+          </>
+        )}
       </MyModal>
       <View style={{ flex: 1 }}>
+        {/* <Image
+          source={{
+            uri: "https://dats.mathiavelli.com/uploads/prints/order_52_20250825_201742.jpg",
+            headers: { Authorization: `Token ${token}` },
+          }}
+          height={1.2 * winHeight}
+          resizeMode="contain"
+          onError={(e) => console.log("Error", e.nativeEvent, print)}
+        /> */}
         <FlatList
           data={list.filter((s) => s.item.includes(`${value}`))}
           keyExtractor={(_, index) => index.toString()}
@@ -366,10 +406,7 @@ export const FastenerView = observer(() => {
           removeClippedSubviews
         />
       </View>
-
-      <View style={{ position: "absolute", bottom: 10, right: 10 }}>
-        <MyIcon icon="print" size={30} onPress={onPressPrint} />
-      </View>
+      <MyButton label="Print" onPress={onPressPrint} />
     </View>
   );
 });

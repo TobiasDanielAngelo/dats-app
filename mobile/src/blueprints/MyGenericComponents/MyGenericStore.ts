@@ -594,6 +594,12 @@ export function MyStore<
         result = yield* _await(
           postItemRequest(baseURL, `${method}`, credentials)
         );
+        if (result?.data && "key" in result?.data && method !== "logout") {
+          AsyncStorage.setItem("token", result.data.key as string);
+        }
+        if (method === "logout") {
+          AsyncStorage.removeItem("token");
+        }
       } catch (error) {
         error;
         return { details: "Network Error", ok: false, data: null };

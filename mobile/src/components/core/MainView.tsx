@@ -52,6 +52,8 @@ export const MainView = observer(() => {
     const arr = await Promise.all([settingStore.fetchAll("page=all")]);
     if (!arr.every((item: any) => item.ok)) {
       navigate("/login");
+    } else {
+      console.log("Successfully accessed.");
     }
   };
 
@@ -78,9 +80,9 @@ export const MainView = observer(() => {
       >
         <Routes>
           <Route path="menu" element={<ModularView />} />
-          <Route path="/" element={<TransactionQuickView />} />
+          <Route path="/quick" element={<TransactionQuickView />} />
           <Route path="/purchase" element={<PurchaseQuickView />} />
-          <Route path="/fasteners" element={<FastenerView />} />
+          <Route path="/" element={<FastenerView />} />
           {routes.map(({ path, component: Component }) => (
             <Route
               key={path}

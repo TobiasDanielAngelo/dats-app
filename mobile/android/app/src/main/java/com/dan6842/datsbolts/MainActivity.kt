@@ -1,4 +1,4 @@
-package com.dan6842.datsapp
+package com.dan6842.datsbolts
 
 import android.os.Build
 import android.os.Bundle

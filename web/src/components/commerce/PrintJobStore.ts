@@ -16,6 +16,9 @@ export const PrintJobFields = {
     field: "CascadeOptionalForeignKey",
     fk: "Purchase",
   },
+  image: {
+    field: "ImageField",
+  },
 } satisfies Record<string, DjangoModelField>;
 
 const props = fieldToProps(PrintJobFields);
