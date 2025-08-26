@@ -15,7 +15,7 @@ export const TransactionFields = {
     field: "SetNullOptionalForeignKey",
     fk: "Category",
   },
-  description: { field: "MediumCharField" },
+  description: { field: "MediumCharField", searchable: true },
   comingFrom: {
     field: "SetNullOptionalForeignKey",
     fk: "Account",

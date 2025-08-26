@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   correctNumberInput,
   keyListToObject,
@@ -6,10 +6,12 @@ import {
   toMoney,
 } from "../constants/helpers";
 import { useVisible } from "../constants/hooks";
-import { Field } from "../constants/interfaces";
+import { Field, Option } from "../constants/interfaces";
 import { MyForm } from "./MyForm";
 import { MyIcon } from "./MyIcon";
 import { MyModal } from "./MyModal";
+import { kebabCase } from "lodash";
+import { FetchItemResult } from "./MyGenericComponents/MyGenericStore";
 
 export const MyInput = (props: {
   hidden?: boolean;
@@ -21,6 +23,7 @@ export const MyInput = (props: {
   centered?: boolean;
   isPassword?: boolean;
   optional?: boolean;
+  searchFcn?: (t: string) => any;
   msg?: string;
   type?: string;
 }) => {
@@ -34,10 +37,12 @@ export const MyInput = (props: {
     pattern,
     isPassword,
     optional,
+    searchFcn,
     msg,
     type,
   } = props;
   const { isVisible1, setVisible1 } = useVisible();
+  const [opt, setOpt] = useState<Option[]>([]);
 
   const denominations = [
     "1000",
@@ -88,6 +93,30 @@ export const MyInput = (props: {
     ...denominations.map((s) => [{ name: s, label: s, type: "number" }]),
   ] satisfies Field[][];
 
+  const fetchText = async () => {
+    if (!searchFcn) return;
+    const resp: FetchItemResult = await searchFcn?.(
+      `page=1&${kebabCase(label)}__search=${value}`
+    );
+
+    if (!resp.ok && !resp.data) return;
+
+    setOpt(
+      resp.data?.map((s, ind) => ({
+        name: s[kebabCase(label)],
+        id: ind,
+      })) ?? []
+    );
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      value !== "" && fetchText();
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [value]);
+
   return hidden ? (
     <></>
   ) : (
@@ -101,7 +130,7 @@ export const MyInput = (props: {
           onClickSubmit={onSubmitAmountDetails}
         />
       </MyModal>
-      <div className="flex flex-row">
+      <div className="flex flex-row relative">
         <input
           type={isPassword ? "password" : undefined}
           name={label}
@@ -118,6 +147,20 @@ export const MyInput = (props: {
           value={value}
           onChange={(e) => onChangeCorrect(e.target.value)}
         />
+        <ul className="absolute flex-1 w-full top-10 z-50 border border-teal-400 dark:bg-gray-800 bg-teal-100 rounded-b-xl rounded-t-md">
+          {!opt.map((s) => s.name).includes(value ?? "") &&
+            opt?.map((opt) => (
+              <li
+                key={opt.id}
+                onClick={() => {
+                  onChangeValue?.(opt.name);
+                }}
+                className="text-sm z-49 cursor-pointer px-4 py-2 dark:text-white text-black rounded-md dark:hover:bg-gray-600 hover:bg-teal-200"
+              >
+                {opt.name}
+              </li>
+            ))}
+        </ul>
         {type === "amount" ? (
           <MyIcon icon="Calculate" onClick={() => setVisible1(true)} />
         ) : (

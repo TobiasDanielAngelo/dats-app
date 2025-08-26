@@ -11,11 +11,11 @@ import { ProductImageComponents } from "./ProductImageComponents";
 import { UnitComponents } from "./UnitComponents";
 
 export const Product = {
-  Article: ArticleComponents,
-  Address: AddressComponents,
-  Barcode: BarcodeComponents,
   Category: CategoryComponents,
   GenericProduct: GenericProductComponents,
+  Article: ArticleComponents,
+  Barcode: BarcodeComponents,
+  Address: AddressComponents,
   Location: LocationComponents,
   Maker: MakerComponents,
   Motor: MotorComponents,

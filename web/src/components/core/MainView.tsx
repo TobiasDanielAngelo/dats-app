@@ -19,9 +19,9 @@ export const MainView = observer(() => {
     }
   };
 
-  // useEffect(() => {
-  //   fetchAll();
-  // }, []);
+  useEffect(() => {
+    fetchAll();
+  }, []);
 
   const routes = buildRoutes(Main);
 

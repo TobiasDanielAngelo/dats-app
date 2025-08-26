@@ -9,8 +9,8 @@ class Unit(fields.CustomModel):
 class Category(fields.CustomModel):
     parent_category = fields.SetNullOptionalForeignKey("self")
     name = fields.ShortCharField(display=True, unique=True)
-    is_kit = fields.DefaultBooleanField(False, display=True)
-    is_universal = fields.DefaultBooleanField(False, display=True)
+    is_kit = fields.DefaultBooleanField(False)
+    is_universal = fields.DefaultBooleanField(False)
     notes = fields.MediumCharField()
 
 
@@ -30,10 +30,12 @@ class GenericProduct(fields.CustomModel):
 
     def clean(self):
         super().clean()
-        motors = (
-            getattr(self, "_prefetched_compatibility", None) or self.compatibility.all()
-        )
-        print(vars(self))
+        motors = getattr(self, "_prefetched_compatibility", None)
+        if motors is None:
+            if self.pk:
+                motors = self.compatibility.all()
+            else:
+                motors = []  # or skip
         if self.category:
             for motor in motors:
                 if (

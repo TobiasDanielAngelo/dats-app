@@ -145,11 +145,7 @@ export async function guidedRequest<T>(
   }
 }
 
-export async function fetchItemsRequest<T>(
-  baseURL: string,
-  endpoint: string,
-  params?: string
-): Promise<{
+export type FetchItemResult<T = any> = {
   details: any;
   ok: boolean;
   data: T[] | null;
@@ -161,7 +157,13 @@ export async function fetchItemsRequest<T>(
   priceFields: string[];
   timeFields: string[];
   pageDetails?: Omit<PaginatedResponse<T>, "results">;
-}> {
+};
+
+export async function fetchItemsRequest<T>(
+  baseURL: string,
+  endpoint: string,
+  params?: string
+): Promise<FetchItemResult<T>> {
   const result = await guidedRequest<{
     results: T[];
     related: Related[];

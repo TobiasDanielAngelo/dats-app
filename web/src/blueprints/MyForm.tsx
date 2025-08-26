@@ -137,6 +137,7 @@ const renderField = (
           value={details[t.name] ?? ""}
           centered={t.centered}
           type={t.type}
+          searchFcn={t.searchText}
         />
       );
     default:
