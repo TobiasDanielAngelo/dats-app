@@ -149,6 +149,10 @@ export const DjangoFields = {
     prop: prop<string[]>(() => []),
     type: "multi",
   },
+  TwoDimArrayField: {
+    prop: prop<string[][]>(() => []),
+    type: "multi",
+  },
   ID: {
     prop: prop<number | string>(""),
     type: "number",

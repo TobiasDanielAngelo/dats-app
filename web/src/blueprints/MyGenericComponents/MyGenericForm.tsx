@@ -13,6 +13,7 @@ export interface MyGenericFormProps<T extends { id: string | number }> {
   isLoading?: boolean;
   objectName: string;
   store: IStore;
+  title?: string;
 }
 
 export interface MyGenericForm<T extends { id: string | number }> {
@@ -21,6 +22,7 @@ export interface MyGenericForm<T extends { id: string | number }> {
   store?: IStore;
   hiddenFields?: (keyof T)[];
   fetchFcn?: () => void;
+  title?: string;
 }
 
 export function MyGenericForm<T extends { id: string | number }>({
@@ -31,10 +33,13 @@ export function MyGenericForm<T extends { id: string | number }>({
   fields,
   objectName,
   store,
+  title,
 }: MyGenericFormProps<T>) {
-  const title = item?.id
-    ? `Edit ${toTitleCase(objectName)}`
-    : `${toTitleCase(objectName)} Creation Form`;
+  const theTitle =
+    title ??
+    (item?.id
+      ? `Edit ${toTitleCase(objectName)}`
+      : `${toTitleCase(objectName)} Creation Form`);
 
   const {
     dateFields,
@@ -152,7 +157,7 @@ export function MyGenericForm<T extends { id: string | number }>({
     <div className="items-center">
       <MyForm
         fields={fields}
-        title={title}
+        title={theTitle}
         details={details}
         setDetails={setDetails}
         onClickSubmit={item?.id ? onClickEdit : onClickCreate}

@@ -6,6 +6,7 @@ import {
   MyModel,
   MyStore,
 } from "../../blueprints/MyGenericComponents/MyGenericStore";
+import { UnitIdMap } from "./UnitStore";
 
 const { slug } = getPathParts(import.meta.url, "Store");
 
@@ -15,13 +16,17 @@ export const ArticleFields = {
     field: "CascadeRequiredForeignKey",
     fk: "GenericProduct",
   },
-  brand: { field: "ShortCharField" },
   isOrig: { field: "DefaultBooleanField" },
-  unit: { field: "SetNullOptionalForeignKey", fk: "Unit" },
+  unit: {
+    field: "SetNullOptionalForeignKey",
+    fk: "Unit",
+    defaultValue: UnitIdMap["pcs"],
+  },
   quantityPerUnit: { field: "LimitedIntegerField" },
-  purchasePrice: { field: "LimitedDecimalField" },
-  sellingPrice: { field: "LimitedDecimalField" },
+  purchasePrice: { field: "AmountField" },
+  sellingPrice: { field: "AmountField" },
   parentArticle: { field: "SetNullOptionalForeignKey", fk: "Article" },
+  brand: { field: "ShortCharField", searchable: true },
 } satisfies Record<string, DjangoModelField>;
 
 const props = fieldToProps(ArticleFields);

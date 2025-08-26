@@ -19,6 +19,10 @@ export const GenericProductFields = {
     field: "OptionalManyToManyField",
     fk: "Motor",
   },
+  description: {
+    field: "MediumCharField",
+    searchable: true,
+  },
   reorderLevel: { field: "LimitedIntegerField" },
 } satisfies Record<string, DjangoModelField>;
 

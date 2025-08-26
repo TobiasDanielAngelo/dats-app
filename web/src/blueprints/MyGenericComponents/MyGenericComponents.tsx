@@ -68,7 +68,7 @@ export const MyGenericComponents = <
     FieldToRelatedModals(fields, modelNameParts.folder);
 
   const FormComponent = (props: MyGenericForm<NonNullableModelData>) => {
-    const { item, setVisible, hiddenFields, fetchFcn } = props;
+    const { item, setVisible, hiddenFields, fetchFcn, title } = props;
     const store = useStore();
     const [key, setKey] = useState("");
     const allFields = fieldToFormField(
@@ -105,6 +105,7 @@ export const MyGenericComponents = <
           store={(store as any)[selectedStore1][selectedStore2]}
           setVisible={setVisible}
           fetchFcn={fetchFcn}
+          title={title}
         />
       </>
     );

@@ -9,6 +9,13 @@ import {
 
 const { slug } = getPathParts(import.meta.url, "Store");
 
+export const UnitIdMap = {
+  pcs: -1,
+  set: -2,
+  ft: -3,
+  m: -4,
+};
+
 export const UnitFields = {
   id: { field: "ID" },
   name: { field: "ShortCharField" },

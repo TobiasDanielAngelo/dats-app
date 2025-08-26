@@ -7,6 +7,7 @@ import { NavBar } from "./NavigationBar";
 import { useStore } from "./Store";
 import Chat from "../../blueprints/ChatRoom";
 import { LandingView } from "./LandingView";
+import { TirePriceView } from "../product/MatrixPriceComponents";
 
 export const MainView = observer(() => {
   const navigate = useNavigate();
@@ -45,6 +46,7 @@ export const MainView = observer(() => {
           />
         ))}
         <Route path="/chat" element={<Chat room="room1" />} />
+        <Route path="/guides/prices" element={<TirePriceView />} />
         <Route path="/" element={<LandingView />} />
       </Routes>
     </div>

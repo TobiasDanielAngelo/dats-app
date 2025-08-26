@@ -16,6 +16,7 @@ export const CategoryFields = {
   isUniversal: { field: "DefaultBooleanField" },
   parentCategory: { field: "SetNullOptionalForeignKey", fk: "Category" },
   notes: { field: "MediumCharField" },
+  priceMatrix: { field: "TwoDimArrayField", readOnly: true },
 } satisfies Record<string, DjangoModelField>;
 
 const props = fieldToProps(CategoryFields);

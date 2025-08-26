@@ -26,6 +26,7 @@ class Motor(fields.CustomModel):
 class GenericProduct(fields.CustomModel):
     category = fields.SetNullOptionalForeignKey(Category, display=True)
     compatibility = fields.OptionalManyToManyField(Motor, display=True)
+    description = fields.MediumCharField(display=True)
     reorder_level = fields.LimitedIntegerField(1, 100000, 10)
 
     def clean(self):
@@ -60,6 +61,17 @@ class Article(fields.CustomModel):
     quantity_per_unit = fields.LimitedIntegerField(1, 100, 1)
     purchase_price = fields.LimitedDecimalField(0, 999999.99)
     selling_price = fields.LimitedDecimalField(0, 999999.99)
+
+    def clean(self):
+        super().clean()
+
+        if self.purchase_price >= self.selling_price:
+            raise ValidationError(
+                {
+                    "purchase_price": f"Must be less than selling price.",
+                    "selling_price": f"Must be greater than purchase price.",
+                }
+            )
 
 
 class Barcode(fields.CustomModel):

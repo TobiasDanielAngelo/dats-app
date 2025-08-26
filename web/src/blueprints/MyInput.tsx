@@ -110,6 +110,10 @@ export const MyInput = (props: {
   };
 
   useEffect(() => {
+    if (value === "") {
+      setOpt([]);
+      return;
+    }
     const timer = setTimeout(() => {
       value !== "" && fetchText();
     }, 500);
@@ -120,7 +124,7 @@ export const MyInput = (props: {
   return hidden ? (
     <></>
   ) : (
-    <div className="relative z-0 w-full mt-3 group">
+    <div className={styles.container}>
       <MyModal isVisible={isVisible1} setVisible={setVisible1}>
         <MyForm
           fields={fields}
@@ -130,7 +134,7 @@ export const MyInput = (props: {
           onClickSubmit={onSubmitAmountDetails}
         />
       </MyModal>
-      <div className="flex flex-row relative">
+      <div className={styles.subcon}>
         <input
           type={isPassword ? "password" : undefined}
           name={label}
@@ -140,39 +144,50 @@ export const MyInput = (props: {
                 ? "center"
                 : undefined,
           }}
-          className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-teal-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+          className={styles.input}
           placeholder=" "
           pattern={pattern}
           required={!optional}
           value={value}
           onChange={(e) => onChangeCorrect(e.target.value)}
         />
-        <ul className="absolute flex-1 w-full top-10 z-50 border border-teal-400 dark:bg-gray-800 bg-teal-100 rounded-b-xl rounded-t-md">
-          {!opt.map((s) => s.name).includes(value ?? "") &&
-            opt?.map((opt) => (
+        {!opt.map((s) => s.name).includes(value ?? "") && opt.length > 0 ? (
+          <ul className={styles.ul}>
+            {opt?.map((opt) => (
               <li
                 key={opt.id}
                 onClick={() => {
                   onChangeValue?.(opt.name);
                 }}
-                className="text-sm z-49 cursor-pointer px-4 py-2 dark:text-white text-black rounded-md dark:hover:bg-gray-600 hover:bg-teal-200"
+                className={styles.li}
               >
                 {opt.name}
               </li>
             ))}
-        </ul>
+          </ul>
+        ) : (
+          <></>
+        )}
         {type === "amount" ? (
           <MyIcon icon="Calculate" onClick={() => setVisible1(true)} />
         ) : (
           <></>
         )}
       </div>
-      <label className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-90 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-[85%] peer-focus:-translate-y-6">
-        {label}
-      </label>
-      <label className="block text-xs font-medium dark:text-white mb-3 text-red-600">
-        {msg}
-      </label>
+      <label className={styles.label}>{label}</label>
+      <label className={styles.msg}>{msg}</label>
     </div>
   );
+};
+
+const styles = {
+  input:
+    "block w-full py-2.5 text-sm text-gray-900 bg-transparent border-b-2 border-teal-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:border-blue-600 peer",
+  ul: "absolute w-full top-10 z-51 border border-teal-400 dark:bg-gray-800",
+  li: "bg-teal-100 text-sm cursor-pointer px-4 py-2 dark:text-white hover:bg-teal-200 dark:hover:bg-gray-600",
+  label:
+    "absolute top-3 text-sm text-gray-500 dark:text-gray-400 transform transition duration-300 -translate-y-6 scale-90 origin-[0] peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-6 peer-focus:scale-90 peer-focus:text-blue-600 peer-focus:dark:text-blue-500",
+  msg: "block mb-3 text-xs font-medium text-red-600 dark:text-white",
+  subcon: "flex relative",
+  container: "relative w-full mt-3",
 };
