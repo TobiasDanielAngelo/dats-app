@@ -6,5 +6,5 @@ import { Article, ArticleFields } from "./ArticleStore";
 export const ArticleComponents = MyGenericComponents(
   Article,
   ArticleFields,
-  getPathParts(import.meta.url, "Components")
+  getPathParts("product", "Article")
 );

@@ -7,7 +7,7 @@ import {
   MyStore,
 } from "../../blueprints/MyGenericComponents/MyGenericStore";
 
-const { slug } = getPathParts(import.meta.url, "Store");
+const { slug } = getPathParts("finance", "Receivable");
 
 export const ReceivableFields = {
   id: { field: "ID" },

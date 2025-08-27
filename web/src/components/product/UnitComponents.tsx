@@ -6,5 +6,5 @@ import { Unit, UnitFields } from "./UnitStore";
 export const UnitComponents = MyGenericComponents(
   Unit,
   UnitFields,
-  getPathParts(import.meta.url, "Components")
+  getPathParts("product", "Unit")
 );

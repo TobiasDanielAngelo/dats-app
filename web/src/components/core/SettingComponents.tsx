@@ -22,5 +22,5 @@ export const SettingFields = {
 export const SettingComponents = MyGenericComponents(
   Setting,
   SettingFields,
-  getPathParts(import.meta.url, "Components")
+  getPathParts("core", "Setting")
 );

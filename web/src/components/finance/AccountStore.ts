@@ -8,7 +8,7 @@ import {
 } from "../../blueprints/MyGenericComponents/MyGenericStore";
 import { TYPE_CHOICES } from "./_AllChoices";
 
-const { slug } = getPathParts(import.meta.url, "Store");
+const { slug } = getPathParts("finance", "Account");
 
 export const AccountFields = {
   id: { field: "ID" },

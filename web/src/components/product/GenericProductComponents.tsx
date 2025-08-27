@@ -6,5 +6,5 @@ import { GenericProduct, GenericProductFields } from "./GenericProductStore";
 export const GenericProductComponents = MyGenericComponents(
   GenericProduct,
   GenericProductFields,
-  getPathParts(import.meta.url, "Components")
+  getPathParts("product", "GenericProduct")
 );

@@ -6,5 +6,5 @@ import { ProductImage, ProductImageFields } from "./ProductImageStore";
 export const ProductImageComponents = MyGenericComponents(
   ProductImage,
   ProductImageFields,
-  getPathParts(import.meta.url, "Components")
+  getPathParts("product", "ProductImage")
 );

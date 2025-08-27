@@ -36,7 +36,7 @@ export const CategoryIdMap = {
   Tax: -25,
 };
 
-const { slug } = getPathParts(import.meta.url, "Store");
+const { slug } = getPathParts("finance", "Category");
 
 export const CategoryFields = {
   id: { field: "ID" },

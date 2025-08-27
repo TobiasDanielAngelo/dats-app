@@ -6,5 +6,5 @@ import { PrintJob, PrintJobFields } from "./PrintJobStore";
 export const PrintJobComponents = MyGenericComponents(
   PrintJob,
   PrintJobFields,
-  getPathParts(import.meta.url, "Components")
+  getPathParts("product", "PrintJob")
 );

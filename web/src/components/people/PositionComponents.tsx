@@ -6,5 +6,5 @@ import { Position, PositionFields } from "./PositionStore";
 export const PositionComponents = MyGenericComponents(
   Position,
   PositionFields,
-  getPathParts(import.meta.url, "Components")
+  getPathParts("people", "Position")
 );

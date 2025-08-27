@@ -6,5 +6,5 @@ import { Maker, MakerFields } from "./MakerStore";
 export const MakerComponents = MyGenericComponents(
   Maker,
   MakerFields,
-  getPathParts(import.meta.url, "Components")
+  getPathParts("product", "Maker")
 );

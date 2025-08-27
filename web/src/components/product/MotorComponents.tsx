@@ -6,5 +6,5 @@ import { Motor, MotorFields } from "./MotorStore";
 export const MotorComponents = MyGenericComponents(
   Motor,
   MotorFields,
-  getPathParts(import.meta.url, "Components")
+  getPathParts("product", "Motor")
 );

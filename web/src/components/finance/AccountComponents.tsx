@@ -6,5 +6,5 @@ import { Account, AccountFields } from "./AccountStore";
 export const AccountComponents = MyGenericComponents(
   Account,
   AccountFields,
-  getPathParts(import.meta.url, "Components")
+  getPathParts("finance", "Account")
 );

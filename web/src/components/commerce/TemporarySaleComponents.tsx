@@ -6,5 +6,5 @@ import { TemporarySale, TemporarySaleFields } from "./TemporarySaleStore";
 export const TemporarySaleComponents = MyGenericComponents(
   TemporarySale,
   TemporarySaleFields,
-  getPathParts(import.meta.url, "Components")
+  getPathParts("commerce", "TemporarySale")
 );

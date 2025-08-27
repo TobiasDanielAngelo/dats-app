@@ -8,7 +8,7 @@ import { getPathParts, toOptions } from "../../constants/helpers";
 import { PropsToInterface } from "../../constants/interfaces";
 import { LOG_TYPE_CHOICES } from "./_AllChoices";
 
-const { slug } = getPathParts(import.meta.url, "Store");
+const { slug } = getPathParts("commerce", "InventoryLog");
 
 export const InventoryLogFields = {
   id: {

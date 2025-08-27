@@ -7,7 +7,7 @@ import { DjangoModelField, fieldToProps } from "../../constants/djangoHelpers";
 import { getPathParts } from "../../constants/helpers";
 import { PropsToInterface } from "../../constants/interfaces";
 
-const { slug } = getPathParts(import.meta.url, "Store");
+const { slug } = getPathParts("src/components/people/EmployeeStore.tsx", "Store");
 
 export const EmployeeFields = {
   id: { field: "ID" },

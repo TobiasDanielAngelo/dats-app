@@ -6,5 +6,5 @@ import { Supplier, SupplierFields } from "./SupplierStore";
 export const SupplierComponents = MyGenericComponents(
   Supplier,
   SupplierFields,
-  getPathParts(import.meta.url, "Components")
+  getPathParts("people", "Supplier")
 );

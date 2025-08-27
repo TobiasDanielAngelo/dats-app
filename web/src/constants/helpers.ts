@@ -951,12 +951,7 @@ export function toRomanWithExponents(number: number): string {
   return `${sign ? "[" : ""}${chunks.join(" ")}${sign ? "]" : ""}`;
 }
 
-export const getPathParts = (url: string, eliminate?: string) => {
-  const parts = url.split("/");
-  const fileWithExt = parts.pop() || "";
-  const folder = parts.pop() || "";
-  const rawName = fileWithExt.split(".")[0].replace(eliminate ?? "", "");
-
+export const getPathParts = (folder: string, rawName: string) => {
   const words = rawName.match(/[A-Z][a-z]+|[a-z]+/g) || [""];
 
   const kebabCase = words.map((w) => w.toLowerCase()).join("-");

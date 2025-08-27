@@ -6,5 +6,5 @@ import { Payable, PayableFields } from "./PayableStore";
 export const PayableComponents = MyGenericComponents(
   Payable,
   PayableFields,
-  getPathParts(import.meta.url, "Components")
+  getPathParts("finance", "Payable")
 );

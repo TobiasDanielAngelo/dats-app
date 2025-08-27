@@ -40,7 +40,7 @@ const MoreModals = (
 export const LaborComponents = MyGenericComponents(
   Labor,
   LaborFields,
-  getPathParts(import.meta.url, "Components"),
+  getPathParts("commerce", "Labor"),
   <></>,
   [],
   MoreModals

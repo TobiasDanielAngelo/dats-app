@@ -11,7 +11,7 @@ export const AddressIdMap = {
   "Gen Luna": -1,
 } as const;
 
-const { slug } = getPathParts(import.meta.url, "Store");
+const { slug } = getPathParts("product", "Address");
 
 export const AddressFields = {
   id: { field: "ID" },

@@ -12,7 +12,7 @@ export const LocationIdMap = {
   "Gen Luna Storage": -2,
 } as const;
 
-const { slug } = getPathParts(import.meta.url, "Store");
+const { slug } = getPathParts("product", "Location");
 
 export const LocationFields = {
   id: { field: "ID" },

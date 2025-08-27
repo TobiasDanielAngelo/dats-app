@@ -73,7 +73,7 @@ const MoreModals = (item: Receivable) => {
 export const ReceivableComponents = MyGenericComponents(
   Receivable,
   ReceivableFields,
-  getPathParts(import.meta.url, "Components"),
+  getPathParts("finance", "Receivable"),
   undefined,
   undefined,
   MoreModals

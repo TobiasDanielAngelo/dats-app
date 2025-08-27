@@ -6,5 +6,5 @@ import { Employee, EmployeeFields } from "./EmployeeStore";
 export const EmployeeComponents = MyGenericComponents(
   Employee,
   EmployeeFields,
-  getPathParts(import.meta.url, "Components")
+  getPathParts("people", "Employee")
 );

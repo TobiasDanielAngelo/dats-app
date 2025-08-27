@@ -244,7 +244,7 @@ const MainModals = [] satisfies ActionModalDef[];
 export const PurchaseComponents = MyGenericComponents(
   Purchase,
   PurchaseFields,
-  getPathParts(import.meta.url, "Components"),
+  getPathParts("commerce", "Purchase"),
   SideB,
   MainModals,
   MoreModals

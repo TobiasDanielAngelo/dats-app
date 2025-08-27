@@ -6,5 +6,5 @@ import { Location, LocationFields } from "./LocationStore";
 export const LocationComponents = MyGenericComponents(
   Location,
   LocationFields,
-  getPathParts(import.meta.url, "Components")
+  getPathParts("product", "Location")
 );

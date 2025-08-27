@@ -7,7 +7,7 @@ import {
   MyStore,
 } from "../../blueprints/MyGenericComponents/MyGenericStore";
 
-const { slug } = getPathParts(import.meta.url, "Store");
+const { slug } = getPathParts("commerce", "LaborType");
 
 export const LaborTypeFields = {
   id: { field: "ID" },

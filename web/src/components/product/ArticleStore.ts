@@ -8,7 +8,7 @@ import {
 } from "../../blueprints/MyGenericComponents/MyGenericStore";
 import { UnitIdMap } from "./UnitStore";
 
-const { slug } = getPathParts(import.meta.url, "Store");
+const { slug } = getPathParts("product", "Article");
 
 export const ArticleFields = {
   id: { field: "ID" },

@@ -9,5 +9,5 @@ import {
 export const TemporaryPurchaseComponents = MyGenericComponents(
   TemporaryPurchase,
   TemporaryPurchaseFields,
-  getPathParts(import.meta.url, "Components")
+  getPathParts("commerce", "TemporaryPurchase")
 );

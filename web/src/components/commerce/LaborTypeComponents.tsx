@@ -6,5 +6,5 @@ import { LaborType, LaborTypeFields } from "./LaborTypeStore";
 export const LaborTypeComponents = MyGenericComponents(
   LaborType,
   LaborTypeFields,
-  getPathParts(import.meta.url, "Components")
+  getPathParts("commerce", "LaborType")
 );

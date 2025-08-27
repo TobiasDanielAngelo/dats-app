@@ -3,7 +3,7 @@ import { MyGenericComponents } from "../../blueprints/MyGenericComponents/MyGene
 import { getPathParts } from "../../constants/helpers";
 import { Transaction, TransactionFields } from "./TransactionStore";
 
-const pathParts = getPathParts(import.meta.url, "Components");
+const pathParts = getPathParts("finance", "Transaction");
 
 export const TransactionComponents = MyGenericComponents(
   Transaction,

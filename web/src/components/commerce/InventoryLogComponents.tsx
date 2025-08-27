@@ -36,7 +36,7 @@ const MoreModals = (
 export const InventoryLogComponents = MyGenericComponents(
   InventoryLog,
   InventoryLogFields,
-  getPathParts(import.meta.url, "Components"),
+  getPathParts("commerce", "InventoryLog"),
   <></>,
   [],
   MoreModals
