@@ -17,6 +17,7 @@ export const CategoryFields = {
   parentCategory: { field: "SetNullOptionalForeignKey", fk: "Category" },
   notes: { field: "MediumCharField" },
   priceMatrix: { field: "TwoDimArrayField", readOnly: true },
+  compatibilityMatrix: { field: "TwoDimArrayField", readOnly: true },
 } satisfies Record<string, DjangoModelField>;
 
 const props = fieldToProps(CategoryFields);

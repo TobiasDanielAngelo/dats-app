@@ -1,13 +1,14 @@
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
+import Chat from "../../blueprints/ChatRoom";
 import { buildRoutes } from "../../constants/helpers";
 import { Main } from "./_AllComponents";
+import { LandingView } from "./LandingView";
 import { NavBar } from "./NavigationBar";
 import { useStore } from "./Store";
-import Chat from "../../blueprints/ChatRoom";
-import { LandingView } from "./LandingView";
-import { TirePriceView } from "../product/MatrixPriceComponents";
+import { PriceView } from "../product/MatrixPriceComponents";
+import { CompatibilityView } from "../product/CompatibilityComponents";
 
 export const MainView = observer(() => {
   const navigate = useNavigate();
@@ -46,7 +47,11 @@ export const MainView = observer(() => {
           />
         ))}
         <Route path="/chat" element={<Chat room="room1" />} />
-        <Route path="/guides/prices" element={<TirePriceView />} />
+        <Route path="/guides/prices" element={<PriceView />} />
+        <Route
+          path="/guides/compatible-motors"
+          element={<CompatibilityView />}
+        />
         <Route path="/" element={<LandingView />} />
       </Routes>
     </div>

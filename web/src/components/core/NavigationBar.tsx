@@ -13,7 +13,11 @@ export type ViewPath = {
 
 export const defaultViewPaths = buildViewPaths(Main);
 export const additionalPaths: ViewPath[] = [
-  { title: "Guides", items: ["prices", "pistons"], mainLink: "" },
+  {
+    title: "Guides",
+    items: ["prices", "compatible-motors", "pistons"],
+    mainLink: "",
+  },
 ];
 
 export const allViewPaths = [...defaultViewPaths, ...additionalPaths];

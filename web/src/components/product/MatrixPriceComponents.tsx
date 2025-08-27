@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { MyIcon } from "../../blueprints/MyIcon";
 import { MyModal } from "../../blueprints/MyModal";
 import { MySpeedDial } from "../../blueprints/MySpeedDial";
@@ -10,6 +10,8 @@ import { useStore } from "../core/Store";
 import { Product } from "./_AllComponents";
 import { Category } from "./CategoryStore";
 import { UnitIdMap } from "./UnitStore";
+import { MyDropdownSelector } from "../../blueprints";
+import { toOptions } from "../../constants/helpers";
 
 function codeToInt(code: string): number {
   const mapping: Record<string, string> = {
@@ -160,9 +162,11 @@ const PriceMatrixTable = observer(({ category }: { category: Category }) => {
   );
 });
 
-export const TirePriceView = observer(() => {
+export const PriceView = observer(() => {
   const { isVisible, setVisible, setVisible1 } = useVisible();
   const { productStore } = useStore();
+  const [value, setValue] = useState(-1);
+  const currentCategory = productStore.categoryStore.allItems.get(value);
   const actionModalDefs = [
     {
       icon: "AddCard",
@@ -178,6 +182,18 @@ export const TirePriceView = observer(() => {
           title="Add Entry"
           setVisible={setVisible1}
           fetchFcn={productStore.categoryStore.fetchAll}
+        />
+      ),
+    },
+    {
+      icon: "Star",
+      name: "Select a Prdouct",
+      label: "SELECT",
+      modal: () => (
+        <MyDropdownSelector
+          value={value}
+          onChangeValue={setValue}
+          options={toOptions(productStore.categoryStore.items, "displayName")}
         />
       ),
     },
@@ -219,9 +235,16 @@ export const TirePriceView = observer(() => {
           {S ? <S /> : <></>}
         </MyModal>
       ))}
-      {productStore.categoryStore.items.map((s, ind) => (
-        <PriceMatrixTable category={s} key={ind} />
-      ))}
+      {/* {productStore.categoryStore.items
+        .filter((s) => s.priceMatrix.length > 1)
+        .map((s, ind) => (
+          <PriceMatrixTable category={s} key={ind} />
+        ))} */}
+      {currentCategory ? (
+        <PriceMatrixTable category={currentCategory} />
+      ) : (
+        <></>
+      )}
 
       <MySpeedDial actions={actions} />
     </>

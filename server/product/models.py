@@ -33,23 +33,48 @@ class GenericProduct(fields.CustomModel):
         super().clean()
         motors = getattr(self, "_prefetched_compatibility", None)
         if motors is None:
-            if self.pk:
-                motors = self.compatibility.all()
-            else:
-                motors = []  # or skip
-        if self.category:
-            for motor in motors:
-                if (
-                    GenericProduct.objects.exclude(pk=self.pk)
-                    .filter(category=self.category, compatibility=motor)
-                    .exists()
-                ):
-                    raise ValidationError(
-                        {
-                            "category": f"Combination of category '{self.category}' and motor '{motor}' already exists.",
-                            "compatibility": f"Combination of category '{self.category}' and motor '{motor}' already exists.",
-                        }
-                    )
+            motors = self.compatibility.all() if self.pk else []
+
+        # Normalize empties
+        has_cat = bool(self.category)
+        has_desc = bool(self.description)
+        has_motor = bool(motors)
+
+        if not (has_cat or has_desc or has_motor):
+            return  # all empty, skip
+
+        # Check for each motor if applicable, else handle no motor case
+        check_motors = motors if has_motor else [None]
+
+        for motor in check_motors:
+            qs = GenericProduct.objects.exclude(pk=self.pk)
+
+            # Build filter based on non-empty fields
+            filters = {}
+            if has_cat:
+                filters["category"] = self.category
+            if has_desc:
+                filters["description"] = self.description
+            if motor:
+                filters["compatibility"] = motor
+
+            if filters and qs.filter(**filters).exists():
+                parts = []
+                if has_cat:
+                    parts.append(f"category '{self.category}'")
+                if has_desc:
+                    parts.append(f"description '{self.description}'")
+                if motor:
+                    parts.append(f"motor '{motor}'")
+
+                msg = f"Combination of {', '.join(parts)} already exists."
+                raise ValidationError(
+                    {
+                        "category": msg if has_cat else None,
+                        "description": msg if has_desc else None,
+                        "compatibility": msg if motor else None,
+                    }
+                )
 
 
 class Article(fields.CustomModel):

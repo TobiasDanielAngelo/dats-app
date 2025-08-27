@@ -4,7 +4,7 @@ from my_django_app.serializers import (
     serializers,
 )
 from . import models
-from .models import Article, GenericProduct
+from .models import Article, GenericProduct, Category, Motor
 from django.db.models import Max
 
 auto_create_serializers(models)
@@ -29,9 +29,10 @@ def int_to_code(n: float) -> str:
 
 class CategorySerializer(CustomSerializer):
     price_matrix = serializers.SerializerMethodField()
+    compatibility_matrix = serializers.SerializerMethodField()
 
     class Meta:
-        fields = ["price_matrix"]
+        fields = ["price_matrix", "compatibility_matrix"]
 
     def get_price_matrix(self, obj):
         # Step 1: get latest created_at per (brand, product)
@@ -56,7 +57,9 @@ class CategorySerializer(CustomSerializer):
         # collect all products in this category
         products = {
             gp.description: {b: "" for b in brands}
-            for gp in GenericProduct.objects.filter(category=obj)
+            for gp in GenericProduct.objects.filter(category=obj).order_by(
+                "description"
+            )
         }
 
         # fill with data from articles
@@ -69,5 +72,29 @@ class CategorySerializer(CustomSerializer):
         # Build rows
         for prod, brand_prices in products.items():
             rows.append([prod] + [brand_prices[b] for b in brands])
+
+        return rows
+
+    def get_compatibility_matrix(self, obj):
+        # Only build matrix if this category has children
+        child_cats = Category.objects.filter(parent_category=obj)
+        if not child_cats.exists():
+            return []
+
+        # Collect all motors that appear under these child categories
+        motors = Motor.objects.all()
+
+        # Header row: "Motor" + each child category name
+        rows = [["Motor"] + [cat.name for cat in child_cats]]
+
+        # Build each row for a motor
+        for motor in motors:
+            row = [motor.model]
+            for cat in child_cats:
+                products = GenericProduct.objects.filter(
+                    category=cat, compatibility=motor
+                ).values_list("description", flat=True)
+                row.append(", ".join(products))
+            rows.append(row)
 
         return rows
