@@ -10,7 +10,7 @@ interface WSMessage {
 
 const Chat: React.FC<ChatProps> = ({ room }) => {
   const [msg, setMsg] = useState<string>("");
-  const [recv, setRecv] = useState<string>("");
+  const [recv, _] = useState<string>("");
   const [socket, setSocket] = useState<WebSocket | null>(null);
 
   useEffect(() => {
