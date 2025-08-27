@@ -79,9 +79,9 @@ class ReportBuilder:
             try:
                 return ImageFont.truetype(self.font_path, size)
             except OSError:
-                return ImageFont.load_default()
+                return ImageFont.load_default(size)
         else:
-            return ImageFont.load_default()
+            return ImageFont.load_default(size)
 
     def header(self, text, pos=(10, 10), size=40, color="black"):
         self.draw.text(pos, text, font=self.font(size), fill=color)

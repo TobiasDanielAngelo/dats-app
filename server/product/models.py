@@ -36,7 +36,7 @@ class Category(fields.CustomModel):
         if self.pricelist_image:
             self.pricelist_image.delete(save=False)
 
-        timestamp = datetime.now().strftime("%y%m%d")
+        timestamp = datetime.now().strftime("%y%m%d_%H%M")
 
         self.pricelist_image.save(
             f"pricelist_{self.pk}_{timestamp}.png",
@@ -61,7 +61,7 @@ class Category(fields.CustomModel):
         if self.compatibility_image:
             self.compatibility_image.delete(save=False)
 
-        timestamp = datetime.now().strftime("%y%m%d")
+        timestamp = datetime.now().strftime("%y%m%d_%H%M")
 
         self.compatibility_image.save(
             f"compatibility_{self.pk}_{timestamp}.png",
