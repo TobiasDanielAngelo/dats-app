@@ -67,7 +67,7 @@ class ReportBuilder:
             lines.append(current)
         return lines
 
-    def __init__(self, width=800, height=600, bg="white", font_path="arial.ttf"):
+    def __init__(self, width=800, height=600, bg="white", font_path=None):
         self.img = Image.new("RGB", (width, height), bg)
         self.draw = ImageDraw.Draw(self.img)
         self.width = width
@@ -75,7 +75,13 @@ class ReportBuilder:
         self.font_path = font_path
 
     def font(self, size=20):
-        return ImageFont.truetype(self.font_path, size)
+        if self.font_path:
+            try:
+                return ImageFont.truetype(self.font_path, size)
+            except OSError:
+                return ImageFont.load_default()
+        else:
+            return ImageFont.load_default()
 
     def header(self, text, pos=(10, 10), size=40, color="black"):
         self.draw.text(pos, text, font=self.font(size), fill=color)
