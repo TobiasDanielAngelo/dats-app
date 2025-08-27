@@ -1,6 +1,6 @@
-from django.db.models.signals import post_migrate
+from django.db.models.signals import post_migrate, post_save
 from django.dispatch import receiver
-from .models import Address, Location, Unit
+from .models import Address, Location, Unit, Category
 
 
 @receiver(post_migrate)
@@ -24,3 +24,16 @@ def create_default_accounts(sender, **kwargs):
 
     for model, id, fields in defaults:
         model.objects.get_or_create(id=id, defaults=fields)
+
+
+@receiver(post_save, sender=Category)
+def generate_images_if_needed(sender, instance, **kwargs):
+    if instance.to_print_price:
+        post_save.disconnect(generate_images_if_needed, sender=Category)
+        instance.generate_pricelist_image()
+        post_save.connect(generate_images_if_needed, sender=Category)
+
+    if instance.to_print_compatibility:
+        post_save.disconnect(generate_images_if_needed, sender=Category)
+        instance.generate_compatibility_image()
+        post_save.connect(generate_images_if_needed, sender=Category)

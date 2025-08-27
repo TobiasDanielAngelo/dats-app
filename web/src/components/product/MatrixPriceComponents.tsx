@@ -154,8 +154,16 @@ const PriceMatrixTable = observer(({ category }: { category: Category }) => {
           fetchFcn={productStore.categoryStore.fetchAll}
         />
       </MyModal>
-      <div className="text-2xl text-center pt-10">
-        {category.displayName} Price List
+      <div className="text-2xl text-center pt-10 flex flex-row flex-1 items-center justify-center gap-5">
+        {category.displayName} Price List{" "}
+        <MyIcon
+          icon="Print"
+          onClick={() =>
+            productStore.categoryStore.updateItem(category.id, {
+              toPrintPrice: true,
+            })
+          }
+        />
       </div>
       <MyTable matrix={matrix} />
     </div>

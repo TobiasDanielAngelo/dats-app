@@ -1,5 +1,6 @@
 # signals.py
 from django.db.models.signals import post_save, post_delete
+from django.core.files.base import ContentFile
 from django.dispatch import receiver
 from .models import (
     Sale,
@@ -8,10 +9,12 @@ from .models import (
     TemporarySale,
     Purchase,
     TemporaryPurchase,
+    PrintJob,
 )
 from finance.models import Transaction, Account, Category
-from my_django_app.utils import SumProduct
 from django.utils import timezone
+from datetime import datetime
+from .utils import create_order_summary_image
 
 
 @receiver(post_save, sender=Sale)
@@ -116,6 +119,51 @@ def inventory_log_adjust_stock_value(sender, instance, **kwargs):
             amount=instance.quantity * instance.product.selling_price,
         )
         transaction.save()
+
+
+@receiver(post_save, sender=PrintJob)
+def ensure_unique_printjob(sender, instance, created, **kwargs):
+    if not created:
+        return  # only care about new ones
+
+    if instance.purchase_id:
+        PrintJob.objects.filter(purchase_id=instance.purchase_id).exclude(
+            id=instance.id
+        ).delete()
+
+    if instance.sale_id:
+        PrintJob.objects.filter(sale_id=instance.sale_id).exclude(
+            id=instance.id
+        ).delete()
+
+
+@receiver(post_delete, sender=PrintJob)
+def delete_printjob_image(sender, instance, **kwargs):
+    if instance.image:  # ImageField
+        instance.image.delete(save=False)
+
+
+@receiver(post_save, sender=PrintJob)
+def generate_order_image(sender, instance, created, **kwargs):
+    """
+    Generate an order summary image whenever a PrintJob is created
+    """
+    if created and instance.purchase:  # Only for new PrintJob instances with a purchase
+        try:
+            # Generate the image
+            image_data = create_order_summary_image(instance.purchase)
+
+            # Create filename
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"order_{instance.purchase.id}_{timestamp}.jpg"
+
+            # Save to the PrintJob's image field
+            instance.image.save(filename, ContentFile(image_data), save=True)
+
+            print(f"✅ Generated image for PrintJob {instance.id}: {filename}")
+
+        except Exception as e:
+            print(f"❌ Error generating image for PrintJob {instance.id}: {str(e)}")
 
 
 # from product.models import Article

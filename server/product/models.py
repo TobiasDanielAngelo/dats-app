@@ -1,5 +1,9 @@
 from my_django_app import fields
 from django.core.exceptions import ValidationError
+from io import BytesIO
+from django.core.files.base import ContentFile
+from .utils import get_compatibility_matrix, get_price_matrix
+from datetime import datetime
 
 
 class Unit(fields.CustomModel):
@@ -12,6 +16,60 @@ class Category(fields.CustomModel):
     is_kit = fields.DefaultBooleanField(False)
     is_universal = fields.DefaultBooleanField(False)
     notes = fields.MediumCharField()
+    to_print_price = fields.DefaultBooleanField(False)
+    to_print_compatibility = fields.DefaultBooleanField(False)
+    pricelist_image = fields.ImageField("prices")
+    compatibility_image = fields.ImageField("compatibility")
+
+    def generate_pricelist_image(self):
+        from core.utils import ReportBuilder
+
+        rb = ReportBuilder(width=1200, height=800)
+        rb.header(f"Pricelist for {self.name}")
+        rb.line(70)
+        pricelist = get_price_matrix(self)
+        rb.table(pricelist)
+
+        buffer = BytesIO()
+        rb.img.save(buffer, format="PNG")
+
+        if self.pricelist_image:
+            self.pricelist_image.delete(save=False)
+
+        timestamp = datetime.now().strftime("%y%m%d")
+
+        self.pricelist_image.save(
+            f"pricelist_{self.pk}_{timestamp}.png",
+            ContentFile(buffer.getvalue()),
+            save=True,
+        )
+
+        self.to_print_price = False
+        self.save(update_fields=["to_print_price"])
+
+    def generate_compatibility_image(self):
+        from core.utils import ReportBuilder
+
+        rb = ReportBuilder(width=600, height=400)
+        rb.header(f"Compatibility for {self.name}")
+        rb.line(70)
+        rb.table([["Compatible With"], ["Motor A"], ["Motor B"]])
+
+        buffer = BytesIO()
+        rb.img.save(buffer, format="PNG")
+
+        if self.compatibility_image:
+            self.compatibility_image.delete(save=False)
+
+        timestamp = datetime.now().strftime("%y%m%d")
+
+        self.compatibility_image.save(
+            f"compatibility_{self.pk}_{timestamp}.png",
+            ContentFile(buffer.getvalue()),
+            save=True,
+        )
+        self.to_print_compatibility = False
+        self.save(update_fields=["to_print_compatibility"])
 
 
 class Maker(fields.CustomModel):

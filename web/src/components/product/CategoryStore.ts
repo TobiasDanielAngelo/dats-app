@@ -18,6 +18,10 @@ export const CategoryFields = {
   notes: { field: "MediumCharField" },
   priceMatrix: { field: "TwoDimArrayField", readOnly: true },
   compatibilityMatrix: { field: "TwoDimArrayField", readOnly: true },
+  toPrintPrice: { field: "DefaultBooleanField" },
+  toPrintCompatibility: { field: "DefaultBooleanField" },
+  pricelistImage: { field: "ImageField" },
+  compatibilityImage: { field: "ImageField" },
 } satisfies Record<string, DjangoModelField>;
 
 const props = fieldToProps(CategoryFields);

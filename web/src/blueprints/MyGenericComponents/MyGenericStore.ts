@@ -107,14 +107,20 @@ export async function guidedRequest<T>(
   const preparedBody = options.body ? autoFormData(options.body) : undefined;
   const isFormData = preparedBody instanceof FormData;
 
+  let theCsrfToken = "";
+
+  if(options.method !== "GET") {
   const resp = await fetch(`${baseURL}/csrf/`, {
     credentials: "include",
   });
   const { csrfToken } = await resp.json();
+  theCsrfToken = csrfToken;
+  }
+
 
   const headers: Record<string, string> = {
     "ngrok-skip-browser-warning": "any",
-    "X-CSRFToken": csrfToken,
+    "X-CSRFToken": theCsrfToken,
   };
 
   if (!isFormData) {
