@@ -30,8 +30,8 @@ class Category(fields.CustomModel):
         )
 
         rb = ReportBuilder(width=1200, height=800)
-        rb.header(f"Pricelist for {self.name} ({timestamp_head})")
-        rb.line(70)
+        rb.header(f"Pricelist for {self.name} ({timestamp_head})", size=25)
+        rb.line(50)
         pricelist = get_price_matrix(self)
         cols = 1
         if len(pricelist) > 0:
@@ -40,7 +40,7 @@ class Category(fields.CustomModel):
             pricelist,
             start=(50, 110),
             cell_size=(1100 / cols, 650 / len(pricelist)),
-            font_size=0.9 * min(200 / cols, 650 / len(pricelist)),
+            font_size=0.95 * min(200 / cols, 650 / len(pricelist)),
         )
 
         buffer = BytesIO()
