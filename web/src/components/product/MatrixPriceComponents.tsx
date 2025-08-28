@@ -153,6 +153,19 @@ const PriceMatrixTable = observer(({ category }: { category: Category }) => {
     documentTitle: `${filename}.pdf`,
   });
 
+  const onClickDownload = () => {
+    const url = `${category.pricelistFile}`; // replace with your URL
+    const filename = url.split("/").pop() || "download";
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename; // hint for filename
+    link.target = "_blank"; // optional
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div>
       <MyModal isVisible={isVisible1} setVisible={setVisible1}>
@@ -187,7 +200,10 @@ const PriceMatrixTable = observer(({ category }: { category: Category }) => {
               </style>
               <img src={`${category.pricelistImage}`} />
             </div>
-            <MyButton label="Print" onClick={onClickPrint} />
+            <div className="flex flex-row justify-between">
+              <MyButton label="Print" onClick={onClickPrint} />
+              <MyButton label="Download" onClick={onClickDownload} />
+            </div>
           </>
         ) : (
           <></>

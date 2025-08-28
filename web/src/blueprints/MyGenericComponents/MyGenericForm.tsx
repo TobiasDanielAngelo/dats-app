@@ -25,6 +25,15 @@ export interface MyGenericForm<T extends { id: string | number }> {
   title?: string;
 }
 
+function filterByKeys<T extends object>(obj: T, keys: string[]): Partial<T> {
+  return Object.entries(obj)
+    .filter(([key]) => keys.includes(key))
+    .reduce((acc, [key, value]) => {
+      (acc as any)[key] = value;
+      return acc;
+    }, {} as Partial<T>);
+}
+
 export function MyGenericForm<T extends { id: string | number }>({
   item,
   setVisible,
@@ -139,7 +148,13 @@ export function MyGenericForm<T extends { id: string | number }>({
 
   const onClickEdit = async () => {
     if (!item?.id) return;
-    const resp = await updateItem(item.id, transformTo(details));
+    const resp = await updateItem(
+      item.id,
+      filterByKeys(
+        transformTo(details),
+        fields.flat(1).map((s) => s.name)
+      )
+    );
     if (!resp.ok) return setMsg(resp.details);
     fetchAll();
     setVisible?.(false);

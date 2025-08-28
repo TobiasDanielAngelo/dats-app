@@ -5,6 +5,13 @@ from django.core.files.base import ContentFile
 from .utils import get_compatibility_matrix, get_price_matrix
 from datetime import datetime
 
+import csv
+from django.core.files.base import ContentFile
+from io import StringIO
+
+from openpyxl import Workbook
+from openpyxl.styles import PatternFill, Border, Side, Alignment
+
 
 class Unit(fields.CustomModel):
     name = fields.ShortCharField(display=True)
@@ -20,8 +27,11 @@ class Category(fields.CustomModel):
     to_print_compatibility = fields.DefaultBooleanField(False)
     pricelist_image = fields.ImageField("prices")
     compatibility_image = fields.ImageField("compatibility")
+    pricelist_file = fields.FileField("prices-csv")
+    compatibility_file = fields.FileField("compatibility-csv")
 
     def generate_pricelist_image(self):
+        print("Boom")
         from core.utils import ReportBuilder
 
         timestamp = datetime.now().strftime("%y%m%d_%H%M")
@@ -40,7 +50,7 @@ class Category(fields.CustomModel):
             pricelist,
             start=(50, 60),
             cell_size=(1100 / cols, 700 / len(pricelist)),
-            font_size=0.95 * min(200 / cols, 700 / len(pricelist)),
+            font_size=0.95 * min(220 / cols, 700 / len(pricelist)),
         )
 
         buffer = BytesIO()
@@ -51,6 +61,53 @@ class Category(fields.CustomModel):
 
         self.pricelist_image.save(
             f"pricelist_{self.pk}_{timestamp}.png",
+            ContentFile(buffer.getvalue()),
+            save=True,
+        )
+
+        # buffer = StringIO()
+        # writer = csv.writer(buffer)
+        # for row in pricelist:
+        #     writer.writerow(row)
+
+        if self.pricelist_file:
+            self.pricelist_file.delete(save=False)
+
+        # self.pricelist_file.save(
+        #     f"pricelist_{self.pk}_{timestamp}.csv",
+        #     ContentFile(buffer.getvalue().encode("utf-8")),
+        #     save=True,
+        # )
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Pricelist"
+
+        # Styles
+        thin_border = Border(
+            left=Side(style="thin"),
+            right=Side(style="thin"),
+            top=Side(style="thin"),
+            bottom=Side(style="thin"),
+        )
+        gray_fill = PatternFill(
+            start_color="DDDDDD", end_color="DDDDDD", fill_type="solid"
+        )
+
+        # Write data
+        for r, row in enumerate(pricelist, start=1):
+            for c, value in enumerate(row, start=1):
+                cell = ws.cell(row=r, column=c, value=value)
+                cell.alignment = Alignment(vertical="center", horizontal="center")
+                cell.border = thin_border
+                if r % 2 == 0:  # alternate row fill
+                    cell.fill = gray_fill
+
+        # Save to memory
+        buffer = BytesIO()
+        wb.save(buffer)
+
+        self.pricelist_file.save(
+            f"pricelist_{self.pk}_{timestamp}.xlsx",
             ContentFile(buffer.getvalue()),
             save=True,
         )
