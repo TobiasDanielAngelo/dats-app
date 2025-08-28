@@ -11,6 +11,7 @@ from io import StringIO
 
 from openpyxl import Workbook
 from openpyxl.styles import PatternFill, Border, Side, Alignment
+from openpyxl.worksheet.page import PageMargins
 
 
 class Unit(fields.CustomModel):
@@ -82,6 +83,20 @@ class Category(fields.CustomModel):
         ws = wb.active
         ws.title = "Pricelist"
 
+        ws.page_setup.paperSize = ws.PAPERSIZE_A4
+        ws.page_setup.orientation = ws.ORIENTATION_LANDSCAPE
+        ws.page_margins = PageMargins(left=0.5, right=0.5, top=0.5, bottom=0.5)
+
+        total_width_units = 135  # ~A4 landscape width
+        total_height_units = 520  # ~A4 landscape height
+
+        cols = len(pricelist[0])
+        rows = len(pricelist)
+
+        col_width = total_width_units / cols
+        row_height = total_height_units / rows
+        ws.page_setup.fitToWidth = 1
+        ws.page_setup.fitToHeight = 0  # unlimited height (scale by width only)
         # Styles
         thin_border = Border(
             left=Side(style="thin"),
@@ -92,6 +107,15 @@ class Category(fields.CustomModel):
         gray_fill = PatternFill(
             start_color="DDDDDD", end_color="DDDDDD", fill_type="solid"
         )
+
+        # Apply equal col widths
+        for c in range(1, cols + 1):
+            col_letter = ws.cell(row=1, column=c).column_letter
+            ws.column_dimensions[col_letter].width = col_width
+
+        # Apply equal row heights
+        for r in range(1, rows + 1):
+            ws.row_dimensions[r].height = row_height
 
         # Write data
         for r, row in enumerate(pricelist, start=1):
