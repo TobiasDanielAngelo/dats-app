@@ -38,9 +38,9 @@ class Category(fields.CustomModel):
             cols = len(pricelist[0])
         rb.table(
             pricelist,
-            start=(50, 110),
-            cell_size=(1100 / cols, 650 / len(pricelist)),
-            font_size=0.95 * min(200 / cols, 650 / len(pricelist)),
+            start=(30, 110),
+            cell_size=(1100 / cols, 700 / len(pricelist)),
+            font_size=0.95 * min(200 / cols, 700 / len(pricelist)),
         )
 
         buffer = BytesIO()
