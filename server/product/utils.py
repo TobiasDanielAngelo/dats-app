@@ -31,9 +31,8 @@ def get_price_matrix(obj):
     # fill with data from articles
     for art in articles:
         prod = art.generic_product.description
-        products[prod][
-            art.brand
-        ] = f"{art.selling_price}\n({int_to_code(art.purchase_price)})"
+        products[prod][art.brand] = f"{art.selling_price}"
+        # \n({int_to_code(art.purchase_price)})
 
     # Build rows
     for prod, brand_prices in products.items():
