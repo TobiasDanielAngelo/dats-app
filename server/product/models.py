@@ -40,7 +40,7 @@ class Category(fields.CustomModel):
             pricelist,
             start=(50, 110),
             cell_size=(1100 / cols, 650 / len(pricelist)),
-            font_size=min(200 / cols, 650 / len(pricelist)),
+            font_size=0.9 * min(200 / cols, 650 / len(pricelist)),
         )
 
         buffer = BytesIO()
