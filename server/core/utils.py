@@ -83,7 +83,6 @@ class ReportBuilder:
             try:
                 return ImageFont.truetype(self.font_path, size)
             except OSError:
-                print("Defaulted")
                 return ImageFont.load_default(size)
         else:
             return ImageFont.load_default(size)
@@ -107,7 +106,6 @@ class ReportBuilder:
         x0, y0 = start
         rows = len(data)
         cols = len(data[0]) if rows > 0 else 0
-        print(font_size)
 
         for r in range(rows):
             for c in range(cols):
