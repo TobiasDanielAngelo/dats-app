@@ -33,7 +33,7 @@ def get_price_matrix(obj):
         prod = art.generic_product.description
         products[prod][
             art.brand
-        ] = f"{art.selling_price} ({int_to_code(art.purchase_price)})"
+        ] = f"{art.selling_price}\n({int_to_code(art.purchase_price)})"
 
     # Build rows
     for prod, brand_prices in products.items():

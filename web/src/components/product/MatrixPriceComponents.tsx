@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { MyIcon } from "../../blueprints/MyIcon";
 import { MyModal } from "../../blueprints/MyModal";
 import { MySpeedDial } from "../../blueprints/MySpeedDial";
@@ -10,8 +10,9 @@ import { useStore } from "../core/Store";
 import { Product } from "./_AllComponents";
 import { Category } from "./CategoryStore";
 import { UnitIdMap } from "./UnitStore";
-import { MyDropdownSelector } from "../../blueprints";
+import { MyButton, MyDropdownSelector } from "../../blueprints";
 import { toOptions } from "../../constants/helpers";
+import { useReactToPrint } from "react-to-print";
 
 function codeToInt(code: string): number {
   const mapping: Record<string, string> = {
@@ -86,7 +87,7 @@ const PriceMatrixItem = observer(
             fetchFcn={productStore.categoryStore.fetchAll}
           />
         </MyModal>
-        <div onClick={() => setVisible1(true)}>
+        <div onClick={() => setVisible1(true)} className="whitespace-pre-line">
           {item === "+" ? (
             <MyIcon icon="Add" onClick={() => setVisible1(true)} />
           ) : (
@@ -99,8 +100,16 @@ const PriceMatrixItem = observer(
 );
 
 const PriceMatrixTable = observer(({ category }: { category: Category }) => {
-  const { isVisible1, setVisible1, isVisible2, setVisible2 } = useVisible();
+  const {
+    isVisible1,
+    setVisible1,
+    isVisible2,
+    setVisible2,
+    isVisible3,
+    setVisible3,
+  } = useVisible();
 
+  const imgRef = useRef<HTMLDivElement | null>(null);
   const { productStore } = useStore();
   useEffect(() => {
     productStore.genericProductStore.fetchAll(
@@ -129,6 +138,21 @@ const PriceMatrixTable = observer(({ category }: { category: Category }) => {
     [<MyIcon icon="Add" onClick={() => setVisible2(true)} />],
   ];
 
+  const onClickView = async () => {
+    await productStore.categoryStore.updateItem(category.id, {
+      toPrintPrice: true,
+    });
+    setVisible3(true);
+  };
+
+  const priceListImage = `${category.pricelistImage}`;
+  const filename = priceListImage.split("/").pop()?.split(".")[0];
+
+  const onClickPrint = useReactToPrint({
+    contentRef: imgRef,
+    documentTitle: `${filename}.pdf`,
+  });
+
   return (
     <div>
       <MyModal isVisible={isVisible1} setVisible={setVisible1}>
@@ -154,16 +178,24 @@ const PriceMatrixTable = observer(({ category }: { category: Category }) => {
           fetchFcn={productStore.categoryStore.fetchAll}
         />
       </MyModal>
+      <MyModal isVisible={isVisible3} setVisible={setVisible3}>
+        {category.pricelistImage ? (
+          <>
+            <div ref={imgRef}>
+              <style type="text/css" media="print">
+                {"@page { size: A4 landscape; margin: 10mm; }"}
+              </style>
+              <img src={`${category.pricelistImage}`} />
+            </div>
+            <MyButton label="Print" onClick={onClickPrint} />
+          </>
+        ) : (
+          <></>
+        )}
+      </MyModal>
       <div className="text-2xl text-center pt-10 flex flex-row flex-1 items-center justify-center gap-5">
         {category.displayName} Price List{" "}
-        <MyIcon
-          icon="Print"
-          onClick={() =>
-            productStore.categoryStore.updateItem(category.id, {
-              toPrintPrice: true,
-            })
-          }
-        />
+        <MyIcon icon="RemoveRedEye" onClick={onClickView} />
       </div>
       <MyTable matrix={matrix} />
     </div>

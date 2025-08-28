@@ -24,19 +24,30 @@ class Category(fields.CustomModel):
     def generate_pricelist_image(self):
         from core.utils import ReportBuilder
 
+        timestamp = datetime.now().strftime("%y%m%d_%H%M")
+        timestamp_head = (
+            datetime.now().strftime("%B {day}, %Y").format(day=datetime.now().day)
+        )
+
         rb = ReportBuilder(width=1200, height=800)
-        rb.header(f"Pricelist for {self.name}")
+        rb.header(f"Pricelist for {self.name} ({timestamp_head})")
         rb.line(70)
         pricelist = get_price_matrix(self)
-        rb.table(pricelist)
+        cols = 1
+        if len(pricelist) > 0:
+            cols = len(pricelist[0])
+        rb.table(
+            pricelist,
+            start=(50, 110),
+            cell_size=(1100 / cols, 650 / len(pricelist)),
+            font_size=200 / len(pricelist),
+        )
 
         buffer = BytesIO()
         rb.img.save(buffer, format="PNG")
 
         if self.pricelist_image:
             self.pricelist_image.delete(save=False)
-
-        timestamp = datetime.now().strftime("%y%m%d_%H%M")
 
         self.pricelist_image.save(
             f"pricelist_{self.pk}_{timestamp}.png",

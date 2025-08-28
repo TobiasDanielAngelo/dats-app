@@ -55,14 +55,18 @@ class ReportBuilder:
 
     def wrap_text(self, text, font, max_width):
         words = text.split()
-        lines, current = [], ""
+        lines = []
+        current = ""
         for word in words:
-            test = current + " " + word if current else word
+            test = f"{current} {word}" if current else word
+            # measure single-line only
             if self.draw.textlength(test, font=font) <= max_width:
                 current = test
             else:
-                lines.append(current)
+                if current:
+                    lines.append(current)
                 current = word
+
         if current:
             lines.append(current)
         return lines
