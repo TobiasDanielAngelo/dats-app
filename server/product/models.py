@@ -119,7 +119,7 @@ class Barcode(fields.CustomModel):
 
 
 class PrintDimension(fields.CustomModel):
-    width_mm = fields.LimitedIntegerField(1, 216, 10)
+    width_mm = fields.LimitedIntegerField(1, 330, 10)
     height_mm = fields.LimitedIntegerField(1, 330, 10)
     name = fields.ShortCharField()
 
