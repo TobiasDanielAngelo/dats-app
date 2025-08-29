@@ -28,7 +28,7 @@ export const SideBySideView = observer(
             <></>
           ) : (
             <div
-              className="lg:overflow-scroll m-2 border border-teal-500 dark:border-gray-700 rounded-lg"
+              className="lg:overflow-scroll m-2 min-h-[80vh] border border-teal-500 dark:border-gray-700 rounded-lg"
               style={{
                 width: width >= 1024 ? widthA : "100%",
                 display: width >= 1024 || SideA ? "block" : "none",
@@ -41,7 +41,7 @@ export const SideBySideView = observer(
             <></>
           ) : (
             <div
-              className="overflow-scroll m-2 min-h-[60vh] border border-teal-500 dark:border-gray-700 rounded-lg items-center justify-center"
+              className="overflow-scroll m-2 min-h-[80vh] border border-teal-500 dark:border-gray-700 rounded-lg items-center justify-center"
               style={{
                 width: width >= 1024 ? widthB : "100%",
               }}

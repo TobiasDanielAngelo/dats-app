@@ -1,20 +1,18 @@
 import { observer } from "mobx-react-lite";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useReactToPrint } from "react-to-print";
+import { MyButton, MyDropdownSelector } from "../../blueprints";
 import { MyIcon } from "../../blueprints/MyIcon";
 import { MyModal } from "../../blueprints/MyModal";
-import { MySpeedDial } from "../../blueprints/MySpeedDial";
 import { MyTable } from "../../blueprints/MyTable";
-import { useKeyPress, useVisible } from "../../constants/hooks";
-import { ActionModalDef, KeyboardCodes } from "../../constants/interfaces";
+import { toOptions } from "../../constants/helpers";
+import { useVisible } from "../../constants/hooks";
 import { useStore } from "../core/Store";
 import { Product } from "./_AllComponents";
 import { Category } from "./CategoryStore";
 import { UnitIdMap } from "./UnitStore";
-import { MyButton, MyDropdownSelector } from "../../blueprints";
-import { toOptions } from "../../constants/helpers";
-import { useReactToPrint } from "react-to-print";
 
-function codeToInt(code: string): number {
+export function codeToInt(code: string): number {
   const mapping: Record<string, string> = {
     L: "1",
     U: "2",
@@ -219,90 +217,27 @@ const PriceMatrixTable = observer(({ category }: { category: Category }) => {
 });
 
 export const PriceView = observer(() => {
-  const { isVisible, setVisible, setVisible1 } = useVisible();
   const { productStore } = useStore();
   const [value, setValue] = useState(-1);
   const currentCategory = productStore.categoryStore.allItems.get(value);
-  const actionModalDefs = [
-    {
-      icon: "AddCard",
-      name: "Add a Price",
-      label: "Add",
-      modal: () => (
-        <Product.Article.Form
-          item={{
-            unit: UnitIdMap["pcs"],
-            quantityPerUnit: 1,
-          }}
-          hiddenFields={["isOrig", "parentArticle", "quantityPerUnit", "unit"]}
-          title="Add Entry"
-          setVisible={setVisible1}
-          fetchFcn={productStore.categoryStore.fetchAll}
-        />
-      ),
-    },
-    {
-      icon: "Star",
-      name: "Select a Prdouct",
-      label: "SELECT",
-      modal: () => (
-        <MyDropdownSelector
-          value={value}
-          onChangeValue={setValue}
-          options={toOptions(productStore.categoryStore.items, "displayName")}
-        />
-      ),
-    },
-  ] satisfies ActionModalDef[];
-
-  const actions = useMemo(
-    () =>
-      actionModalDefs.map((def, i) => ({
-        icon: <MyIcon icon={def.icon} fontSize="large" label={def.label} />,
-        name: def.name,
-        onClick: () => setVisible(i + 1, true),
-      })),
-    [setVisible, actionModalDefs]
-  );
-
-  const Modals = actionModalDefs.map((s) => s.modal);
-
-  actions.forEach((s, ind) =>
-    useKeyPress(["Alt", `Digit${ind + 1}` as KeyboardCodes], s.onClick)
-  );
 
   useEffect(() => {
     productStore.categoryStore.fetchAll("page=1");
   }, []);
   return (
     <>
-      {Modals.map((S, ind) => (
-        <MyModal
-          key={ind}
-          isVisible={!!S && isVisible[ind + 1]}
-          setVisible={(v: boolean) =>
-            setVisible(
-              ind + 1,
-              typeof v === "function" ? (v as any)(isVisible[ind + 1]) : v
-            )
-          }
-          disableClose
-        >
-          {S ? <S /> : <></>}
-        </MyModal>
-      ))}
-      {/* {productStore.categoryStore.items
-        .filter((s) => s.priceMatrix.length > 1)
-        .map((s, ind) => (
-          <PriceMatrixTable category={s} key={ind} />
-        ))} */}
+      <div className="flex flex-row absolute top-20 left-5">
+        <MyDropdownSelector
+          value={value}
+          onChangeValue={setValue}
+          options={toOptions(productStore.categoryStore.items, "displayName")}
+        />
+      </div>
       {currentCategory ? (
         <PriceMatrixTable category={currentCategory} />
       ) : (
         <></>
       )}
-
-      <MySpeedDial actions={actions} />
     </>
   );
 });

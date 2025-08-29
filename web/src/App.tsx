@@ -3,6 +3,7 @@ import "./App.css";
 import { LoginView } from "./components/core/LoginView";
 import { MainView } from "./components/core/MainView";
 import { createStore, StoreContext } from "./components/core/Store";
+
 function App() {
   const store = createStore();
 

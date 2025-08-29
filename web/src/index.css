@@ -60,3 +60,41 @@ button:focus-visible {
     linear-gradient(to bottom, #bbb 2px, transparent 2px);
   background-size: 50% 50%;
 }
+
+@font-face {
+  font-family: "Regular1"; /*Can be any text*/
+  src: local("Dart6842font1-Regular"),
+    url("./fonts/Dart6842font1-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Regular2"; /*Can be any text*/
+  src: local("Dart6842font2-Regular"),
+    url("./fonts/Dart6842font2-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Regular3"; /*Can be any text*/
+  src: local("Dart6842font3-Regular"),
+    url("./fonts/Dart6842font3-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Regular5"; /*Can be any text*/
+  src: local("DivFont2"), url("./fonts/DivFont2.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Regular6"; /*Can be any text*/
+  src: local("DivFont3"), url("./fonts/DivFont3.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "LoraBold"; /*Can be any text*/
+  src: local("Lora-Bold"), url("./fonts/Lora-Bold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Lora"; /*Can be any text*/
+  src: local("Lora-Regular"), url("./fonts/Lora-Regular.ttf") format("truetype");
+}

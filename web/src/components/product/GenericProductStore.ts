@@ -24,6 +24,9 @@ export const GenericProductFields = {
     searchable: true,
   },
   reorderLevel: { field: "LimitedIntegerField" },
+  isArticle: {
+    field: "DefaultBooleanField",
+  },
 } satisfies Record<string, DjangoModelField>;
 
 const props = fieldToProps(GenericProductFields);

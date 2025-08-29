@@ -259,6 +259,8 @@ export function fieldToFormField<F extends FieldsInput>(
           options: choices ?? storeOptions,
           defaultValue: defaultValue,
           fetchFcn:
+            field !== "NumberArrayField" &&
+            field !== "StringArrayField" &&
             (type === "select" || type === "multi") &&
             store &&
             !choices &&
@@ -266,7 +268,11 @@ export function fieldToFormField<F extends FieldsInput>(
               ? selectedStore.fetchAll
               : undefined,
           searchFcn:
-            (type === "select" || type === "multi") && store && !choices
+            field !== "NumberArrayField" &&
+            field !== "StringArrayField" &&
+            (type === "select" || type === "multi") &&
+            store &&
+            !choices
               ? selectedStore.fetchTemp
               : undefined,
           searchText: searchable ? myStore.fetchTemp : undefined,

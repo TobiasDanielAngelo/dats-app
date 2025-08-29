@@ -209,7 +209,7 @@ export const MyForm = observer(
     };
 
     return (
-      <div className="max-w-xl mx-auto p-10">
+      <div className="max-w-xl mx-auto">
         <MyConfirmModal
           isVisible={isVisible1}
           setVisible={setVisible1}

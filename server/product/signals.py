@@ -1,6 +1,14 @@
 from django.db.models.signals import post_migrate, post_save
 from django.dispatch import receiver
-from .models import Address, Location, Unit, Category
+from .models import (
+    Address,
+    Location,
+    Unit,
+    Category,
+    GenericProduct,
+    Article,
+    PrintDimension,
+)
 
 
 @receiver(post_migrate)
@@ -20,6 +28,7 @@ def create_default_accounts(sender, **kwargs):
         (Unit, -2, {"name": "set"}),
         (Unit, -3, {"name": "ft"}),
         (Unit, -4, {"name": "m"}),
+        (PrintDimension, -1, {"width_mm": 76, "height_mm": 38, "name": "Quantum"}),
     ]
 
     for model, id, fields in defaults:
@@ -37,3 +46,11 @@ def generate_images_if_needed(sender, instance, **kwargs):
         post_save.disconnect(generate_images_if_needed, sender=Category)
         instance.generate_compatibility_image()
         post_save.connect(generate_images_if_needed, sender=Category)
+
+
+@receiver(post_save, sender=GenericProduct)
+def create_article_for_non_generic(sender, instance, created, **kwargs):
+    if created and instance.is_article:
+        Article.objects.create(
+            generic_product=instance, purchase_price=0, selling_price=1
+        )

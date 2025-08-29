@@ -11,8 +11,16 @@ const { slug } = getPathParts("product", "PrintJob");
 
 export const PrintJobFields = {
   id: { field: "ID" },
-  product: { field: "CascadeRequiredForeignKey", fk: "Article" },
+  product: { field: "CascadeOptionalForeignKey", fk: "Article" },
+  description: { field: "LongCharField" },
+  purchaseCode: { field: "ShortCharField" },
+  sellingCode: { field: "ShortCharField" },
+  fontSizes: { field: "NumberArrayField" },
   quantity: { field: "LimitedIntegerField" },
+  dimension: { field: "SetNullOptionalForeignKey", fk: "PrintDimension" },
+  isCompleted: { field: "DefaultBooleanField" },
+  widthMm: { field: "LimitedIntegerField", readOnly: true },
+  heightMm: { field: "LimitedIntegerField", readOnly: true },
 } satisfies Record<string, DjangoModelField>;
 
 const props = fieldToProps(PrintJobFields);

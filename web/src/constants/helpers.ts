@@ -8,6 +8,12 @@ import { ViewPath } from "../components/core/NavigationBar";
 
 export const posRamp = (x: number) => (x > 0 ? x : 0);
 
+export function clipNum(value: number, min?: number, max?: number): number {
+  if (min !== undefined && value < min) return min;
+  if (max !== undefined && value > max) return max;
+  return value;
+}
+
 export function kebabToCamel(str: string) {
   return str.replace(/-([a-z])/g, (_, char) => char.toUpperCase());
 }

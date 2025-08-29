@@ -9,6 +9,7 @@ import { NavBar } from "./NavigationBar";
 import { useStore } from "./Store";
 import { PriceView } from "../product/MatrixPriceComponents";
 import { CompatibilityView } from "../product/CompatibilityComponents";
+import { LabelView } from "../product/LabelComponents";
 
 export const MainView = observer(() => {
   const navigate = useNavigate();
@@ -52,6 +53,7 @@ export const MainView = observer(() => {
           path="/guides/compatible-motors"
           element={<CompatibilityView />}
         />
+        <Route path="/guides/labels" element={<LabelView />} />
         <Route path="/" element={<LandingView />} />
       </Routes>
     </div>
