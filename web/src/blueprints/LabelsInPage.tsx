@@ -86,9 +86,7 @@ const LabelsInPage: React.FC<LabelsInPageProps> = ({
         count++;
       }
     }
-  }
-
-  if (best.type === "rotated") {
+  } else if (best.type === "rotated") {
     for (let r = 0; r < fitRotRows; r++) {
       for (let c = 0; c < fitRotCols; c++) {
         labels.push(
@@ -104,19 +102,22 @@ const LabelsInPage: React.FC<LabelsInPageProps> = ({
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              transform: "rotate(90deg)",
               transformOrigin: "center",
             }}
           >
-            {allLabels[count]}
+            <div
+              style={{
+                transform: "rotate(90deg)",
+              }}
+            >
+              {allLabels[count]}
+            </div>
           </div>
         );
         count++;
       }
     }
-  }
-
-  if (best.type === "hybridH") {
+  } else if (best.type === "hybridH") {
     const usedW = fitUprightCols * lw;
     const extraCols = Math.floor(leftoverW / lh);
     const extraRows = Math.floor(ph / lw);
@@ -150,9 +151,7 @@ const LabelsInPage: React.FC<LabelsInPageProps> = ({
         count++;
       }
     }
-  }
-
-  if (best.type === "hybridV") {
+  } else if (best.type === "hybridV") {
     const usedH = fitUprightRows * lh;
     const extraRows = Math.floor(leftoverH / lw);
     const extraCols = Math.floor(pw / lh);
@@ -197,9 +196,7 @@ const LabelsInPage: React.FC<LabelsInPageProps> = ({
       <style type="text/css" media="print">
         {"@page { size: A4 portrait; margin: 10mm; }"}
       </style>
-      <div style={{ top: "5mm", left: "5mm", position: "absolute" }}>
-        {labels}
-      </div>
+      <div style={{ position: "absolute" }}>{labels}</div>
     </div>
   );
 };

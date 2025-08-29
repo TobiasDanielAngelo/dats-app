@@ -316,6 +316,9 @@ export const LabelView = observer(() => {
     await productStore.printJobStore.fetchAll("page=all&is_completed=False");
     await productStore.printDimensionStore.fetchAll("page=all");
   };
+  const { widthMm, heightMm } = productStore.printDimensionStore.allItems.get(
+    value
+  ) ?? { widthMm: 76, heightMm: 38 };
 
   useEffect(() => {
     fetchDim();
@@ -354,7 +357,7 @@ export const LabelView = observer(() => {
                     <LayoutCard key={`${s.id}-${i}`} item={s} />
                   ))
                 )}
-              labelSize={[items[0].widthMm, items[0].heightMm]}
+              labelSize={[widthMm, heightMm]}
               pageRef={pageRef}
             />
           ) : (
