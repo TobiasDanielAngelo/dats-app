@@ -40,21 +40,21 @@ export const MainView = observer(() => {
     <div className="flex flex-col min-h-screen text-teal-700 dark:text-gray-400 dark:bg-[#242424]">
       <NavBar />
       <Routes>
-        {routes.map(({ path, component: Component }) => (
+        {/* {routes.map(({ path, component: Component }) => (
           <Route
             key={path}
             path={path}
             element={<Component routePath={path} />}
           />
-        ))}
+        ))} */}
         <Route path="/chat" element={<Chat room="room1" />} />
-        <Route path="/guides/prices" element={<PriceView />} />
+        <Route path="/prices" element={<PriceView />} />
         <Route
           path="/guides/compatible-motors"
           element={<CompatibilityView />}
         />
-        <Route path="/guides/labels" element={<LabelView />} />
-        <Route path="/" element={<LandingView />} />
+        <Route path="/labels" element={<LabelView />} />
+        <Route path="/" element={<></>} />
       </Routes>
     </div>
   );
