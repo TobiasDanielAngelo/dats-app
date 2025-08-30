@@ -7,7 +7,7 @@ import { MyModal } from "../../blueprints/MyModal";
 import { MySlider } from "../../blueprints/MySlider";
 import { SideBySideView } from "../../blueprints/SideBySideView";
 import { toOptions } from "../../constants/helpers";
-import { useVisible } from "../../constants/hooks";
+import { useKeyPress, useVisible } from "../../constants/hooks";
 import { Field, StateSetter } from "../../constants/interfaces";
 import { useStore } from "../core/Store";
 import { Product } from "./_AllComponents";
@@ -169,10 +169,14 @@ function parseSellingCode(
 export const transformLabelToPrint = (details: LabelInterface) => {
   return {
     ...details,
-    purchaseCode: intToCode(details.purchasePrice),
-    sellingCode: `\u20b1${details.sellingPrice}${
-      details.unit ? "/" + details.unit : ""
-    }`,
+    purchaseCode:
+      details.purchasePrice > 0 ? intToCode(details.purchasePrice) : "",
+    sellingCode:
+      details.sellingPrice > 0
+        ? `\u20b1${details.sellingPrice}${
+            details.unit ? "/" + details.unit : ""
+          }`
+        : "",
   };
 };
 
@@ -252,6 +256,8 @@ export const LabelForm = ({
       },
     ],
   ] satisfies Field[][];
+
+  useKeyPress(["Enter"], onClickSubmit);
 
   const numSliders = details.description.split("\n").length + 1;
   return (
