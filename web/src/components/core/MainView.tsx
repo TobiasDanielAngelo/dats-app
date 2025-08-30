@@ -2,14 +2,11 @@ import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import Chat from "../../blueprints/ChatRoom";
-import { buildRoutes } from "../../constants/helpers";
-import { Main } from "./_AllComponents";
-import { LandingView } from "./LandingView";
-import { NavBar } from "./NavigationBar";
-import { useStore } from "./Store";
-import { PriceView } from "../product/MatrixPriceComponents";
 import { CompatibilityView } from "../product/CompatibilityComponents";
 import { LabelView } from "../product/LabelComponents";
+import { PriceView } from "../product/MatrixPriceComponents";
+import { NavBar } from "./NavigationBar";
+import { useStore } from "./Store";
 
 export const MainView = observer(() => {
   const navigate = useNavigate();
@@ -26,7 +23,7 @@ export const MainView = observer(() => {
     fetchAll();
   }, []);
 
-  const routes = buildRoutes(Main);
+  // const routes = buildRoutes(Main);
 
   useEffect(() => {
     if (settingStore.theme() === "dark") {
