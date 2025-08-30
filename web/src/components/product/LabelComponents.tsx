@@ -257,7 +257,7 @@ export const LabelForm = ({
     ],
   ] satisfies Field[][];
 
-  useKeyPress(["Enter"], onClickSubmit);
+  useKeyPress(["Shift", "Enter"], onClickSubmit);
 
   const numSliders = details.description.split("\n").length + 1;
   return (
