@@ -60,7 +60,7 @@ const LayoutView = ({
 const LayoutCard = ({ item }: { item: PrintJobInterface }) => {
   return (
     <div
-      className="border-2 rounded-md relative bg-amber-100 p-1 text-black"
+      className="border-2 rounded-md relative bg-white p-1 text-black"
       style={{
         width: `${item.widthMm}mm`,
         height: `${item.heightMm}mm`,
