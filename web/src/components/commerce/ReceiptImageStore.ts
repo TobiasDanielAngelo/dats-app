@@ -18,9 +18,11 @@ export const ReceiptImageFields = {
   },
   receiptNo: {
     field: "ShortCharField",
+    searchable: true,
   },
   issuer: {
     field: "ShortCharField",
+    searchable: true,
   },
   date: {
     field: "OptionalDateField",
