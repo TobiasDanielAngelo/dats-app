@@ -8,6 +8,86 @@ import { ViewPath } from "../components/core/NavigationBar";
 
 export const posRamp = (x: number) => (x > 0 ? x : 0);
 
+export function numberToWords(num: number): string {
+  const ones = [
+    "",
+    "one",
+    "two",
+    "three",
+    "four",
+    "five",
+    "six",
+    "seven",
+    "eight",
+    "nine",
+    "ten",
+    "eleven",
+    "twelve",
+    "thirteen",
+    "fourteen",
+    "fifteen",
+    "sixteen",
+    "seventeen",
+    "eighteen",
+    "nineteen",
+  ];
+  const tens = [
+    "",
+    "",
+    "twenty",
+    "thirty",
+    "forty",
+    "fifty",
+    "sixty",
+    "seventy",
+    "eighty",
+    "ninety",
+  ];
+  const scales = ["", "thousand", "million", "billion"];
+
+  function chunkToWords(n: number): string {
+    let str = "";
+    if (n >= 100) {
+      str += ones[Math.floor(n / 100)] + " hundred ";
+      n %= 100;
+    }
+    if (n >= 20) {
+      str += tens[Math.floor(n / 10)] + " ";
+      n %= 10;
+    }
+    if (n > 0) {
+      str += ones[n] + " ";
+    }
+    return str.trim();
+  }
+
+  function integerToWords(n: number): string {
+    if (n === 0) return "zero";
+    const words: string[] = [];
+    let scale = 0;
+    while (n > 0) {
+      const chunk = n % 1000;
+      if (chunk > 0) {
+        words.unshift(
+          chunkToWords(chunk) + (scales[scale] ? " " + scales[scale] : "")
+        );
+      }
+      n = Math.floor(n / 1000);
+      scale++;
+    }
+    return words.join(" ").trim();
+  }
+
+  const [intPart, decPart] = num.toString().split(".");
+  let result = integerToWords(parseInt(intPart));
+
+  if (decPart) {
+    result += " & " + decPart.padEnd(2, "0").slice(0, 2) + "/100";
+  }
+
+  return result + " only";
+}
+
 export function clipNum(value: number, min?: number, max?: number): number {
   if (min !== undefined && value < min) return min;
   if (max !== undefined && value > max) return max;

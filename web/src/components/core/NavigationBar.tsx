@@ -29,6 +29,11 @@ export const additionalPaths: ViewPath[] = [
     mainLink: "prices",
   },
   {
+    title: "Receipts",
+    items: ["purchases"],
+    mainLink: "",
+  },
+  {
     title: "Guides",
     items: ["compatible-motors"],
     mainLink: "",

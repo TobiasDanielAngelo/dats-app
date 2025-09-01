@@ -7,6 +7,7 @@ import { useStore } from "./Store";
 import { PriceView } from "../product/MatrixPriceComponents";
 import { CompatibilityView } from "../product/CompatibilityComponents";
 import { LabelView } from "../product/LabelComponents";
+import { Commerce } from "../commerce/_AllComponents";
 
 export const MainView = observer(() => {
   const navigate = useNavigate();
@@ -46,6 +47,12 @@ export const MainView = observer(() => {
         ))} */}
         <Route path="/chat" element={<Chat room="room1" />} />
         <Route path="/prices" element={<PriceView />} />
+        <Route
+          path="/receipts/purchases"
+          element={
+            <Commerce.ReceiptImage.View routePath="/receipts/purchases" />
+          }
+        />
         <Route
           path="/guides/compatible-motors"
           element={<CompatibilityView />}

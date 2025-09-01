@@ -186,10 +186,18 @@ class Sale(fields.CustomModel):
         return list(self.transaction_sale.values_list("pk", flat=True))
 
 
+class ReceiptImage(fields.CustomModel):
+    image = fields.ImageField("receipts")
+    receipt_no = fields.ShortCharField()
+    issuer = fields.ShortCharField(display=True)
+    date = fields.OptionalDateField(display=True)
+
+
 class Purchase(fields.CustomModel):
+    receipt_images = fields.OptionalManyToManyField(ReceiptImage)
     status = fields.ChoiceIntegerField(STATUS_CHOICES, display=True)
     supplier = fields.SetNullOptionalForeignKey(Supplier, display=True)
-    created_at = fields.AutoCreatedAtField(display=True)
+    created_at = fields.AutoCreatedAtField(display=True)  # Added for display
 
     @property
     def current_status(self):

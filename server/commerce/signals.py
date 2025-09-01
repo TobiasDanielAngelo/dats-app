@@ -10,6 +10,7 @@ from .models import (
     Purchase,
     TemporaryPurchase,
     PrintJob,
+    ReceiptImage,
 )
 from finance.models import Transaction, Account, Category
 from django.utils import timezone
@@ -164,6 +165,12 @@ def generate_order_image(sender, instance, created, **kwargs):
 
         except Exception as e:
             print(f"❌ Error generating image for PrintJob {instance.id}: {str(e)}")
+
+
+@receiver(post_delete, sender=ReceiptImage)
+def delete_receipt_image(sender, instance, **kwargs):
+    if instance.image:  # ImageField
+        instance.image.delete(save=False)
 
 
 # from product.models import Article
