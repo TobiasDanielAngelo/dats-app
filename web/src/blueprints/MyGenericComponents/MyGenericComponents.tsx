@@ -43,7 +43,16 @@ export const MyGenericComponents = <
       setValue: (t: V) => void;
     },
     store?: Store
-  ) => ActionModalDef[]
+  ) => ActionModalDef[],
+  CustomComponents?: {
+    Form?: any;
+    Filter?: any;
+    Row?: any;
+    Table?: any;
+    Card?: any;
+    Collection?: any;
+    View?: any;
+  }
 ) => {
   type ExtractModelArg<U> = U extends KeystoneModel<infer X> ? X : never;
 
@@ -337,7 +346,7 @@ export const MyGenericComponents = <
           title={modelNameParts.titleCase}
           Context={Context}
           CollectionComponent={Collection}
-          FormComponent={Form}
+          FormComponent={CustomComponents?.Form ?? Form}
           FilterComponent={Filter}
           actionModalDefs={actionModalDefs}
           TableComponent={Table}

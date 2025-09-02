@@ -16,6 +16,7 @@ export const defaultViewPaths = buildViewPaths(Main, [
   "Finance",
   "Product",
   "People",
+  "Productivity",
 ]);
 export const additionalPaths: ViewPath[] = [
   {
@@ -27,6 +28,11 @@ export const additionalPaths: ViewPath[] = [
     title: "Prices",
     items: [],
     mainLink: "prices",
+  },
+  {
+    title: "Tasks",
+    items: [],
+    mainLink: "tasks",
   },
   {
     title: "Receipts",

@@ -771,7 +771,7 @@ export function buildRRule(schedule: ScheduleInterface): RRule | null {
     : `${normalizeDate(endDate)}T${normalizeTime(endTime)}`;
 
   const ruleOptions = {
-    freq: schedule.freq ?? RRule.DAILY,
+    freq: schedule.frequency ?? RRule.DAILY,
     interval: Number(schedule.interval) || 1,
     byweekday: schedule.byWeekDay
       ?.map((d) => WEEKDAY_MAP[d])

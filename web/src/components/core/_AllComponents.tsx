@@ -2,10 +2,12 @@ import { Commerce } from "../commerce/_AllComponents";
 import { Finance } from "../finance/_AllComponents";
 import { People } from "../people/_AllComponents";
 import { Product } from "../product/_AllComponents";
+import { Productivity } from "../productivity/_AllComponents";
 
 export const Main = {
   Commerce,
   Finance,
   Product,
   People,
+  Productivity,
 };

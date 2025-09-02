@@ -17,7 +17,7 @@ export type CalendarEvent = {
 
 export type ScheduleInterface = {
   id?: number | string;
-  freq?: number;
+  frequency?: number;
   interval?: number;
   byWeekDay?: string[];
   byMonthDay?: number[];

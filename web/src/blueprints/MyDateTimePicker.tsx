@@ -22,6 +22,8 @@ export const MyDateTimePicker = (props: {
     msg,
   } = props;
 
+  console.log(value);
+
   return (
     <div>
       <label className="text-xs text-blue-600">
@@ -35,7 +37,11 @@ export const MyDateTimePicker = (props: {
           <Datetime
             value={value}
             onChange={(d) => {
-              onChangeValue(d as string);
+              if (moment.isMoment(d)) {
+                onChangeValue(d.toISOString()); // or format however you want
+              } else {
+                onChangeValue(d); // string fallback
+              }
             }}
             dateFormat={isTimeOnly ? false : dateFormat ?? "MMM D, YYYY"}
             timeFormat={isDateOnly ? false : "h:mm A"}

@@ -8,6 +8,9 @@ import { PriceView } from "../product/MatrixPriceComponents";
 import { CompatibilityView } from "../product/CompatibilityComponents";
 import { LabelView } from "../product/LabelComponents";
 import { Commerce } from "../commerce/_AllComponents";
+import { buildRoutes } from "../../constants/helpers";
+import { Main } from "./_AllComponents";
+import { TaskView } from "../productivity/MoreTaskComponents";
 
 export const MainView = observer(() => {
   const navigate = useNavigate();
@@ -24,7 +27,7 @@ export const MainView = observer(() => {
     fetchAll();
   }, []);
 
-  // const routes = buildRoutes(Main);
+  const routes = buildRoutes(Main);
 
   useEffect(() => {
     if (settingStore.theme() === "dark") {
@@ -38,13 +41,13 @@ export const MainView = observer(() => {
     <div className="flex flex-col min-h-screen text-teal-700 dark:text-gray-400 dark:bg-[#242424]">
       <NavBar />
       <Routes>
-        {/* {routes.map(({ path, component: Component }) => (
+        {routes.map(({ path, component: Component }) => (
           <Route
             key={path}
             path={path}
             element={<Component routePath={path} />}
           />
-        ))} */}
+        ))}
         <Route path="/chat" element={<Chat room="room1" />} />
         <Route path="/prices" element={<PriceView />} />
         <Route
@@ -58,6 +61,7 @@ export const MainView = observer(() => {
           element={<CompatibilityView />}
         />
         <Route path="/labels" element={<LabelView />} />
+        <Route path="/tasks" element={<TaskView />} />
         <Route path="/" element={<></>} />
       </Routes>
     </div>

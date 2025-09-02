@@ -94,7 +94,7 @@ export const MainView = observer(() => {
         </Routes>
       </ImageBackground>
       <NavBar drawerOpen={isVisible1} setDrawerOpen={setVisible1} />
-      {/* <MenuBar items={menuItems} /> */}
+      <MenuBar items={menuItems} />
     </View>
   );
 });
