@@ -1,21 +1,28 @@
 import { observer } from "mobx-react-lite";
 import moment from "moment";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { MyConfirmModal } from "../../blueprints";
 import { MyCalendar } from "../../blueprints/MyCalendar";
 import { MyGenericCollection } from "../../blueprints/MyGenericComponents/MyGenericCollection";
 import { MyIcon } from "../../blueprints/MyIcon";
+import { MyModal } from "../../blueprints/MyModal";
 import { MySpeedDial } from "../../blueprints/MySpeedDial";
+import { MyTable } from "../../blueprints/MyTable";
 import { SideBySideView } from "../../blueprints/SideBySideView";
-import { generateCollidingDates } from "../../constants/helpers";
+import {
+  generateCollidingDates,
+  generateScheduleDefinition,
+  sortByKey,
+} from "../../constants/helpers";
+import { useVisible } from "../../constants/hooks";
 import {
   CalendarEvent,
   CalendarView,
   ScheduleInterface,
 } from "../../constants/interfaces";
 import { useStore } from "../core/Store";
-import { useVisible } from "../../constants/hooks";
-import { MyModal } from "../../blueprints/MyModal";
 import { TaskForm } from "./TaskComponents";
+import { Task } from "./TaskStore";
 
 const TaskCard = ({ item }: { item: CalendarEvent }) => {
   return (
@@ -26,11 +33,27 @@ const TaskCard = ({ item }: { item: CalendarEvent }) => {
   );
 };
 
+const TaskAction = ({ item }: { item: Task }) => {
+  const { isVisible1, setVisible1 } = useVisible();
+  const { productivityStore } = useStore();
+  return (
+    <>
+      <MyConfirmModal
+        isVisible={isVisible1}
+        setVisible={setVisible1}
+        onClickCheck={() => productivityStore.taskStore.deleteItem(item.id)}
+        statement="Delete this task?"
+      />
+      <MyIcon icon="Close" onClick={() => setVisible1(true)} />
+    </>
+  );
+};
+
 export const TaskView = observer(() => {
   const { productivityStore } = useStore();
   const [date, setDate] = useState(new Date());
   const [view, setView] = useState<CalendarView>("month");
-  const { isVisible1, setVisible1 } = useVisible();
+  const { isVisible1, setVisible1, isVisible2, setVisible2 } = useVisible();
   const range =
     view === "week"
       ? moment(date).format("YYYY-MM-DD")
@@ -74,12 +97,16 @@ export const TaskView = observer(() => {
         })) satisfies CalendarEvent[]);
 
   useEffect(() => {
-    productivityStore.taskStore.fetchAll("page=1");
+    productivityStore.taskStore.fetchAll("page=all");
   }, []);
 
-  const itemsOfTheDay = items.filter(
-    (s) =>
-      moment(s.dateStart).format("YYYYMMDD") === moment(date).format("YYYYMMDD")
+  const itemsOfTheDay = sortByKey(
+    items.filter(
+      (s) =>
+        moment(s.dateStart).format("YYYYMMDD") ===
+        moment(date).format("YYYYMMDD")
+    ),
+    "dateStart"
   );
 
   const actions = [
@@ -88,12 +115,37 @@ export const TaskView = observer(() => {
       icon: <MyIcon icon="Add" label="Add" onClick={() => setVisible1(true)} />,
       onClick: () => setVisible1(true),
     },
+    {
+      name: "",
+      icon: (
+        <MyIcon
+          icon="ViewList"
+          label="List"
+          onClick={() => setVisible2(true)}
+        />
+      ),
+      onClick: () => setVisible2(true),
+    },
   ];
+
+  const matrix = useMemo(() => {
+    return [
+      ["Title", "Schedule", ""],
+      ...productivityStore.taskStore.items.map((s) => [
+        s.title,
+        generateScheduleDefinition(s as ScheduleInterface) ?? "",
+        <TaskAction item={s} />,
+      ]),
+    ];
+  }, [productivityStore.taskStore.items.length]);
 
   return (
     <>
       <MyModal isVisible={isVisible1} setVisible={setVisible1}>
         <TaskForm setVisible={setVisible1} />
+      </MyModal>
+      <MyModal isVisible={isVisible2} setVisible={setVisible2}>
+        <MyTable matrix={matrix} />
       </MyModal>
       <SideBySideView
         SideA={
