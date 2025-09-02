@@ -13,6 +13,9 @@ import {
   ScheduleInterface,
 } from "../../constants/interfaces";
 import { useStore } from "../core/Store";
+import { useVisible } from "../../constants/hooks";
+import { MyModal } from "../../blueprints/MyModal";
+import { TaskForm } from "./TaskComponents";
 
 const TaskCard = ({ item }: { item: CalendarEvent }) => {
   return (
@@ -27,6 +30,7 @@ export const TaskView = observer(() => {
   const { productivityStore } = useStore();
   const [date, setDate] = useState(new Date());
   const [view, setView] = useState<CalendarView>("month");
+  const { isVisible1, setVisible1 } = useVisible();
   const range =
     view === "week"
       ? moment(date).format("YYYY-MM-DD")
@@ -78,10 +82,19 @@ export const TaskView = observer(() => {
       moment(s.dateStart).format("YYYYMMDD") === moment(date).format("YYYYMMDD")
   );
 
-  const actions = [{ name: "", icon: <MyIcon icon="Add" label="Add" /> }];
+  const actions = [
+    {
+      name: "",
+      icon: <MyIcon icon="Add" label="Add" onClick={() => setVisible1(true)} />,
+      onClick: () => setVisible1(true),
+    },
+  ];
 
   return (
     <>
+      <MyModal isVisible={isVisible1} setVisible={setVisible1}>
+        <TaskForm setVisible={setVisible1} />
+      </MyModal>
       <SideBySideView
         SideA={
           <MyGenericCollection

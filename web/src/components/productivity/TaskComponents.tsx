@@ -26,7 +26,8 @@ export const TaskForm = (props: MyGenericForm<Task>) => {
       [
         [
           { name: "title", label: "Task Name", type: "text" },
-          { name: "count", label: "Count", type: "text" },
+          { name: "count", label: "Count", type: "number" },
+          { name: "importance", label: "Importance (1-100)", type: "number" },
         ],
         [
           {
