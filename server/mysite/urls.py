@@ -14,6 +14,7 @@ urlpatterns = [
     path("product/", include("product.urls")),
     path("finance/", include("finance.urls")),
     path("commerce/", include("commerce.urls")),
+    path("productivity/", include("productivity.urls")),
 ] + auth_url_patterns()
 
 if settings.DEBUG:

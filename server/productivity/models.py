@@ -2,8 +2,7 @@ from my_django_app.fields import CustomModel
 from my_django_app import fields
 
 
-class Schedule(CustomModel):
-
+class Task(CustomModel):
     FREQ_CHOICES = [
         (0, "Yearly"),
         (1, "Monthly"),
@@ -24,7 +23,7 @@ class Schedule(CustomModel):
         (6, "Sunday"),
     ]
 
-    freq = fields.ChoiceIntegerField(FREQ_CHOICES, 3)
+    frequency = fields.ChoiceIntegerField(FREQ_CHOICES, 3)
     interval = fields.LimitedDecimalField(1, None, 1)
     by_week_day = fields.ChoicesStringArrayField(
         ["MO", "TU", "WE", "TH", "FR", "SA", "SU"]
@@ -46,18 +45,13 @@ class Schedule(CustomModel):
 
     week_start = fields.ChoiceIntegerField(WEEKDAY_CHOICES)
 
-    class Meta:
-        abstract = True
-
-
-class Task(Schedule):
     title = fields.ShortCharField(display=True)
     is_archived = fields.DefaultBooleanField(False)
-    importance = fields.LimitedDecimalField(0, 10)
+    importance = fields.LimitedDecimalField(0, 100)
 
     def __str__(self):
         return self.title
 
 
-class Event(CustomModel):
-    task = fields.CascadeOptionalForeignKey(Task)
+class Log(CustomModel):
+    task = fields.CascadeRequiredForeignKey(Task)

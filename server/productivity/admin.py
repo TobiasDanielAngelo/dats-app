@@ -1,3 +1,4 @@
-from django.contrib import admin
+from my_django_app.admin import auto_create_admins
+from . import models
 
-# Register your models here.
+auto_create_admins(models)

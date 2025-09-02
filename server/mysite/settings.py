@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     "finance",
     "commerce",
     "product",
+    "productivity",
 ]
 MIDDLEWARE = [
     "my_django_app.middleware.CsrfExemptMobileMiddleware",
