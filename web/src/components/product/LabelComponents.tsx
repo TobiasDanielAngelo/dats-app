@@ -16,7 +16,7 @@ import { PrintJob, PrintJobInterface } from "./PrintJobStore";
 import { GuidedDiv } from "../../blueprints/MyGuidedDiv";
 import LabelsInPage from "../../blueprints/LabelsInPage";
 import { useReactToPrint } from "react-to-print";
-import { MyDropdownSelector } from "../../blueprints";
+import { MyDropdownSelector, MyInput } from "../../blueprints";
 
 function intToCode(num: number): string {
   const mapping: Record<string, string> = {
@@ -47,13 +47,25 @@ const LayoutView = ({
   labelSize: [number, number];
   pageRef: React.RefObject<HTMLDivElement | null>;
 }) => {
+  const [bestCount, setBestCount] = useState(0);
+
   return (
-    <LabelsInPage
-      labelSize={labelSize}
-      pageSize={[210, 297]}
-      allLabels={printItems}
-      pageRef={pageRef}
-    />
+    <div ref={pageRef}>
+      {Array.from(
+        Array(
+          bestCount === 0 ? 1 : Math.ceil(printItems.length / bestCount)
+        ).keys()
+      ).map((s) => (
+        <LabelsInPage
+          labelSize={labelSize}
+          pageSize={[210, 297]}
+          allLabels={printItems.slice(bestCount * s, bestCount * (s + 1))}
+          setBestCount={setBestCount}
+          key={s}
+          footNote={"Print Settings: Size = A4, Margin = None, Scale = 100%"}
+        />
+      ))}
+    </div>
   );
 };
 
@@ -130,17 +142,35 @@ const LabelCard = observer(({ item }: { item: PrintJob }) => {
   );
 });
 
-const StagingView = ({ items }: { items: PrintJob[] }) => {
+const StagingView = observer(({ items }: { items: PrintJob[] }) => {
+  const [value, setValue] = useState("");
+
+  const { productStore } = useStore();
+
   return (
     <div className="relative">
+      <div className="px-2">
+        <MyInput
+          value={value}
+          onChangeValue={setValue}
+          searchFcn={productStore.printJobStore.fetchTemp}
+          label="Description"
+        />
+      </div>
       <MyGenericCollection
-        items={items}
+        items={
+          value
+            ? items.filter((s) =>
+                s.description.toLowerCase().includes(value.toLowerCase())
+              )
+            : items.filter((s) => !s.isCompleted)
+        }
         CardComponent={LabelCard}
         title="Labels"
       />
     </div>
   );
-};
+});
 
 const defaultDetails = {
   description: "",
@@ -346,11 +376,7 @@ export const LabelView = observer(() => {
               value={value}
               onChangeValue={setValue}
             />
-            <StagingView
-              items={items.filter(
-                (s) => s.dimension === value && !s.isCompleted
-              )}
-            />
+            <StagingView items={items.filter((s) => s.dimension === value)} />
           </>
         }
         SideB={

@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { StateSetter } from "../constants/interfaces";
 
 type Size = [number, number];
 
@@ -6,14 +7,16 @@ interface LabelsInPageProps {
   labelSize: Size; // [width, height] in mm
   pageSize: Size; // [width, height] in mm
   allLabels: React.ReactNode[];
-  pageRef: React.RefObject<HTMLDivElement | null>;
+  setBestCount: StateSetter<number>;
+  footNote?: string;
 }
 
 const LabelsInPage: React.FC<LabelsInPageProps> = ({
   labelSize,
   pageSize,
   allLabels,
-  pageRef,
+  setBestCount,
+  footNote,
 }) => {
   const [lw, lh] = labelSize;
   const [pw, ph] = pageSize;
@@ -86,7 +89,9 @@ const LabelsInPage: React.FC<LabelsInPageProps> = ({
         count++;
       }
     }
-  } else if (best.type === "rotated") {
+  }
+
+  if (best.type === "rotated") {
     for (let r = 0; r < fitRotRows; r++) {
       for (let c = 0; c < fitRotCols; c++) {
         labels.push(
@@ -117,7 +122,8 @@ const LabelsInPage: React.FC<LabelsInPageProps> = ({
         count++;
       }
     }
-  } else if (best.type === "hybridH") {
+  }
+  if (best.type === "hybridH") {
     const usedW = fitUprightCols * lw;
     const extraCols = Math.floor(leftoverW / lh);
     const extraRows = Math.floor(ph / lw);
@@ -151,7 +157,8 @@ const LabelsInPage: React.FC<LabelsInPageProps> = ({
         count++;
       }
     }
-  } else if (best.type === "hybridV") {
+  }
+  if (best.type === "hybridV") {
     const usedH = fitUprightRows * lh;
     const extraRows = Math.floor(leftoverH / lw);
     const extraCols = Math.floor(pw / lh);
@@ -182,6 +189,10 @@ const LabelsInPage: React.FC<LabelsInPageProps> = ({
     }
   }
 
+  useEffect(() => {
+    setBestCount(best.count);
+  }, [best.count]);
+
   return (
     <div
       style={{
@@ -189,14 +200,16 @@ const LabelsInPage: React.FC<LabelsInPageProps> = ({
         width: `${pw}mm`,
         height: `${ph}mm`,
         background: "white",
-        border: "0.2mm solid black",
+        border: "0.1mm black dashed",
+        padding: "6mm",
       }}
-      ref={pageRef}
     >
-      <style type="text/css" media="print">
-        {"@page { size: A4 portrait; margin: 10mm; }"}
-      </style>
       <div style={{ position: "absolute" }}>{labels}</div>
+      <div
+        style={{ position: "absolute", bottom: 10, left: 10, color: "black" }}
+      >
+        {footNote}
+      </div>
     </div>
   );
 };
