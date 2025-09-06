@@ -1,4 +1,4 @@
-package com.dan6842.datsbolts
+package com.dan6842.datsapp
 
 import android.app.Application
 import android.content.res.Configuration

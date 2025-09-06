@@ -74,9 +74,9 @@ class FontManager:
             }
         except OSError:
             return {
-                "header": ImageFont.load_default(),
-                "normal": ImageFont.load_default(),
-                "small": ImageFont.load_default(),
+                "header": ImageFont.load_default(ImageConfig.HEADER_FONT_SIZE),
+                "normal": ImageFont.load_default(ImageConfig.NORMAL_FONT_SIZE),
+                "small": ImageFont.load_default(ImageConfig.SMALL_FONT_SIZE),
             }
 
     def get_random_font(self, size: int = ImageConfig.RANDOM_FONT_SIZE):
