@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { Option, StateSetter } from "../constants/interfaces";
 import { ImageNameType, MyImage } from "./MyImages";
+import { MyIcon } from "./MyIcon";
 
 const { width } = Dimensions.get("window");
 const ITEM_SIZE = width / 5;
@@ -30,7 +31,7 @@ export default function AvatarSelector({
   const listRef = useRef<Animated.FlatList<any>>(null);
 
   const loopData = Array.from(
-    { length: LOOP_MULTIPLIER },
+    { length: options.length > 1 ? LOOP_MULTIPLIER : 1 },
     () => options ?? []
   ).flat();
 
@@ -95,7 +96,7 @@ export default function AvatarSelector({
               <Animated.View style={{ transform: [{ scale }] }}>
                 <TouchableOpacity
                   style={{
-                    backgroundColor: "white",
+                    backgroundColor: item.color ?? "white",
                     borderWidth: 1,
                     borderRadius: 100000,
                     width: 80,
@@ -104,24 +105,18 @@ export default function AvatarSelector({
                     justifyContent: "center",
                   }}
                 >
-                  <MyImage
-                    image={
-                      (
-                        item.name.replace(" ", "") as string
-                      ).toLowerCase() as ImageNameType
-                    }
-                    width={40}
-                  />
-                  {/* <Image
-                    source={item.source}
-                    style={{
-                      width: ITEM_SIZE * 0.9,
-                      height: ITEM_SIZE * 0.9,
-                      borderRadius: ITEM_SIZE,
-                      borderWidth: 2,
-                      borderColor: "#4CAF50",
-                    }}
-                  /> */}
+                  {item.icon ? (
+                    <MyIcon icon={item.icon} size={40} />
+                  ) : (
+                    <MyImage
+                      image={
+                        (
+                          item.name.replace(" ", "") as string
+                        ).toLowerCase() as ImageNameType
+                      }
+                      width={40}
+                    />
+                  )}
                   <Text style={{ textAlign: "center" }}>{item.id}</Text>
                 </TouchableOpacity>
               </Animated.View>

@@ -11,6 +11,10 @@ export function kebabToCamel(str: string) {
   return str.replace(/-([a-z])/g, (_, char) => char.toUpperCase());
 }
 
+export function getKeyByValue(obj: object, value: number): string | undefined {
+  return Object.keys(obj).find((key) => obj[key as keyof typeof obj] === value);
+}
+
 export function prettifyJSON(str: string): string {
   try {
     const obj = JSON.parse(str);

@@ -8,6 +8,7 @@ import { PurchaseStore } from "./PurchaseStore";
 import { SaleStore } from "./SaleStore";
 import { TemporaryPurchaseStore } from "./TemporaryPurchaseStore";
 import { TemporarySaleStore } from "./TemporarySaleStore";
+import { SaleReceiptStore } from "./SaleReceiptStore";
 
 @model("myApp/CommerceStore")
 export class CommerceStore extends Model(
@@ -18,6 +19,7 @@ export class CommerceStore extends Model(
     LaborTypeStore,
     PurchaseStore,
     SaleStore,
+    SaleReceiptStore,
     TemporaryPurchaseStore,
     TemporarySaleStore,
   })

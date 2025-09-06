@@ -11,11 +11,12 @@ from .models import (
     TemporaryPurchase,
     PrintJob,
     ReceiptImage,
+    SaleReceipt,
 )
 from finance.models import Transaction, Account, Category
 from django.utils import timezone
 from datetime import datetime
-from .utils import create_order_summary_image
+from .utils import create_order_summary_image, create_sale_images
 
 
 @receiver(post_save, sender=Sale)
@@ -138,8 +139,9 @@ def ensure_unique_printjob(sender, instance, created, **kwargs):
         ).delete()
 
 
+@receiver(post_delete, sender=SaleReceipt)
 @receiver(post_delete, sender=PrintJob)
-def delete_printjob_image(sender, instance, **kwargs):
+def delete_print_image(sender, instance, **kwargs):
     if instance.image:  # ImageField
         instance.image.delete(save=False)
 
@@ -149,22 +151,50 @@ def generate_order_image(sender, instance, created, **kwargs):
     """
     Generate an order summary image whenever a PrintJob is created
     """
-    if created and instance.purchase:  # Only for new PrintJob instances with a purchase
+    if created:
+        if instance.purchase:  # Only for new PrintJob instances with a purchase
+            try:
+                # Generate the image
+                image_data = create_order_summary_image(instance.purchase)
+
+                # Create filename
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                filename = f"order_{instance.purchase.id}_{timestamp}.jpg"
+
+                # Save to the PrintJob's image field
+                instance.image.save(filename, ContentFile(image_data), save=True)
+
+                print(f"✅ Generated image for PrintJob {instance.id}: {filename}")
+
+            except Exception as e:
+                print(f"❌ Error generating image for PrintJob {instance.id}: {str(e)}")
+
+
+@receiver(post_save, sender=Sale)
+def generate_sale_images(sender, instance, created, **kwargs):
+    post_save.disconnect(generate_sale_images, sender=Sale)
+    if instance.to_print:
+        instance.salereceipt_sale.all().delete()
         try:
-            # Generate the image
-            image_data = create_order_summary_image(instance.purchase)
-
-            # Create filename
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            filename = f"order_{instance.purchase.id}_{timestamp}.jpg"
+            images = create_sale_images(instance)
+            for page_num, image_data in enumerate(images, 1):
+                if len(images) > 1:
+                    filename = f"sale_{instance.id}_{timestamp}_page{page_num}.jpg"
+                else:
+                    filename = f"sale_{instance.id}_{timestamp}.jpg"
 
-            # Save to the PrintJob's image field
-            instance.image.save(filename, ContentFile(image_data), save=True)
-
-            print(f"✅ Generated image for PrintJob {instance.id}: {filename}")
-
+                sale_receipt = SaleReceipt(
+                    sale=instance, page_number=page_num, total_pages=len(images)
+                )
+                sale_receipt.image.save(filename, ContentFile(image_data), save=False)
+                sale_receipt.save()
+            print(f"✅ Generated {len(images)} receipt image(s) for Sale {instance.id}")
         except Exception as e:
-            print(f"❌ Error generating image for PrintJob {instance.id}: {str(e)}")
+            print(f"❌ Error generating image for Sale {instance.id}: {str(e)}")
+        instance.to_print = False
+        instance.save(update_fields=["to_print"])
+    post_save.connect(generate_sale_images, sender=Sale)
 
 
 @receiver(post_delete, sender=ReceiptImage)

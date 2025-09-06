@@ -58,6 +58,9 @@ export const SaleFields = {
     field: "MediumCharField",
     readOnly: true,
   },
+  toPrint: {
+    field: "DefaultBooleanField",
+  },
 } satisfies Record<string, DjangoModelField>;
 
 const props = fieldToProps(SaleFields);

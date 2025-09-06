@@ -207,3 +207,5 @@ TEMPLATES = [
         },
     },
 ]
+
+SPECIAL_API_KEY = GET_ENV("SPECIAL_API_KEY", "")

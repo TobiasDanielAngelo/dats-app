@@ -66,6 +66,7 @@ STATUS_CHOICES = [
 class Sale(fields.CustomModel):
     customer = fields.ShortCharField(display=True)
     status = fields.ChoiceIntegerField(STATUS_CHOICES, display=True)
+    to_print = fields.DefaultBooleanField(False)
 
     @property
     def current_status(self):
@@ -193,6 +194,14 @@ class ReceiptImage(fields.CustomModel):
     date = fields.OptionalDateField(display=True)
 
 
+class SaleReceipt(fields.CustomModel):
+    sale = fields.CascadeRequiredForeignKey(Sale)
+    image = fields.ImageField("sale-receipts")
+    page_number = fields.LimitedIntegerField(1, 10, 1)
+    total_pages = fields.LimitedIntegerField(1, 10, 1)
+    to_print = fields.DefaultBooleanField(False)
+
+
 class Purchase(fields.CustomModel):
     receipt_images = fields.OptionalManyToManyField(ReceiptImage)
     status = fields.ChoiceIntegerField(STATUS_CHOICES, display=True)
@@ -288,6 +297,7 @@ class PrintJob(fields.CustomModel):
     sale = fields.CascadeOptionalForeignKey(Sale, display=True)
     purchase = fields.CascadeOptionalForeignKey(Purchase, display=True)
     image = fields.ImageField("prints")
+    to_print = fields.DefaultBooleanField(False)
 
 
 class LaborType(fields.CustomModel):

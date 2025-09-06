@@ -15,9 +15,8 @@ import { PurchaseQuickView } from "../commerce/MorePurchaseComponents";
 import { TestingView } from "./TestingView";
 import { NavBar } from "./NavigationBar";
 import { FastenerView } from "../commerce/FastenerComponents";
-import { SaleQuickView } from "../commerce/MoreSaleComponents";
 
-export const MainView = observer(() => {
+export const MainAdminView = observer(() => {
   const navigate = useNavigate();
   const insets = useSafeAreaInsets();
   const { isVisible1, setVisible1 } = useVisible();
@@ -30,11 +29,10 @@ export const MainView = observer(() => {
       label: "Report",
       location: "/quick",
     },
-
     {
-      name: "list",
-      label: "Sale",
-      location: "/sale",
+      name: "file-signature",
+      label: "Order",
+      location: "/purchase",
     },
     // {
     //   name: "file-signature",
@@ -42,14 +40,9 @@ export const MainView = observer(() => {
     //   location: "/labor",
     // },
     {
-      name: "wrench",
-      label: "Bolts",
-      location: "/fasteners",
-    },
-    {
       name: "file-signature",
-      label: "Purchase",
-      location: "/purchase",
+      label: "BNW",
+      location: "/fasteners",
     },
     // { name: "bars", label: "Menu", onPress: () => setVisible1(true) },
     // { name: "star", label: "Testing", onPress: () => navigate("/testing") },
@@ -88,7 +81,6 @@ export const MainView = observer(() => {
           <Route path="menu" element={<ModularView />} />
           <Route path="/quick" element={<TransactionQuickView />} />
           <Route path="/purchase" element={<PurchaseQuickView />} />
-          <Route path="/sale" element={<SaleQuickView />} />
           <Route path="/fasteners" element={<FastenerView />} />
           {routes.map(({ path, component: Component }) => (
             <Route

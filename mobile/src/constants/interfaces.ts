@@ -49,6 +49,8 @@ export type InterfaceToProps<T> = {
 export interface Option {
   id: number | string;
   name: string;
+  icon?: string;
+  color?: string;
 }
 
 export const graphTypes = ["pie", "line", "bar", "area"] as const;

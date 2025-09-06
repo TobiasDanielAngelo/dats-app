@@ -20,6 +20,9 @@ export const PrintJobFields = {
     field: "ImageField",
     readOnly: true,
   },
+  toPrint: {
+    field: "DefaultBooleanField",
+  },
 } satisfies Record<string, DjangoModelField>;
 
 const props = fieldToProps(PrintJobFields);

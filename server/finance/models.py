@@ -2,6 +2,7 @@ from my_django_app import fields
 from my_django_app.utils import CannotEqual
 from django.db.models import Sum
 from commerce.models import Sale, Purchase, Labor
+from .utils import generate_check
 
 TYPE_CHOICES = [
     (0, "Cash"),
@@ -47,6 +48,7 @@ class Category(fields.CustomModel):
 
 
 class Transaction(fields.CustomModel):
+    image = fields.ImageField("transactions")
     sale = fields.CascadeOptionalForeignKey(Sale)
     purchase = fields.CascadeOptionalForeignKey(Purchase)
     labor = fields.CascadeOptionalForeignKey(Labor)
@@ -55,10 +57,14 @@ class Transaction(fields.CustomModel):
     coming_from = fields.SetNullOptionalForeignKey(Account, display=True)
     going_to = fields.SetNullOptionalForeignKey(Account, display=True)
     amount = fields.AmountField()
+    to_print = fields.DefaultBooleanField(False)
 
     @property
     def nature(self):
         return self.category.get_nature_display()
+
+    def generate_transaction_check(self):
+        generate_check(self)
 
     class Meta:
         constraints = [CannotEqual("coming_from", "going_to", "Transaction")]
