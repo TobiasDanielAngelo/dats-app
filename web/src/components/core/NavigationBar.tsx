@@ -12,7 +12,6 @@ export type ViewPath = {
 };
 
 export const defaultViewPaths = buildViewPaths(Main, [
-  "Commerce",
   "Finance",
   "Product",
   "People",
