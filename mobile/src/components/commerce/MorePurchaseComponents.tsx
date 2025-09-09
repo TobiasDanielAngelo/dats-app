@@ -172,7 +172,9 @@ export const PurchaseQuickView = observer(() => {
 
   useEffect(() => {
     if (purchase && purchase > 0) {
-      commerceStore.temporaryPurchaseStore.fetchAll("purchase=" + purchase);
+      commerceStore.temporaryPurchaseStore.fetchAll(
+        "page=all&purchase=" + purchase
+      );
       commerceStore.printJobStore.fetchAll("purchase=" + purchase);
     }
   }, [purchase]);

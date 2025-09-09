@@ -128,7 +128,14 @@ const SaleTable = observer(
 
 export const SaleQuickView = observer(() => {
   const { commerceStore, peopleStore } = useStore();
-  const { isVisible1, setVisible1, isVisible2, setVisible2 } = useVisible();
+  const {
+    isVisible1,
+    setVisible1,
+    isVisible2,
+    setVisible2,
+    isVisible3,
+    setVisible3,
+  } = useVisible();
   const [sale, setSale] = useState<number | null>(-1);
   const currentSale = commerceStore.saleStore.allItems.get(sale ?? -1);
   const currentSaleImages = currentSale
@@ -179,7 +186,15 @@ export const SaleQuickView = observer(() => {
         <MyModal isVisible={isVisible1} setVisible={setVisible1}>
           <Commerce.Sale.Form
             setVisible={setVisible1}
-            hiddenFields={["status"]}
+            hiddenFields={["status", "toPrint"]}
+          />
+        </MyModal>
+
+        <MyModal isVisible={isVisible3} setVisible={setVisible3}>
+          <Commerce.Sale.Form
+            item={currentSale}
+            setVisible={setVisible3}
+            hiddenFields={["status", "toPrint"]}
           />
         </MyModal>
         <MyModal isVisible={isVisible2} setVisible={setVisible2}>
@@ -266,7 +281,12 @@ export const SaleQuickView = observer(() => {
           onChangeValue={setSale as StateSetter<string | number | null>}
         />
         <ScrollView>
-          <Text>{currentSale?.displayName}</Text>
+          <Text
+            style={{ color: "blue", textDecorationLine: "underline" }}
+            onPress={() => setVisible3(true)}
+          >
+            {currentSale?.displayName}
+          </Text>
           {sale && sale > 0 && (
             <SaleTable item={currentSale} tempSaleItems={tempSaleItems} />
           )}

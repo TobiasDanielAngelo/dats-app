@@ -19,7 +19,7 @@ class ImageConfig:
 
     # Base dimensions (in inches at 72 DPI)
     ORDER_WIDTH = 306 * SCALE  # 4.25"
-    ORDER_HEIGHT = 936 * SCALE  # 13"
+    ORDER_HEIGHT = 1440 * SCALE  # 20"
     SALE_WIDTH = 306 * SCALE
     SALE_HEIGHT = 432 * SCALE
 
