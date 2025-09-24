@@ -55,6 +55,7 @@ export const MyMultiDropdownSelector = (props: {
         onChangeValue([...value, id]);
       }
     }
+    setOpen(false);
     setSearch("");
   };
 
