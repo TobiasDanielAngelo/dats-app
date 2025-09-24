@@ -6,6 +6,7 @@ import { GenericProductComponents } from "./GenericProductComponents";
 import { LocationComponents } from "./LocationComponents";
 import { MakerComponents } from "./MakerComponents";
 import { MotorComponents } from "./MotorComponents";
+import { PrintDimensionComponents } from "./PrintDimensionComponents";
 import { PrintJobComponents } from "./PrintJobComponents";
 import { ProductImageComponents } from "./ProductImageComponents";
 import { UnitComponents } from "./UnitComponents";
@@ -20,6 +21,7 @@ export const Product = {
   Maker: MakerComponents,
   Motor: MotorComponents,
   PrintJob: PrintJobComponents,
+  PrintDimension: PrintDimensionComponents,
   ProductImage: ProductImageComponents,
   Unit: UnitComponents,
 };

@@ -117,6 +117,7 @@ export type Field = {
   defaultValue?: any;
   fetchFcn?: (t: string) => void;
   searchFcn?: (t: string) => void;
+  searchText?: (t: string) => any;
   function?: (t: Object) => any;
   centered?: boolean;
   infoType?: string;

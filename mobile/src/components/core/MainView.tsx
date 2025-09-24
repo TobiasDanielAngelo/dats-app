@@ -16,6 +16,7 @@ import { TestingView } from "./TestingView";
 import { NavBar } from "./NavigationBar";
 import { FastenerView } from "../commerce/FastenerComponents";
 import { SaleQuickView } from "../commerce/MoreSaleComponents";
+import { PistonPrintView } from "../product/PistonPrintComponents";
 
 export const MainView = observer(() => {
   const navigate = useNavigate();
@@ -25,11 +26,11 @@ export const MainView = observer(() => {
   const { settingStore } = useStore();
 
   const menuItems = [
-    {
-      name: "money-bill-wave",
-      label: "Report",
-      location: "/quick",
-    },
+    // {
+    //   name: "money-bill-wave",
+    //   label: "Report",
+    //   location: "/quick",
+    // },
 
     {
       name: "list",
@@ -50,6 +51,11 @@ export const MainView = observer(() => {
       name: "file-signature",
       label: "Purchase",
       location: "/purchase",
+    },
+    {
+      name: "circle-notch",
+      label: "Piston",
+      location: "/pistons",
     },
     // { name: "bars", label: "Menu", onPress: () => setVisible1(true) },
     // { name: "star", label: "Testing", onPress: () => navigate("/testing") },
@@ -90,6 +96,7 @@ export const MainView = observer(() => {
           <Route path="/purchase" element={<PurchaseQuickView />} />
           <Route path="/sale" element={<SaleQuickView />} />
           <Route path="/fasteners" element={<FastenerView />} />
+          <Route path="/pistons" element={<PistonPrintView />} />
           {routes.map(({ path, component: Component }) => (
             <Route
               key={path}

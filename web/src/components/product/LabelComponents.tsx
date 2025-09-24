@@ -7,7 +7,11 @@ import { MyModal } from "../../blueprints/MyModal";
 import { MySlider } from "../../blueprints/MySlider";
 import { SideBySideView } from "../../blueprints/SideBySideView";
 import { toOptions } from "../../constants/helpers";
-import { useKeyPress, useVisible } from "../../constants/hooks";
+import {
+  useKeyPress,
+  useLoadingAlert,
+  useVisible,
+} from "../../constants/hooks";
 import { Field, StateSetter } from "../../constants/interfaces";
 import { useStore } from "../core/Store";
 import { Product } from "./_AllComponents";
@@ -17,6 +21,7 @@ import { GuidedDiv } from "../../blueprints/MyGuidedDiv";
 import LabelsInPage from "../../blueprints/LabelsInPage";
 import { useReactToPrint } from "react-to-print";
 import { MyDropdownSelector, MyInput } from "../../blueprints";
+import { PrintDimensionIdMap } from "./PrintDimensionStore";
 
 function intToCode(num: number): string {
   const mapping: Record<string, string> = {
@@ -343,10 +348,21 @@ export const LabelView = observer(() => {
   const { items } = productStore.printJobStore;
   const pageRef = useRef<HTMLDivElement>(null);
   const [value, setValue] = useState(-1);
+  useLoadingAlert(
+    productStore.printJobStore.countToUpdate ?? 0,
+    value === PrintDimensionIdMap["Piston Kit"]
+      ? () =>
+          productStore.printJobStore.fetchAll(
+            `page=all&dimension=${PrintDimensionIdMap["Piston Kit"]}`
+          )
+      : async () => {}
+  );
 
   const onClickPrint = useReactToPrint({
     contentRef: pageRef,
   });
+
+  const match = "labels" === location.pathname.replaceAll("/", "");
 
   const fetchDim = async () => {
     await productStore.printJobStore.fetchAll("page=all&is_completed=False");
@@ -358,7 +374,32 @@ export const LabelView = observer(() => {
 
   useEffect(() => {
     fetchDim();
-  });
+  }, []);
+
+  useEffect(() => {
+    if (!match) return;
+    let count = 0;
+    let timeoutId: number;
+
+    const run = () => {
+      count++;
+      if (count < 20) {
+        const lastUpdated =
+          productStore.printJobStore.lastUpdated === ""
+            ? new Date().toISOString()
+            : productStore.printJobStore.lastUpdated;
+        productStore.printJobStore.checkUpdated(lastUpdated);
+        timeoutId = setTimeout(run, 5000);
+      } else {
+        productStore.printJobStore.fetchUpdated();
+      }
+    };
+
+    run();
+
+    return () => clearTimeout(timeoutId);
+  }, [match, productStore.printJobStore.lastUpdated]);
+
   return (
     <div className="relative">
       <MyModal isVisible={isVisible1} setVisible={setVisible1} fullWidth>

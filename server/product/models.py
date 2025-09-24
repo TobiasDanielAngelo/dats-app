@@ -34,6 +34,14 @@ class Maker(fields.CustomModel):
 class Motor(fields.CustomModel):
     maker = fields.SetNullOptionalForeignKey(Maker)
     model = fields.ShortCharField(display=True, unique=True)
+    piston_pin_size = fields.LimitedDecimalField(10, 20, 10)
+    piston_bore_00 = fields.LimitedDecimalField(40, 60, 40)
+    piston_bore_25 = fields.LimitedDecimalField(40, 60, 40)
+    piston_bore_50 = fields.LimitedDecimalField(40, 60, 40)
+    piston_bore_75 = fields.LimitedDecimalField(40, 60, 40)
+    piston_bore_100 = fields.LimitedDecimalField(40, 60, 40)
+    piston_bore_150 = fields.LimitedDecimalField(40, 60, 40)
+    piston_bore_200 = fields.LimitedDecimalField(40, 60, 40)
 
 
 class GenericProduct(fields.CustomModel):

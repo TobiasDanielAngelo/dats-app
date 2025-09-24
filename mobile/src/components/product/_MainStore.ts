@@ -11,6 +11,7 @@ import { MotorStore } from "./MotorStore";
 import { PrintJobStore } from "./PrintJobStore";
 import { ProductImageStore } from "./ProductImageStore";
 import { UnitStore } from "./UnitStore";
+import { PrintDimensionStore } from "./PrintDimensionStore";
 
 @model("myApp/ProductStore")
 export class ProductStore extends Model(
@@ -22,6 +23,7 @@ export class ProductStore extends Model(
     MakerStore,
     MotorStore,
     PrintJobStore,
+    PrintDimensionStore,
     ArticleStore,
     AddressStore,
     ProductImageStore,

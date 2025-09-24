@@ -164,6 +164,7 @@ export type DjangoModelField = {
   label?: string;
   defaultValue?: any;
   readOnly?: boolean;
+  searchable?: boolean;
 };
 
 type ExtractPropType<F> = F extends OptionalModelProp<infer T> ? T : never;
@@ -211,14 +212,27 @@ export function fieldToFormField<F extends FieldsInput>(
     if (["id", ...(excludedFields ?? [])].includes(key)) {
       continue;
     }
-    const { field, choices, label, defaultValue, fk, appFK, readOnly } =
-      fields[key];
+    const {
+      field,
+      choices,
+      label,
+      defaultValue,
+      fk,
+      appFK,
+      readOnly,
+      searchable,
+    } = fields[key];
     const type = DjangoFields[field].type;
     const fileStore = fk ? fk[0].toLowerCase() + fk.slice(1) : "";
+    const targetStore = target[0].toLowerCase() + target.slice(1);
 
     const selectedStore = (store as any)[
       `${appFK?.toLowerCase() ?? folder}Store`
     ][`${fileStore}Store`] as IStore;
+
+    const myStore = (store as any)[`${folder}Store`][
+      `${targetStore}Store`
+    ] as IStore;
 
     const storeOptions = store
       ? fk
@@ -253,6 +267,7 @@ export function fieldToFormField<F extends FieldsInput>(
             (type === "select" || type === "multi") && store && !choices
               ? selectedStore.fetchTemp
               : undefined,
+          searchText: searchable ? myStore.fetchTemp : undefined,
           onPressAdd:
             choices || target === fileStore ? undefined : () => setKey?.(key),
         },

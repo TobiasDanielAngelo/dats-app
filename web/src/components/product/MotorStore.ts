@@ -13,6 +13,14 @@ export const MotorFields = {
   id: { field: "ID" },
   maker: { field: "SetNullOptionalForeignKey", fk: "Maker" },
   model: { field: "ShortCharField" },
+  pistonPinSize: { field: "LimitedDecimalField" },
+  pistonBore00: { field: "LimitedDecimalField" },
+  pistonBore25: { field: "LimitedDecimalField" },
+  pistonBore50: { field: "LimitedDecimalField" },
+  pistonBore75: { field: "LimitedDecimalField" },
+  pistonBore100: { field: "LimitedDecimalField" },
+  pistonBore150: { field: "LimitedDecimalField" },
+  pistonBore200: { field: "LimitedDecimalField" },
 } satisfies Record<string, DjangoModelField>;
 
 const props = fieldToProps(MotorFields);

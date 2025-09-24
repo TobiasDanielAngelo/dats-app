@@ -3,6 +3,7 @@ import { FlatList, Pressable, Text, View } from "react-native";
 import type { Option } from "../constants/interfaces";
 import { MyCheckBox } from "./MyCheckbox";
 import { MyIcon } from "./MyIcon";
+import { MyInput } from "./MyInput";
 
 export const MyMultiDropdownSelector = (props: {
   label?: string;
@@ -18,6 +19,7 @@ export const MyMultiDropdownSelector = (props: {
   searchFcn?: (t: string) => void;
   onPressAdd?: () => void;
   flex?: number;
+  noSearch?: boolean;
 }) => {
   const {
     label,
@@ -33,10 +35,17 @@ export const MyMultiDropdownSelector = (props: {
     onPressAdd,
     flex,
     searchFcn,
+    noSearch,
   } = props;
+
   const [isOpen, setOpen] = useState(open ?? false);
   const [selectAll, setSelectAll] = useState(isAll);
   const [search, setSearch] = useState("");
+  const [isOption, setIsOption] = useState(true);
+
+  const filteredOptions = options?.filter((opt) =>
+    String(opt.name).toLowerCase().includes(search.toLowerCase())
+  );
 
   const onToggle = (id: number | string) => {
     if (value.includes(id)) {
@@ -46,6 +55,7 @@ export const MyMultiDropdownSelector = (props: {
         onChangeValue([...value, id]);
       }
     }
+    setSearch("");
   };
 
   useEffect(() => {
@@ -79,30 +89,59 @@ export const MyMultiDropdownSelector = (props: {
         </Text>
       )}
 
-      <Pressable
-        style={{
-          borderWidth: 1,
-          borderRadius: 5,
-          paddingHorizontal: 10,
-          borderColor: "gray",
-          justifyContent: "space-between",
-          alignItems: "center",
-          flexDirection: "row",
-        }}
-        onPress={() => setOpen(!isOpen)}
-      >
-        <Text>
-          {!value || value.length === 0
-            ? `Select ${label ?? "items"}`
-            : value.slice(0, 3).join(", ") + (value.length > 3 ? "..." : "")}
-        </Text>
-        <MyIcon
-          icon={isOpen ? "angle-up" : "angle-down"}
-          onPress={() => setOpen(!isOpen)}
-        />
-      </Pressable>
+      {isOption ? (
+        <View style={{ flexDirection: "row", gap: 10, flex: flex }}>
+          {onPressAdd && <MyIcon icon={"plus"} onPress={onPressAdd} />}
 
-      {isOpen && (
+          <Pressable
+            style={{
+              borderWidth: 1,
+              borderRadius: 5,
+              paddingHorizontal: 10,
+              borderColor: "gray",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexDirection: "row",
+              flex: 1,
+              backgroundColor: "white",
+            }}
+            onPress={() => setOpen(!isOpen)}
+          >
+            <Text ellipsizeMode="tail">
+              {!value || value.length === 0
+                ? `Select ${label ?? "items"}`
+                : value.slice(0, 3).join(", ") +
+                  (value.length > 3 ? "..." : "")}
+            </Text>
+            <MyIcon
+              icon={isOpen ? "angle-up" : "angle-down"}
+              onPress={() => setOpen(!isOpen)}
+            />
+          </Pressable>
+
+          {!noSearch && (
+            <MyIcon icon={"searchengin"} onPress={() => setIsOption(false)} />
+          )}
+        </View>
+      ) : (
+        <View style={{ flexDirection: "row", gap: 10 }}>
+          {onPressAdd && <MyIcon icon={"plus"} onPress={onPressAdd} />}
+
+          <View style={{ flex: 1 }}>
+            <MyInput
+              value={search}
+              onChangeValue={setSearch}
+              placeholder="Search"
+            />
+          </View>
+
+          {!noSearch && (
+            <MyIcon icon={"searchengin"} onPress={() => setIsOption(true)} />
+          )}
+        </View>
+      )}
+
+      {(isOpen || search) && (
         <View
           style={{
             marginTop: 5,
@@ -110,7 +149,7 @@ export const MyMultiDropdownSelector = (props: {
             borderWidth: 1,
             borderRadius: 5,
             borderColor: "gray",
-            backgroundColor: "whtie",
+            backgroundColor: "white",
           }}
         >
           <View
@@ -123,10 +162,11 @@ export const MyMultiDropdownSelector = (props: {
               value={selectAll}
               onChangeValue={() => setSelectAll((t) => !t)}
             />
-            <Text>Select All</Text>
+            <Text onPress={() => setSelectAll((t) => !t)}>Select All</Text>
           </View>
+
           <FlatList
-            data={options}
+            data={filteredOptions.slice(0, 5)}
             keyExtractor={(_, i) => i.toString()}
             keyboardShouldPersistTaps="handled"
             renderItem={({ item: opt }) => (
@@ -135,12 +175,13 @@ export const MyMultiDropdownSelector = (props: {
                   alignItems: "center",
                   flexDirection: "row",
                 }}
+                key={opt.id}
               >
                 <MyCheckBox
                   value={value.includes(opt.id)}
                   onChangeValue={() => onToggle(opt.id)}
                 />
-                <Text>{opt.name}</Text>
+                <Text onPress={() => onToggle(opt.id)}>{opt.name}</Text>
               </View>
             )}
           />

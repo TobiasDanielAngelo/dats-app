@@ -1,0 +1,21 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "src/assets/fonts/LoraBold.ttf",
+      "sha1": "9e9c5a41cd498d5ea6757a68fa763b72ed4e3089"
+    },
+    {
+      "path": "src/assets/fonts/LoraBoldItalic.ttf",
+      "sha1": "bf6b23df3069f1dab1fc3309c4757b90fc3e6510"
+    },
+    {
+      "path": "src/assets/fonts/LoraItalic.ttf",
+      "sha1": "54eb0bb2b1023c1d96a89b51bbc6287fc9a35605"
+    },
+    {
+      "path": "src/assets/fonts/LoraRegular.ttf",
+      "sha1": "0fb3771370c167548dfeab894455b57fe241ea77"
+    }
+  ]
+}

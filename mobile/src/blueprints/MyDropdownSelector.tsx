@@ -35,10 +35,18 @@ export const MyDropdownSelector = (props: {
   const [isOption, setIsOption] = useState(true);
   const [search, setSearch] = useState("");
 
-  const filteredOptions = options?.filter((opt) =>
-    String(opt.name).toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredOptions = options?.filter((opt) => {
+    if (!search.trim()) return true;
 
+    const optName = String(opt.name).toLowerCase();
+    const searchTerms = search
+      .toLowerCase()
+      .split(/\s+/)
+      .filter((term) => term.length > 0);
+
+    // Each search term must be found as a substring in the option name
+    return searchTerms.every((term) => optName.includes(term));
+  });
   const toggleValue = (t: number) => {
     onChangeValue(t === value ? null : t);
     setOpen(false);

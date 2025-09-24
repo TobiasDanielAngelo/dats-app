@@ -4,6 +4,7 @@ import moment from "moment";
 import { type Options, RRule, Weekday } from "rrule";
 import type { Option, Page, ScheduleInterface, ViewPath } from "./interfaces";
 import { pluralize } from "inflection";
+import { LetterWeightKey, letterWeights, winWidth } from "./constants";
 
 export const posRamp = (x: number) => (x > 0 ? x : 0);
 
@@ -1138,4 +1139,22 @@ export function keyListToObject<T = any>(
     obj[key] = value;
     return obj;
   }, {} as Record<string, T>);
+}
+
+export function stringToFontSize(
+  line: string,
+  totalWidth = 1000,
+  defaultWeight = 1,
+  maxSize = 100
+): number {
+  const lineTotal =
+    mySum(
+      line
+        .split("")
+        .map(
+          (s) =>
+            letterWeights[s.toUpperCase() as LetterWeightKey] ?? defaultWeight
+        )
+    ) + 1;
+  return Math.min(maxSize, Math.round(totalWidth / lineTotal));
 }

@@ -278,6 +278,20 @@ export type NullableProps<T> = {
   [K in keyof T]: T[K] | null;
 };
 
+export type FetchItemResult<T = any> = {
+  details: any;
+  ok: boolean;
+  data: T[] | null;
+  related: Related[] | null;
+  optionFields: string[];
+  relatedFields: string[];
+  dateFields: string[];
+  datetimeFields: string[];
+  priceFields: string[];
+  timeFields: string[];
+  pageDetails?: Omit<PaginatedResponse<T>, "results">;
+};
+
 export function MyModel<TProps extends ModelProps, TView>(
   slug: string,
   props: TProps,

@@ -2,10 +2,12 @@ import { useCallback, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { MyIcon } from "./MyIcon";
 import { keyListToObject, mySum, toMoney } from "../constants/helpers";
-import { Field } from "../constants/interfaces";
+import { Field, Option } from "../constants/interfaces";
 import { useVisible } from "../constants/hooks";
 import { MyModal } from "./MyModal";
 import { MyForm } from "./MyForm";
+import { FetchItemResult } from "./MyGenericComponents/MyGenericStore";
+import { kebabCase } from "lodash";
 
 export type MyInputProps = {
   hidden?: boolean;
@@ -27,6 +29,7 @@ export type MyInputProps = {
   maxLength?: number;
   autoCapitalize?: boolean;
   type?: string;
+  searchFcn?: (t: string) => any;
   enlarged?: boolean;
   multiline?: boolean;
 };
@@ -52,11 +55,13 @@ export const MyInput = (props: MyInputProps) => {
     maxLength,
     autoCapitalize,
     enlarged,
+    searchFcn,
     multiline,
   } = props;
 
   const [editable, setEditable] = useState(true);
   const { isVisible1, setVisible1 } = useVisible();
+  const [opt, setOpt] = useState<Option[]>([]);
 
   const denominations = [
     "1000",
@@ -100,6 +105,22 @@ export const MyInput = (props: MyInputProps) => {
         parseInt(u) * parseInt(denominations[denominations.length - ind - 1])
     )
   );
+
+  const fetchText = async () => {
+    if (!searchFcn) return;
+    const resp: FetchItemResult = await searchFcn?.(
+      `page=1&${kebabCase(label)}__search=${value}`
+    );
+
+    if (!resp.ok && !resp.data) return;
+
+    setOpt(
+      resp.data?.map((s, ind) => ({
+        name: s[kebabCase(label)],
+        id: ind,
+      })) ?? []
+    );
+  };
 
   const fields = [
     [
