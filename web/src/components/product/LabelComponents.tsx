@@ -237,14 +237,19 @@ export const transformPrintToLabel = (details?: PrintJob): LabelInterface => {
 export const LabelForm = ({
   item,
   setVisible,
+  dimension,
 }: {
   item?: PrintJob;
   setVisible: StateSetter<boolean>;
+  dimension?: number;
 }) => {
   const { productStore } = useStore();
   const { isVisible2, setVisible2 } = useVisible();
 
-  const [details, setDetails] = useState(transformPrintToLabel(item));
+  const [details, setDetails] = useState({
+    ...transformPrintToLabel(item),
+    dimension: dimension ?? -1,
+  });
 
   const { widthMm, heightMm } = productStore.printDimensionStore.allItems.get(
     details.dimension
@@ -417,10 +422,7 @@ export const LabelView = observer(() => {
   return (
     <div className="relative">
       <MyModal isVisible={isVisible1} setVisible={setVisible1} fullWidth>
-        <LabelForm
-          setVisible={setVisible1}
-          item={new PrintJob({ dimension: value })}
-        />
+        <LabelForm setVisible={setVisible1} dimension={value} />
       </MyModal>
 
       <SideBySideView
