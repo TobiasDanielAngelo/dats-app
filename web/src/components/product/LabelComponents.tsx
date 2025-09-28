@@ -248,7 +248,7 @@ export const LabelForm = ({
 
   const [details, setDetails] = useState({
     ...transformPrintToLabel(item),
-    dimension: dimension ?? -1,
+    dimension: item?.dimension ?? dimension ?? -1,
   });
 
   const { widthMm, heightMm } = productStore.printDimensionStore.allItems.get(
