@@ -10,7 +10,7 @@ interface MySliderProps extends SliderProps {
 export const MySlider: React.FC<MySliderProps> = ({ ...props }) => {
   const { title, value, setValue, onChangeSlideDone, ...etc } = props;
   return (
-    <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
+    <Stack spacing={2} sx={{ mb: 1 }}>
       <span>{title}</span>
       <Slider
         valueLabelDisplay="auto"

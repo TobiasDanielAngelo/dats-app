@@ -312,32 +312,46 @@ export const LabelForm = ({
         </div>
         <div className="md:w-[15%] md:mr-8">
           {Array.from(Array(numSliders).keys()).map((s) => (
-            <div key={s}>
-              <div className="text-sm p-2 leading-none">
-                {s === 0
-                  ? "\u20b1-"
-                  : details.description.split("\n")[s - 1].toUpperCase()}
+            <div key={s} className="flex flex-row text-sm p-2 leading-none">
+              <div className="w-10">
+                <MyInput
+                  value={details.fontSizes[s]}
+                  onChangeValue={(t) =>
+                    setDetails((prev) => ({
+                      ...prev,
+                      fontSizes: prev.fontSizes.map((val, i) =>
+                        i === s ? t : val
+                      ),
+                    }))
+                  }
+                />
               </div>
-              <MySlider
-                value={details.fontSizes[s]}
-                setValue={(t) =>
-                  setDetails((prev) => ({
-                    ...prev,
-                    fontSizes: prev.fontSizes.map((val, i) =>
-                      i === s ? t : val
-                    ),
-                  }))
-                }
-                title={""}
-                min={3}
-                max={50}
-                step={0.1}
-              />
+              <div className="flex-1">
+                <MySlider
+                  value={details.fontSizes[s]}
+                  setValue={(t) =>
+                    setDetails((prev) => ({
+                      ...prev,
+                      fontSizes: prev.fontSizes.map((val, i) =>
+                        i === s ? t : val
+                      ),
+                    }))
+                  }
+                  title={
+                    s === 0
+                      ? "\u20b1-"
+                      : details.description.split("\n")[s - 1].toUpperCase()
+                  }
+                  min={3}
+                  max={50}
+                  step={0.1}
+                />
+              </div>
             </div>
           ))}
         </div>
-        <LayoutCard item={layoutDetails} />
       </div>
+      <LayoutCard item={layoutDetails} />
     </>
   );
 };
@@ -377,7 +391,7 @@ export const LabelView = observer(() => {
   }, []);
 
   useEffect(() => {
-    if (!match) return;
+    if (!match || PrintDimensionIdMap["Piston Kit"] !== value) return;
     let count = 0;
     let timeoutId: number;
 
@@ -398,12 +412,15 @@ export const LabelView = observer(() => {
     run();
 
     return () => clearTimeout(timeoutId);
-  }, [match, productStore.printJobStore.lastUpdated]);
+  }, [match, productStore.printJobStore.lastUpdated, value]);
 
   return (
     <div className="relative">
       <MyModal isVisible={isVisible1} setVisible={setVisible1} fullWidth>
-        <LabelForm setVisible={setVisible1} />
+        <LabelForm
+          setVisible={setVisible1}
+          item={new PrintJob({ dimension: value })}
+        />
       </MyModal>
 
       <SideBySideView
