@@ -183,6 +183,10 @@ export const sortByKey = <T>(
     const aVal = a[keyName];
     const bVal = b[keyName];
 
+    if (typeof aVal === "string") {
+      return (decreasing ? 1 : -1) * (bVal > aVal ? 1 : -1);
+    }
+
     const dateA = new Date(aVal as any);
     const dateB = new Date(bVal as any);
 

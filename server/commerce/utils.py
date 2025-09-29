@@ -252,7 +252,7 @@ def create_order_summary_image(purchase) -> bytes:
     # Get items
     items = []
     if hasattr(purchase, "temporarypurchase_purchase"):
-        items = purchase.temporarypurchase_purchase.all()
+        items = purchase.temporarypurchase_purchase.all().order_by("product")
 
     # Draw items
     for item in items:

@@ -13,41 +13,44 @@ import { Purchase } from "./PurchaseStore";
 import { TemporaryPurchase } from "./TemporaryPurchaseStore";
 import { saveImageToDownloads } from "./SaveImage";
 import { MyButton } from "../../blueprints";
+import { sortByKey } from "../../constants/helpers";
+import { UnitIdMap } from "../product/UnitStore";
 
-const TempPurchaseRow = ({
-  item,
-  uneditable,
-}: {
-  item: TemporaryPurchase;
-  uneditable?: boolean;
-}) => {
-  const { isVisible2, setVisible2 } = useVisible();
+const TempPurchaseRow = observer(
+  ({ item, uneditable }: { item: TemporaryPurchase; uneditable?: boolean }) => {
+    const { isVisible2, setVisible2 } = useVisible();
+    const { productStore } = useStore();
 
-  return (
-    <View>
-      <MyModal
-        isVisible={isVisible2}
-        setVisible={setVisible2}
-        title={`Set Details`}
-      >
-        <Commerce.TemporaryPurchase.Form
-          item={item.$ as any}
+    return (
+      <View>
+        <MyModal
+          isVisible={isVisible2}
           setVisible={setVisible2}
-          hiddenFields={["purchase", "unit", "unitAmount"]}
-        />
-      </MyModal>
-      <Text
-        style={
-          uneditable ? {} : { color: "blue", textDecorationLine: "underline" }
-        }
-        onPress={() => !uneditable && setVisible2(true)}
-        numberOfLines={10}
-      >
-        {item.quantity}
-      </Text>
-    </View>
-  );
-};
+          title={`Set Details`}
+        >
+          <Commerce.TemporaryPurchase.Form
+            item={item.$ as any}
+            setVisible={setVisible2}
+            hiddenFields={["purchase", "unitAmount"]}
+          />
+        </MyModal>
+        <Text
+          style={
+            uneditable ? {} : { color: "blue", textDecorationLine: "underline" }
+          }
+          onPress={() => !uneditable && setVisible2(true)}
+          numberOfLines={10}
+        >
+          {`${item.quantity}${
+            item.unit === -1
+              ? ""
+              : " " + productStore.unitStore.allItems.get(item.unit ?? -1)?.name
+          }`}
+        </Text>
+      </View>
+    );
+  }
+);
 
 function splitEveryFiveWords(text: string): string {
   const words = text.trim().split(/\s+/);
@@ -74,7 +77,7 @@ const PurchaseTable = observer(
 
     const matrix = [
       ["Qty", "Item Description"],
-      ...tempPurchaseItems.map((s) => [
+      ...sortByKey(tempPurchaseItems, "product").map((s) => [
         <TempPurchaseRow item={s} />,
         splitEveryFiveWords(s.displayName),
       ]),
@@ -99,15 +102,16 @@ const PurchaseTable = observer(
               purchase: item?.id as number,
               quantity: 1,
               unitAmount: 0,
+              unit: UnitIdMap["pcs"],
             }}
             setVisible={setVisible1}
-            hiddenFields={["purchase", "unit", "unitAmount"]}
+            hiddenFields={["purchase", "unitAmount"]}
           />
         </MyModal>
         <View style={{ flex: 1 }}>
           <MyTable
             matrix={matrix}
-            widths={[0.13, 0.77].map((s) => winWidth * s)}
+            widths={[0.16, 0.77].map((s) => winWidth * s)}
           />
         </View>
       </View>
@@ -116,7 +120,7 @@ const PurchaseTable = observer(
 );
 
 export const PurchaseQuickView = observer(() => {
-  const { commerceStore, peopleStore } = useStore();
+  const { commerceStore, peopleStore, productStore } = useStore();
   const { isVisible1, setVisible1, isVisible2, setVisible2 } = useVisible();
   const [purchase, setPurchase] = useState<number | null>(-1);
   const [isSaved, setSaved] = useState<boolean | null>(null);
@@ -168,6 +172,7 @@ export const PurchaseQuickView = observer(() => {
   useEffect(() => {
     commerceStore.purchaseStore.fetchAll("page=1&order_by=-created_at");
     peopleStore.supplierStore.fetchAll("page=all");
+    productStore.unitStore.fetchAll("page=all");
   }, []);
 
   useEffect(() => {
