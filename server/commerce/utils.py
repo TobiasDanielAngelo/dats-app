@@ -213,7 +213,11 @@ def create_order_summary_image(purchase) -> bytes:
     y_position = ImageConfig.PADDING
 
     # Header
-    header_text = f"Order Summary - Purchase #{purchase.id}"
+    header_text = (
+        f"Order {purchase.supplier.name} - Purchase #{purchase.id}"
+        if purchase.supplier
+        else f"Order Summary - Purchase #{purchase.id}"
+    )
     draw_centered_text(
         draw,
         y_position,
@@ -254,13 +258,16 @@ def create_order_summary_image(purchase) -> bytes:
     if hasattr(purchase, "temporarypurchase_purchase"):
         items = purchase.temporarypurchase_purchase.all().order_by("product")
 
-    # Draw items
+        # Draw items
     for item in items:
         qty = int(item.quantity)
+        unit = item.unit.name if item.unit else ""
+        unit_text = "" if unit.lower() == "pcs" else f" {unit}"
+
+        qty_text = f"{qty}{unit_text}"
         description = item.product
 
-        # Draw quantity (centered in column)
-        qty_text = str(qty)
+        # --- Draw qty + unit together ---
         qty_bbox = draw.textbbox((0, 0), qty_text, font=fonts["normal"])
         qty_width = qty_bbox[2] - qty_bbox[0]
         qty_x = ImageConfig.PADDING + (30 * ImageConfig.SCALE - qty_width) // 2
@@ -269,23 +276,24 @@ def create_order_summary_image(purchase) -> bytes:
             (qty_x, y_position), qty_text, fill=ImageConfig.GRAY, font=fonts["normal"]
         )
 
-        # Draw description with text wrapping
+        # --- Draw description (after qty+unit) ---
+        desc_x = ImageConfig.PADDING + 40 * ImageConfig.SCALE
         description_lines = wrap_text(
             description,
             fonts["normal"],
-            ImageConfig.ORDER_WIDTH - ImageConfig.PADDING - 80 * ImageConfig.SCALE,
+            ImageConfig.ORDER_WIDTH - desc_x - 10 * ImageConfig.SCALE,
         )
 
         for line in description_lines:
             draw.text(
-                (ImageConfig.PADDING + 30 * ImageConfig.SCALE, y_position),
+                (desc_x, y_position),
                 line,
                 fill=ImageConfig.GRAY,
                 font=fonts["normal"],
             )
             y_position += ImageConfig.LINE_SPACING
 
-        # Item spacing and separator
+        # --- Item spacing + separator ---
         y_position += ImageConfig.ITEM_SPACING
         draw_horizontal_line(
             draw,
@@ -307,7 +315,7 @@ def create_order_summary_image(purchase) -> bytes:
 
     # Convert to bytes
     img_buffer = io.BytesIO()
-    image.save(img_buffer, format="JPEG", quality=90)
+    image.save(img_buffer, format="JPEG", quality=100)
     img_buffer.seek(0)
 
     return img_buffer.read()

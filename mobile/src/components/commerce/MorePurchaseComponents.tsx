@@ -111,7 +111,7 @@ const PurchaseTable = observer(
         <View style={{ flex: 1 }}>
           <MyTable
             matrix={matrix}
-            widths={[0.16, 0.77].map((s) => winWidth * s)}
+            widths={[0.25, 0.8].map((s) => winWidth * s)}
           />
         </View>
       </View>
