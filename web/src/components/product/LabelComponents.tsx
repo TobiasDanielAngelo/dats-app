@@ -67,7 +67,7 @@ const LayoutView = ({
           allLabels={printItems.slice(bestCount * s, bestCount * (s + 1))}
           setBestCount={setBestCount}
           key={s}
-          footNote={"Print Settings: Size = A4, Margin = None, Scale = 100%"}
+          footNote={""}
         />
       ))}
     </div>
