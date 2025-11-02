@@ -11,11 +11,7 @@ export type ViewPath = {
   mainLink: string;
 };
 
-export const defaultViewPaths = buildViewPaths(Main, [
-  "Finance",
-  "People",
-  "Productivity",
-]);
+export const defaultViewPaths = buildViewPaths(Main, ["People"]);
 export const additionalPaths: ViewPath[] = [
   {
     title: "Labels",
