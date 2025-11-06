@@ -8,7 +8,8 @@ import io
 import os
 import random
 from datetime import datetime
-from typing import Optional, Tuple
+from typing import Optional, Tuple, List
+import math
 
 
 class ImageConfig:
@@ -19,7 +20,7 @@ class ImageConfig:
 
     # Base dimensions (in inches at 72 DPI)
     ORDER_WIDTH = 306 * SCALE  # 4.25"
-    ORDER_HEIGHT = 1440 * SCALE  # 20"
+    ORDER_HEIGHT = int(1440 * SCALE * 0.6)  # 15" (reduced by 25%)
     SALE_WIDTH = 306 * SCALE
     SALE_HEIGHT = 432 * SCALE
 
@@ -30,17 +31,18 @@ class ImageConfig:
     LIGHT_GRAY = "#555555"
     SEPARATOR_GRAY = "#EEEEEE"
 
-    # Font sizes (scaled)
-    HEADER_FONT_SIZE = 18 * SCALE
-    NORMAL_FONT_SIZE = 12 * SCALE
-    SMALL_FONT_SIZE = 10 * SCALE
+    # Font sizes (scaled) - INCREASED
+    HEADER_FONT_SIZE = 22 * SCALE  # Increased from 18
+    NORMAL_FONT_SIZE = 20 * SCALE  # Increased from 12
+    SMALL_FONT_SIZE = 14 * SCALE  # Increased from 10
     RANDOM_FONT_SIZE = 80
 
     # Spacing
     PADDING = 20 * SCALE
     SMALL_PADDING = 10 * SCALE
-    LINE_SPACING = 18 * SCALE
-    ITEM_SPACING = 2 * SCALE
+    LINE_SPACING = 20 * SCALE  # Increased from 18
+    ITEM_SPACING = 4 * SCALE  # Increased from 2
+    COLUMN_SPACING = 15 * SCALE  # Space between columns
 
 
 class FontManager:
@@ -190,9 +192,55 @@ def draw_vertical_line(
     )
 
 
+def calculate_item_height(item, fonts, column_width: int) -> int:
+    """Calculate the height needed for an item in pixels."""
+    unit = item.unit.name if item.unit else ""
+    unit_text = "" if unit.lower() == "pcs" else f" {unit}"
+    description = item.product
+
+    desc_x_offset = 50 * ImageConfig.SCALE
+    description_lines = wrap_text(
+        description,
+        fonts["normal"],
+        column_width - desc_x_offset,
+    )
+
+    num_lines = len(description_lines)
+    item_height = (
+        num_lines * ImageConfig.LINE_SPACING
+        + ImageConfig.ITEM_SPACING
+        + ImageConfig.SMALL_PADDING
+    )
+
+    return item_height
+
+
+def distribute_items_to_columns(
+    items: List,
+    fonts,
+    num_columns: int,
+    column_width: int,
+    available_height: int,
+    max_per_column: int = 18,
+) -> List[List]:
+    """Distribute items across columns with max 18 items per column."""
+    if not items:
+        return [[] for _ in range(num_columns)]
+
+    # Simply split items into chunks of 12
+    columns = [[] for _ in range(num_columns)]
+
+    for i, item in enumerate(items):
+        col_index = i // max_per_column
+        if col_index < num_columns:
+            columns[col_index].append(item)
+
+    return columns
+
+
 def create_order_summary_image(purchase) -> bytes:
     """
-    Create an order summary image for a purchase.
+    Create an order summary image for a purchase with 2-3 columns.
 
     Args:
         purchase: Purchase object with items
@@ -204,10 +252,24 @@ def create_order_summary_image(purchase) -> bytes:
     font_manager = FontManager()
     fonts = font_manager.get_standard_fonts()
 
-    # Create image
-    image = Image.new(
-        "RGB", (ImageConfig.ORDER_WIDTH, ImageConfig.ORDER_HEIGHT), "white"
+    # Get items
+    items = []
+    if hasattr(purchase, "temporarypurchase_purchase"):
+        items = list(purchase.temporarypurchase_purchase.all().order_by("product"))
+
+    # Determine number of columns based on item count (18 items per column)
+    num_items = len(items)
+    num_columns = max(1, math.ceil(num_items / 18))
+
+    # Calculate image width based on number of columns
+    single_column_width = 306 * ImageConfig.SCALE
+    total_spacing = ImageConfig.COLUMN_SPACING * (num_columns - 1)
+    image_width = (
+        single_column_width * num_columns + total_spacing + ImageConfig.PADDING * 2
     )
+
+    # Create image with adjusted width
+    image = Image.new("RGB", (image_width, ImageConfig.ORDER_HEIGHT), "white")
     draw = ImageDraw.Draw(image)
 
     y_position = ImageConfig.PADDING
@@ -224,85 +286,132 @@ def create_order_summary_image(purchase) -> bytes:
         header_text,
         fonts["header"],
         ImageConfig.BLACK,
-        ImageConfig.ORDER_WIDTH,
+        image_width,
     )
     y_position += ImageConfig.PADDING
 
     # Header divider
     draw_horizontal_line(
-        draw, y_position, ImageConfig.PADDING, ImageConfig.ORDER_WIDTH, line_width=2
+        draw, y_position, ImageConfig.PADDING, image_width, line_width=2
     )
     y_position += ImageConfig.SMALL_PADDING
 
-    # Table headers
-    draw.text(
-        (ImageConfig.PADDING, y_position),
-        "Qty",
-        fill=ImageConfig.BLACK,
-        font=fonts["normal"],
-    )
-    draw.text(
-        (ImageConfig.PADDING + 30 * ImageConfig.SCALE, y_position),
-        "Description",
-        fill=ImageConfig.BLACK,
-        font=fonts["normal"],
-    )
-    y_position += ImageConfig.PADDING
+    # Calculate column width
+    total_padding = ImageConfig.PADDING * 2
+    total_spacing = ImageConfig.COLUMN_SPACING * (num_columns - 1)
+    column_width = (image_width - total_padding - total_spacing) // num_columns
 
-    # Header underline
-    draw_horizontal_line(draw, y_position, ImageConfig.PADDING, ImageConfig.ORDER_WIDTH)
-    y_position += ImageConfig.SMALL_PADDING
+    # Store header start position
+    header_start_y = y_position
 
-    # Get items
-    items = []
-    if hasattr(purchase, "temporarypurchase_purchase"):
-        items = purchase.temporarypurchase_purchase.all().order_by("product")
+    # Draw column headers and get max header height
+    max_header_height = 0
+    for col in range(num_columns):
+        col_x = ImageConfig.PADDING + col * (column_width + ImageConfig.COLUMN_SPACING)
 
-        # Draw items
-    for item in items:
-        qty = int(item.quantity)
-        unit = item.unit.name if item.unit else ""
-        unit_text = "" if unit.lower() == "pcs" else f" {unit}"
-
-        qty_text = f"{qty}{unit_text}"
-        description = item.product
-
-        # --- Draw qty + unit together ---
-        qty_bbox = draw.textbbox((0, 0), qty_text, font=fonts["normal"])
-        qty_width = qty_bbox[2] - qty_bbox[0]
-        qty_x = ImageConfig.PADDING + (30 * ImageConfig.SCALE - qty_width) // 2
-
+        # Qty header
         draw.text(
-            (qty_x, y_position), qty_text, fill=ImageConfig.GRAY, font=fonts["normal"]
+            (col_x, y_position),
+            "Qty",
+            fill=ImageConfig.BLACK,
+            font=fonts["normal"],
+        )
+        # Description header
+        draw.text(
+            (col_x + 40 * ImageConfig.SCALE, y_position),
+            "Description",
+            fill=ImageConfig.BLACK,
+            font=fonts["normal"],
         )
 
-        # --- Draw description (after qty+unit) ---
-        desc_x = ImageConfig.PADDING + 40 * ImageConfig.SCALE
-        description_lines = wrap_text(
-            description,
-            fonts["normal"],
-            ImageConfig.ORDER_WIDTH - desc_x - 10 * ImageConfig.SCALE,
+        header_height = ImageConfig.PADDING
+        max_header_height = max(max_header_height, header_height)
+
+    y_position += max_header_height
+
+    # Draw header underlines for all columns
+    for col in range(num_columns):
+        col_x = ImageConfig.PADDING + col * (column_width + ImageConfig.COLUMN_SPACING)
+        draw.line(
+            [(col_x, y_position), (col_x + column_width, y_position)],
+            fill=ImageConfig.LIGHT_GRAY,
+            width=1,
         )
 
-        for line in description_lines:
-            draw.text(
-                (desc_x, y_position),
-                line,
-                fill=ImageConfig.GRAY,
-                font=fonts["normal"],
-            )
-            y_position += ImageConfig.LINE_SPACING
+    y_position += ImageConfig.SMALL_PADDING
 
-        # --- Item spacing + separator ---
-        y_position += ImageConfig.ITEM_SPACING
-        draw_horizontal_line(
+    # Calculate available height for items
+    footer_height = ImageConfig.PADDING * 2
+    available_height = ImageConfig.ORDER_HEIGHT - y_position - footer_height
+
+    # Distribute items across columns
+    column_items = distribute_items_to_columns(
+        items, fonts, num_columns, column_width, available_height
+    )
+
+    # Draw vertical separators between columns
+    for col in range(1, num_columns):
+        separator_x = (
+            ImageConfig.PADDING
+            + col * (column_width + ImageConfig.COLUMN_SPACING)
+            - ImageConfig.COLUMN_SPACING // 2
+        )
+        draw_vertical_line(
             draw,
-            y_position,
-            ImageConfig.PADDING,
-            ImageConfig.ORDER_WIDTH,
+            separator_x,
+            ImageConfig.ORDER_HEIGHT - y_position - footer_height,
+            start_at=header_start_y,
             fill=ImageConfig.SEPARATOR_GRAY,
+            line_width=1,
         )
-        y_position += ImageConfig.SMALL_PADDING
+
+    # Draw items in each column
+    for col in range(num_columns):
+        col_x = ImageConfig.PADDING + col * (column_width + ImageConfig.COLUMN_SPACING)
+        col_y = y_position
+
+        for item in column_items[col]:
+            qty = int(item.quantity)
+            unit = item.unit.name if item.unit else ""
+            unit_text = "" if unit.lower() == "pcs" else f" {unit}"
+
+            qty_text = f"{qty}{unit_text}"
+            description = item.product
+
+            # Draw qty + unit together (centered in qty column)
+            qty_bbox = draw.textbbox((0, 0), qty_text, font=fonts["normal"])
+            qty_width = qty_bbox[2] - qty_bbox[0]
+            qty_x = col_x + (40 * ImageConfig.SCALE - qty_width) // 2
+
+            draw.text(
+                (qty_x, col_y), qty_text, fill=ImageConfig.GRAY, font=fonts["normal"]
+            )
+
+            # Draw description
+            desc_x = col_x + 50 * ImageConfig.SCALE
+            description_lines = wrap_text(
+                description,
+                fonts["normal"],
+                column_width - 50 * ImageConfig.SCALE,
+            )
+
+            for line in description_lines:
+                draw.text(
+                    (desc_x, col_y),
+                    line,
+                    fill=ImageConfig.GRAY,
+                    font=fonts["normal"],
+                )
+                col_y += ImageConfig.LINE_SPACING
+
+            # Item spacing + separator
+            col_y += ImageConfig.ITEM_SPACING
+            draw.line(
+                [(col_x, col_y), (col_x + column_width, col_y)],
+                fill=ImageConfig.SEPARATOR_GRAY,
+                width=1,
+            )
+            col_y += ImageConfig.SMALL_PADDING
 
     # Footer separator
     footer_y = ImageConfig.ORDER_HEIGHT - ImageConfig.PADDING
