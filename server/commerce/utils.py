@@ -530,14 +530,14 @@ def create_single_receipt(sale, items, page_num, total_pages) -> bytes:
         (ImageConfig.SMALL_PADDING, y_position),
         "Name",
         fill=ImageConfig.BLACK,
-        font=fonts["normal"],
+        font=fonts["small"],
     )
 
     draw.text(
         (ImageConfig.SMALL_PADDING + 170 * ImageConfig.SCALE, y_position),
         "Date",
         fill=ImageConfig.BLACK,
-        font=fonts["normal"],
+        font=fonts["small"],
     )
 
     # Customer name and date header
@@ -604,7 +604,7 @@ def create_single_receipt(sale, items, page_num, total_pages) -> bytes:
         ),
         "# Unit",
         fill=ImageConfig.BLACK,
-        font=fonts["normal"],
+        font=fonts["small"],
     )
     draw.text(
         (
@@ -613,7 +613,7 @@ def create_single_receipt(sale, items, page_num, total_pages) -> bytes:
         ),
         "Description",
         fill=ImageConfig.BLACK,
-        font=fonts["normal"],
+        font=fonts["small"],
     )
 
     draw.text(
@@ -623,7 +623,7 @@ def create_single_receipt(sale, items, page_num, total_pages) -> bytes:
         ),
         "U/P",
         fill=ImageConfig.BLACK,
-        font=fonts["normal"],
+        font=fonts["small"],
     )
 
     draw.text(
@@ -633,7 +633,7 @@ def create_single_receipt(sale, items, page_num, total_pages) -> bytes:
         ),
         "TOT",
         fill=ImageConfig.BLACK,
-        font=fonts["normal"],
+        font=fonts["small"],
     )
 
     draw_horizontal_line(
