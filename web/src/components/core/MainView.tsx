@@ -11,6 +11,7 @@ import { Commerce } from "../commerce/_AllComponents";
 import { buildRoutes } from "../../constants/helpers";
 import { Main } from "./_AllComponents";
 import { TaskView } from "../productivity/MoreTaskComponents";
+import { DashboardView } from "./DashboardView";
 
 export const MainView = observer(() => {
   const navigate = useNavigate();
@@ -62,7 +63,7 @@ export const MainView = observer(() => {
         />
         <Route path="/labels" element={<LabelView />} />
         <Route path="/tasks" element={<TaskView />} />
-        <Route path="/" element={<></>} />
+        <Route path="/" element={<DashboardView />} />
       </Routes>
     </div>
   );

@@ -25,6 +25,7 @@ import Search from "@mui/icons-material/Search";
 import ViewList from "@mui/icons-material/ViewList";
 import TableChart from "@mui/icons-material/TableChart";
 import Timeline from "@mui/icons-material/Timeline";
+import Lock from "@mui/icons-material/Lock";
 import Padding from "@mui/icons-material/Padding";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import ExpandLess from "@mui/icons-material/ExpandLess";
@@ -76,6 +77,7 @@ const iconMap = {
   Print,
   Inventory,
   DisplaySettings,
+  Lock,
   RestartAlt,
   FilePresent,
   VisibilityOff,

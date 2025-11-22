@@ -1182,13 +1182,21 @@ export const toCamel = (str: string) =>
     .join("");
 
 // utils/numberCorrector.ts
+// Nov 22, 2025 Updated
 export function correctNumberInput(input: string): string {
   if (!input) return "";
 
   // preserve leading minus
   const isNegative = input.startsWith("-");
+
+  // Allow just "-" to be typed
+  if (input === "-") return "-";
+
   // remove everything except digits and dots
   const stripped = input.replace(/[^0-9.]/g, "");
+
+  // Allow just "." or "-."
+  if (stripped === ".") return isNegative ? "-." : ".";
 
   // keep only the first dot; join remaining parts (removes extra dots)
   const parts = stripped.split(".");
@@ -1196,10 +1204,9 @@ export function correctNumberInput(input: string): string {
   const fracPart = parts.length ? parts.join("") : "";
 
   // if there was a fractional part, build "int.frac", else just int
-  const core = fracPart ? `${intPart || "0"}.${fracPart}` : intPart;
+  const core = parts.length > 0 ? `${intPart || "0"}.${fracPart}` : intPart;
 
   if (core === "" || core === "0") {
-    // return empty string for totally invalid, but keep "0" as valid if input produced it
     return core === "0" ? "0" : "";
   }
 

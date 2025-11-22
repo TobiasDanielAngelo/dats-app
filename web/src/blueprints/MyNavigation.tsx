@@ -145,6 +145,7 @@ export const MyNavBar = observer(
     paths?: Page[];
   }) => {
     const { title, drawerOpen, setDrawerOpen, profileUrl, paths } = props;
+    const [isOpen, setOpen] = useState(false);
     const location = useLocation();
 
     const { settingStore, userStore } = useStore();
@@ -169,6 +170,15 @@ export const MyNavBar = observer(
       return leaves.length ? leaves : [p];
     });
 
+    if (!isOpen)
+      return (
+        <div className="relative bg-teal-200 border-teal-200 dark:bg-gray-900 items-end justify-between flex px-3">
+          <span className="self-center text-md font-semibold whitespace-nowrap dark:text-white">
+            {title}
+          </span>
+          <MyIcon icon="RemoveRedEye" onClick={() => setOpen(true)} />
+        </div>
+      );
     return (
       <nav className="relative bg-teal-200 border-teal-200 dark:bg-gray-900">
         <ResponsiveDrawer
@@ -178,7 +188,7 @@ export const MyNavBar = observer(
         />
         <div className="flex flex-wrap items-center justify-between mx-auto p-4">
           <div className="flex items-center space-x-3 rtl:space-x-reverse">
-            <Link to={"/menu"}>
+            <Link to={"/"}>
               {/* <MyIcon
                 icon="InsertChart"
                 fontSize="large"
@@ -253,6 +263,7 @@ export const MyNavBar = observer(
                   <MyIcon icon="Menu" />
                 </div>
               </li>
+              <MyIcon icon="DisabledVisible" onClick={() => setOpen(false)} />
             </ul>
           </div>
         </div>

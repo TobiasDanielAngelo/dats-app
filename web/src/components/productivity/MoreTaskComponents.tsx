@@ -24,7 +24,7 @@ import { useStore } from "../core/Store";
 import { TaskForm } from "./TaskComponents";
 import { Task } from "./TaskStore";
 
-const TaskCard = ({ item }: { item: CalendarEvent }) => {
+export const TaskCard = ({ item }: { item: CalendarEvent }) => {
   return (
     <div className="m-2 border border-teal-300 rounded-md items-center justify-center flex flex-1 flex-col">
       <div className="font-bold text-xl">{item.title}</div>

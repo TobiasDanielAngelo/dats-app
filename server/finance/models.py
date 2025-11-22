@@ -57,6 +57,7 @@ class Transaction(fields.CustomModel):
     coming_from = fields.SetNullOptionalForeignKey(Account, display=True)
     going_to = fields.SetNullOptionalForeignKey(Account, display=True)
     amount = fields.AmountField()
+    datetime_transacted = fields.DefaultNowField()
     to_print = fields.DefaultBooleanField(False)
 
     @property

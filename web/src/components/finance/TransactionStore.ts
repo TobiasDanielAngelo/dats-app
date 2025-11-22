@@ -40,6 +40,9 @@ export const TransactionFields = {
     appFK: "Commerce",
   },
   amount: { field: "AmountField" },
+  datetimeTransacted: {
+    field: "DefaultNowField",
+  },
 } satisfies Record<string, DjangoModelField>;
 
 const props = fieldToProps(TransactionFields);
