@@ -87,6 +87,7 @@ export function MyGenericForm<T extends { id: string | number }>({
 
   const transformTo = (raw: T): T => {
     const copy = { ...raw };
+    return copy;
 
     dateFields.forEach((k) => {
       const val = copy[k as keyof T];
@@ -121,6 +122,7 @@ export function MyGenericForm<T extends { id: string | number }>({
         ) as any;
       }
     });
+
     return copy;
     // cleanObject(copy as Record<string, any>) as T;
   };
@@ -132,6 +134,7 @@ export function MyGenericForm<T extends { id: string | number }>({
   const [msg, setMsg] = useState<Object>();
 
   const onClickCreate = async () => {
+    console.log(details, transformTo(details));
     const resp = await addItem(transformTo(details));
     if (!resp.ok) return setMsg(resp.details);
     fetchFcn?.();
