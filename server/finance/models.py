@@ -3,6 +3,7 @@ from my_django_app.utils import CannotEqual
 from django.db.models import Sum
 from commerce.models import Sale, Purchase, Labor
 from .utils import generate_check
+from django.utils import timezone
 
 TYPE_CHOICES = [
     (0, "Cash"),
@@ -26,10 +27,23 @@ class Account(fields.CustomModel):
 
     @property
     def net_balance(self):
-        inflow = self.transaction_going_to.aggregate(total=Sum("amount"))["total"] or 0
-        outflow = (
-            self.transaction_coming_from.aggregate(total=Sum("amount"))["total"] or 0
+        now = timezone.now()
+        today_end = now.replace(hour=23, minute=59, second=59, microsecond=999999)
+
+        inflow = (
+            self.transaction_going_to.filter(
+                datetime_transacted__lte=today_end
+            ).aggregate(total=Sum("amount"))["total"]
+            or 0
         )
+
+        outflow = (
+            self.transaction_coming_from.filter(
+                datetime_transacted__lte=today_end
+            ).aggregate(total=Sum("amount"))["total"]
+            or 0
+        )
+
         return inflow - outflow
 
 
