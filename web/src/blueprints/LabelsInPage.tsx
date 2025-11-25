@@ -19,7 +19,7 @@ const LabelsInPage: React.FC<LabelsInPageProps> = ({
   footNote,
 }) => {
   const [lw, lh] = labelSize;
-  const [pw, ph] = [pageSize[0] - 12, pageSize[1] - 12];
+  const [pw, ph] = [pageSize[0] - 8, pageSize[1] - 8];
 
   // --- Compute best fit ---
   const fitUprightCols = Math.floor(pw / lw);
@@ -197,11 +197,11 @@ const LabelsInPage: React.FC<LabelsInPageProps> = ({
     <div
       style={{
         position: "relative",
-        width: `${pw + 12}mm`,
-        height: `${ph + 12}mm`,
+        width: `${pw + 8}mm`,
+        height: `${ph + 8}mm`,
         background: "white",
         border: "0.1mm black dashed",
-        padding: "6mm",
+        padding: "4mm",
       }}
     >
       <div style={{ position: "absolute" }}>{labels}</div>
