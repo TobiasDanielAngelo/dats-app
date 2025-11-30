@@ -740,12 +740,13 @@ def create_single_receipt(sale, items, page_num, total_pages) -> bytes:
             font_manager=font_manager,
         )
 
-        draw_random_font_text(
-            draw,
+        draw.text(
             (ImageConfig.SMALL_PADDING, y_position),
             "Thank you, come again",
-            font_manager=font_manager,
+            fill=ImageConfig.BLACK,
+            font=fonts["small"],
         )
+
     else:
         draw_random_font_text(
             draw,
