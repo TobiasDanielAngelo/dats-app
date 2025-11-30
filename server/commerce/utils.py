@@ -32,8 +32,8 @@ class ImageConfig:
     SEPARATOR_GRAY = "#EEEEEE"
 
     # Font sizes (scaled) - INCREASED
-    HEADER_FONT_SIZE = 22 * SCALE  # Increased from 18
-    NORMAL_FONT_SIZE = 20 * SCALE  # Increased from 12
+    HEADER_FONT_SIZE = 19 * SCALE  # Increased from 18
+    NORMAL_FONT_SIZE = 17 * SCALE  # Increased from 12
     SMALL_FONT_SIZE = 12 * SCALE  # Increased from 10
     RANDOM_FONT_SIZE = 80
 
