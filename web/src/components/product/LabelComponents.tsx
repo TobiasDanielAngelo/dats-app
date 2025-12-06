@@ -6,7 +6,7 @@ import { MyIcon } from "../../blueprints/MyIcon";
 import { MyModal } from "../../blueprints/MyModal";
 import { MySlider } from "../../blueprints/MySlider";
 import { SideBySideView } from "../../blueprints/SideBySideView";
-import { toOptions } from "../../constants/helpers";
+import { correctNumberInput, toOptions } from "../../constants/helpers";
 import {
   useKeyPress,
   useLoadingAlert,
@@ -204,6 +204,7 @@ function parseSellingCode(
 export const transformLabelToPrint = (details: LabelInterface) => {
   return {
     ...details,
+    fontSizes: details.fontSizes.map((s) => parseFloat(s)),
     purchaseCode:
       details.purchasePrice > 0 ? intToCode(details.purchasePrice) : "",
     sellingCode:
@@ -320,12 +321,13 @@ export const LabelForm = ({
             <div key={s} className="flex flex-row text-sm p-2 leading-none">
               <div className="w-10">
                 <MyInput
+                  type="number"
                   value={details.fontSizes[s]}
                   onChangeValue={(t) =>
                     setDetails((prev) => ({
                       ...prev,
                       fontSizes: prev.fontSizes.map((val, i) =>
-                        i === s ? t : val
+                        i === s ? correctNumberInput(t) : val
                       ),
                     }))
                   }
