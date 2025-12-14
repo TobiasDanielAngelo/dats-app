@@ -75,13 +75,6 @@ const LayoutView = ({
 };
 
 const LayoutCard = ({ item }: { item: PrintJobInterface }) => {
-  const isFile = (v: unknown): v is File =>
-    typeof v === "object" && v instanceof File;
-
-  const imgSrc = isFile(item.image)
-    ? URL.createObjectURL(item.image)
-    : (item.image as string | null) ?? "";
-
   return (
     <div
       className="border-2 rounded-md relative bg-white p-1 text-black"
@@ -120,10 +113,6 @@ const LayoutCard = ({ item }: { item: PrintJobInterface }) => {
         >
           {item.sellingCode ?? ""}
         </div>
-      </div>
-
-      <div className="bottom-1 left-1 absolute">
-        {item.image ? <img src={imgSrc} width={item.imgWidthMm ?? 5} /> : <></>}
       </div>
     </div>
   );
@@ -195,8 +184,6 @@ const defaultDetails = {
   quantity: 1,
   unit: "",
   fontSizes: Array.from(Array(10)).fill(5),
-  image: "",
-  imgWidthMm: 5,
   dimension: -1,
 };
 
@@ -243,8 +230,6 @@ export const transformPrintToLabel = (details?: PrintJob): LabelInterface => {
     purchasePrice: codeToInt(
       details.purchaseCode.replaceAll("(", "").replaceAll(")", "") ?? ""
     ),
-    image: details.image ?? "",
-    imgWidthMm: details.imgWidthMm ?? 5,
     sellingPrice: sellingPrice,
     unit: unit ?? "",
   };
@@ -275,7 +260,6 @@ export const LabelForm = ({
     ...transformLabelToPrint(details),
     widthMm,
     heightMm,
-    image: details.image === "" ? null : details.image,
   };
 
   const onClickSubmit = async () => {
@@ -310,18 +294,6 @@ export const LabelForm = ({
           "displayName"
         ),
         onClickAdd: () => setVisible2(true),
-      },
-    ],
-    [
-      {
-        name: "image",
-        label: "Image",
-        type: "image",
-      },
-      {
-        name: "imgWidthMm",
-        label: "Image Width",
-        type: "number",
       },
     ],
   ] satisfies Field[][];
