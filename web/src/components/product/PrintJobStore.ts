@@ -21,6 +21,9 @@ export const PrintJobFields = {
   isCompleted: { field: "DefaultBooleanField" },
   widthMm: { field: "LimitedIntegerField", readOnly: true },
   heightMm: { field: "LimitedIntegerField", readOnly: true },
+  imgWidthMm: { field: "LimitedIntegerField" },
+  isQ1NotQ3: { field: "DefaultBooleanField" },
+  image: { field: "ImageField" },
 } satisfies Record<string, DjangoModelField>;
 
 const props = fieldToProps(PrintJobFields);

@@ -146,6 +146,11 @@ class PrintJob(fields.CustomModel):
     font_sizes = fields.NumberArrayField()
     quantity = fields.LimitedIntegerField(1, 10000)
     is_completed = fields.DefaultBooleanField(False)
+    image = fields.ImageField(upload_to="label_images/")
+    img_width_mm = fields.LimitedIntegerField(1, 100, 5)
+    is_q1_not_q3 = fields.DefaultBooleanField(
+        False
+    )  # If True, the image is in Q1 else Q3
 
     @property
     def width_mm(self):
