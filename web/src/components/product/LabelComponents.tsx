@@ -398,7 +398,8 @@ export const LabelView = observer(() => {
   }, []);
 
   useEffect(() => {
-    if (!match || PrintDimensionIdMap["Piston Kit"] !== value) return;
+    if (!match) return;
+    // || PrintDimensionIdMap["Piston Kit"] !== value
     let count = 0;
     let timeoutId: number;
 
