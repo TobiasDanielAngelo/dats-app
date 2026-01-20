@@ -140,10 +140,9 @@ class Account(fields.CustomModel):
     def _calculate_worst_average(self):
         """
         Helper method to calculate the worst daily average.
-        For each day from the first transaction onwards:
+        For each day from today onwards (including post-dated transactions):
         - Calculate cumulative balance (inflow - outflow from start to that day)
-        - Includes post-dated (future) transactions to predict worst future state
-        - Divide by number of days elapsed from first transaction to that day
+        - Divide by number of days from today to that day
         - Track the minimum (most negative) average
         """
         # Get all transactions sorted by date
@@ -166,9 +165,7 @@ class Account(fields.CustomModel):
 
         all_txns.sort(key=lambda x: x[0])
 
-        # Get the first transaction date and the last transaction date
-        first_txn_date = all_txns[0][0].date()
-        last_txn_date = all_txns[-1][0].date()
+        today = timezone.now().date()
 
         # Track running balance and worst average
         running_balance = 0
@@ -183,25 +180,29 @@ class Account(fields.CustomModel):
                 txns_by_date[date_key] = 0
             txns_by_date[date_key] += amount
 
-        # Iterate through each day from first transaction to last transaction
-        current_date = first_txn_date
-        while current_date <= last_txn_date:
-            # Update running balance if there are transactions on this day
-            if current_date in txns_by_date:
-                running_balance += txns_by_date[current_date]
+        # Get all transaction dates
+        all_dates = sorted(txns_by_date.keys())
 
-            # Calculate days elapsed (add 1 to avoid division by zero on day 1)
-            days_elapsed = (current_date - first_txn_date).days + 1
+        # Calculate running balance for each date
+        for current_date in all_dates:
+            # Skip past dates (before today)
+            if current_date < today:
+                running_balance += txns_by_date[current_date]
+                continue
+
+            # Update running balance
+            running_balance += txns_by_date[current_date]
+
+            # Calculate days from today to this date (add 1 to include today)
+            days_from_today = (current_date - today).days + 1
 
             # Calculate daily average
-            daily_average = running_balance / days_elapsed
+            daily_average = running_balance / days_from_today
 
             # Track worst (most negative) average
             if daily_average < worst_average:
                 worst_average = daily_average
                 worst_date = current_date
-
-            current_date += timedelta(days=1)
 
         return {
             "average": worst_average if worst_average != float("inf") else 0,
