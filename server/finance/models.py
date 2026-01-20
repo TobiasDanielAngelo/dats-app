@@ -66,6 +66,10 @@ class Account(fields.CustomModel):
         Includes future post-dated transactions.
         Returns -1 if the balance never crossed zero.
         """
+        from collections import defaultdict
+        from datetime import timedelta
+        from decimal import Decimal
+
         # Get all transactions sorted by date
         inflow_txns = self.transaction_going_to.values_list(
             "datetime_transacted", "amount"
@@ -91,21 +95,17 @@ class Account(fields.CustomModel):
         last_txn_date = all_txns[-1][0].date()
 
         # Track running balance and last crossing
-        running_balance = 0
+        running_balance = Decimal("0")  # Use Decimal instead of 0
         last_crossing_date = None
         was_positive = True  # Track previous day's state
 
         # Group transactions by date
-        from collections import defaultdict
-
-        txns_by_date = defaultdict(float)
+        txns_by_date = defaultdict(lambda: Decimal("0"))  # Use Decimal instead of float
         for dt, amount, _ in all_txns:
             date_key = dt.date()
             txns_by_date[date_key] += amount
 
         # Iterate through each day from first transaction to last transaction (including future)
-        from datetime import timedelta
-
         current_date = first_txn_date
         while current_date <= last_txn_date:
             # Update running balance if there are transactions on this day
