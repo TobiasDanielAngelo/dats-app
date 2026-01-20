@@ -63,7 +63,8 @@ class Account(fields.CustomModel):
         """
         Returns the number of days from the first transaction until
         the balance LAST crossed zero (became negative or zero).
-        Returns -1 if the balance never crossed zero (excluding today).
+        Includes future post-dated transactions.
+        Returns -1 if the balance never crossed zero.
         """
         # Get all transactions sorted by date
         inflow_txns = self.transaction_going_to.values_list(
@@ -85,9 +86,9 @@ class Account(fields.CustomModel):
 
         all_txns.sort(key=lambda x: x[0])
 
-        # Get the first transaction date and today
+        # Get the first transaction date and last transaction date
         first_txn_date = all_txns[0][0].date()
-        today = timezone.now().date()
+        last_txn_date = all_txns[-1][0].date()
 
         # Track running balance and last crossing
         running_balance = 0
@@ -95,16 +96,18 @@ class Account(fields.CustomModel):
         was_positive = True  # Track previous day's state
 
         # Group transactions by date
-        txns_by_date = {}
+        from collections import defaultdict
+
+        txns_by_date = defaultdict(float)
         for dt, amount, _ in all_txns:
             date_key = dt.date()
-            if date_key not in txns_by_date:
-                txns_by_date[date_key] = 0
             txns_by_date[date_key] += amount
 
-        # Iterate through each day from first transaction to yesterday
+        # Iterate through each day from first transaction to last transaction (including future)
+        from datetime import timedelta
+
         current_date = first_txn_date
-        while current_date < today:  # Exclude today
+        while current_date <= last_txn_date:
             # Update running balance if there are transactions on this day
             if current_date in txns_by_date:
                 running_balance += txns_by_date[current_date]
