@@ -140,9 +140,9 @@ class Account(fields.CustomModel):
     def _calculate_worst_average(self):
         """
         Helper method to calculate the worst daily average.
-        For each day from the first transaction to today:
+        For each day from the first transaction onwards:
         - Calculate cumulative balance (inflow - outflow from start to that day)
-        - Only considers transactions up to that day (excludes post-dated transactions)
+        - Includes post-dated (future) transactions to predict worst future state
         - Divide by number of days elapsed from first transaction to that day
         - Track the minimum (most negative) average
         """
@@ -166,37 +166,26 @@ class Account(fields.CustomModel):
 
         all_txns.sort(key=lambda x: x[0])
 
-        # Get the first transaction date and today
-        today = timezone.now().date()
-
-        # Only consider transactions up to today (exclude post-dated)
-        past_txns = [
-            (dt, amount, direction)
-            for dt, amount, direction in all_txns
-            if dt.date() <= today
-        ]
-
-        if not past_txns:
-            return None
-
-        first_txn_date = past_txns[0][0].date()
+        # Get the first transaction date and the last transaction date
+        first_txn_date = all_txns[0][0].date()
+        last_txn_date = all_txns[-1][0].date()
 
         # Track running balance and worst average
         running_balance = 0
         worst_average = float("inf")
         worst_date = None
 
-        # Group transactions by date for efficiency (only past transactions)
+        # Group transactions by date for efficiency
         txns_by_date = {}
-        for dt, amount, _ in past_txns:
+        for dt, amount, _ in all_txns:
             date_key = dt.date()
             if date_key not in txns_by_date:
                 txns_by_date[date_key] = 0
             txns_by_date[date_key] += amount
 
-        # Iterate through each day from first transaction to today
+        # Iterate through each day from first transaction to last transaction
         current_date = first_txn_date
-        while current_date <= today:
+        while current_date <= last_txn_date:
             # Update running balance if there are transactions on this day
             if current_date in txns_by_date:
                 running_balance += txns_by_date[current_date]
