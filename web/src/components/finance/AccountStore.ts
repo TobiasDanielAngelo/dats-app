@@ -16,7 +16,7 @@ export const AccountFields = {
   type: { field: "ChoiceIntegerField", choices: toOptions(TYPE_CHOICES) },
   netBalanceDated: { field: "AmountField", readOnly: true },
   netBalancePostDated: { field: "AmountField", readOnly: true },
-  daysTilZero: { field: "LimitedIntegerField", readOnly: true },
+  daysTilZero: { field: "LongCharField", readOnly: true },
   worstAverageValue: { field: "AmountField", readOnly: true },
   worstPeakDay: { field: "LimitedIntegerField", readOnly: true },
 } satisfies Record<string, DjangoModelField>;

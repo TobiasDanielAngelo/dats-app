@@ -61,8 +61,9 @@ class Account(fields.CustomModel):
     @property
     def days_til_zero(self):
         """
-        Returns the number of days from TODAY until the balance crosses zero.
-        Returns -1 if the balance never crosses zero in the future (or already crossed in the past).
+        Returns a formatted string showing days until balance crosses zero and the date.
+        Returns "Never goes negative" if the balance never crosses zero in the future.
+        Returns "Already negative" if the balance is currently negative.
         """
         from collections import defaultdict
         from datetime import timedelta
@@ -84,7 +85,7 @@ class Account(fields.CustomModel):
             all_txns.append((dt, -amount, "out"))
 
         if not all_txns:
-            return -1
+            return "Never goes negative"
 
         all_txns.sort(key=lambda x: x[0])
 
@@ -97,6 +98,7 @@ class Account(fields.CustomModel):
         # Track running balance
         running_balance = Decimal("0")
         was_positive = True
+        current_balance = Decimal("0")  # Track balance as of today
 
         # Group transactions by date
         txns_by_date = defaultdict(lambda: Decimal("0"))
@@ -111,14 +113,25 @@ class Account(fields.CustomModel):
             if current_date in txns_by_date:
                 running_balance += txns_by_date[current_date]
 
+            # Track balance as of today
+            if current_date <= today:
+                current_balance = running_balance
+
             # Only check for crossings on or after today
             if current_date >= today:
                 is_positive = running_balance > 0
 
                 if was_positive and not is_positive:
                     # We just crossed into zero/negative territory
-                    # Return days from today to this crossing date
-                    return (current_date - today).days
+                    days = (current_date - today).days
+                    date_str = current_date.strftime("%b %d, %Y")
+
+                    if days == 0:
+                        return f"Today ({date_str})"
+                    elif days == 1:
+                        return f"1 day ({date_str})"
+                    else:
+                        return f"{days} days ({date_str})"
 
                 was_positive = is_positive
             else:
@@ -127,8 +140,12 @@ class Account(fields.CustomModel):
 
             current_date += timedelta(days=1)
 
+        # Check if already negative as of today
+        if current_balance <= 0:
+            return "Already negative"
+
         # Balance never crosses zero in the future
-        return -1
+        return "Never goes negative"
 
     @property
     def worst_average_value(self):
