@@ -4,6 +4,7 @@ from django.db.models import Sum
 from commerce.models import Sale, Purchase, Labor
 from .utils import generate_check
 from django.utils import timezone
+from datetime import timedelta
 
 TYPE_CHOICES = [
     (0, "Cash"),
@@ -26,7 +27,7 @@ class Account(fields.CustomModel):
     type = fields.ChoiceIntegerField(TYPE_CHOICES)
 
     @property
-    def net_balance(self):
+    def net_balance_dated(self):
         now = timezone.now()
         today_end = now.replace(hour=23, minute=59, second=59, microsecond=999999)
 
@@ -45,6 +46,166 @@ class Account(fields.CustomModel):
         )
 
         return inflow - outflow
+
+    @property
+    def net_balance_post_dated(self):
+
+        inflow = self.transaction_going_to.aggregate(total=Sum("amount"))["total"] or 0
+
+        outflow = (
+            self.transaction_coming_from.aggregate(total=Sum("amount"))["total"] or 0
+        )
+
+        return inflow - outflow
+
+    @property
+    def days_til_zero(self):
+        """
+        Returns the number of days from the first transaction until
+        the balance LAST crossed zero (became negative or zero).
+        Returns -1 if the balance never crossed zero (excluding today).
+        """
+        # Get all transactions sorted by date
+        inflow_txns = self.transaction_going_to.values_list(
+            "datetime_transacted", "amount"
+        )
+        outflow_txns = self.transaction_coming_from.values_list(
+            "datetime_transacted", "amount"
+        )
+
+        # Combine and sort all transactions
+        all_txns = []
+        for dt, amount in inflow_txns:
+            all_txns.append((dt, amount, "in"))
+        for dt, amount in outflow_txns:
+            all_txns.append((dt, -amount, "out"))
+
+        if not all_txns:
+            return -1
+
+        all_txns.sort(key=lambda x: x[0])
+
+        # Get the first transaction date and today
+        first_txn_date = all_txns[0][0].date()
+        today = timezone.now().date()
+
+        # Track running balance and last crossing
+        running_balance = 0
+        last_crossing_date = None
+        was_positive = True  # Track previous day's state
+
+        # Group transactions by date
+        txns_by_date = {}
+        for dt, amount, _ in all_txns:
+            date_key = dt.date()
+            if date_key not in txns_by_date:
+                txns_by_date[date_key] = 0
+            txns_by_date[date_key] += amount
+
+        # Iterate through each day from first transaction to yesterday
+        current_date = first_txn_date
+        while current_date < today:  # Exclude today
+            # Update running balance if there are transactions on this day
+            if current_date in txns_by_date:
+                running_balance += txns_by_date[current_date]
+
+            # Check if we crossed from positive to zero/negative
+            is_positive = running_balance > 0
+
+            if was_positive and not is_positive:
+                # We just crossed into zero/negative territory
+                last_crossing_date = current_date
+
+            was_positive = is_positive
+            current_date += timedelta(days=1)
+
+        # Return days elapsed from first transaction to last crossing
+        if last_crossing_date:
+            return (last_crossing_date - first_txn_date).days
+
+        return -1
+
+    @property
+    def worst_average_value(self):
+        """Returns the most negative daily average value."""
+        worst_data = self._calculate_worst_average()
+        return worst_data["average"] if worst_data else 0
+
+    @property
+    def worst_peak_day(self):
+        """Returns the date when the worst daily average occurred."""
+        worst_data = self._calculate_worst_average()
+        return worst_data["date"] if worst_data else None
+
+    def _calculate_worst_average(self):
+        """
+        Helper method to calculate the worst daily average.
+        For each day from the first transaction to today:
+        - Calculate cumulative balance (inflow - outflow from start to that day)
+        - Divide by number of days elapsed from first transaction to that day
+        - Track the minimum (most negative) average
+        """
+        # Get all transactions sorted by date
+        inflow_txns = self.transaction_going_to.values_list(
+            "datetime_transacted", "amount"
+        )
+        outflow_txns = self.transaction_coming_from.values_list(
+            "datetime_transacted", "amount"
+        )
+
+        # Combine and sort all transactions
+        all_txns = []
+        for dt, amount in inflow_txns:
+            all_txns.append((dt, amount, "in"))
+        for dt, amount in outflow_txns:
+            all_txns.append((dt, -amount, "out"))
+
+        if not all_txns:
+            return None
+
+        all_txns.sort(key=lambda x: x[0])
+
+        # Get the first transaction date and today
+        first_txn_date = all_txns[0][0].date()
+        today = timezone.now().date()
+
+        # Track running balance and worst average
+        running_balance = 0
+        worst_average = float("inf")
+        worst_date = None
+
+        # Group transactions by date for efficiency
+        txns_by_date = {}
+        for dt, amount, _ in all_txns:
+            date_key = dt.date()
+            if date_key not in txns_by_date:
+                txns_by_date[date_key] = 0
+            txns_by_date[date_key] += amount
+
+        # Iterate through each day from first transaction to today
+        current_date = first_txn_date
+        while current_date <= today:
+            # Update running balance if there are transactions on this day
+            if current_date in txns_by_date:
+                running_balance += txns_by_date[current_date]
+
+            # Calculate days elapsed (add 1 to avoid division by zero on day 1)
+            days_elapsed = (current_date - first_txn_date).days + 1
+
+            # Calculate daily average
+            daily_average = running_balance / days_elapsed
+
+            # Track worst (most negative) average
+            if daily_average < worst_average:
+                worst_average = daily_average
+                worst_date = current_date
+
+            current_date += timedelta(days=1)
+
+        return {
+            "average": worst_average if worst_average != float("inf") else 0,
+            "date": worst_date,
+        }
 
 
 NATURE_CHOICES = [

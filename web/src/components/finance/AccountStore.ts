@@ -14,7 +14,11 @@ export const AccountFields = {
   id: { field: "ID" },
   name: { field: "ShortCharField" },
   type: { field: "ChoiceIntegerField", choices: toOptions(TYPE_CHOICES) },
-  netBalance: { field: "AmountField", readOnly: true },
+  netBalanceDated: { field: "AmountField", readOnly: true },
+  netBalancePostDated: { field: "AmountField", readOnly: true },
+  daysTilZero: { field: "LimitedIntegerField", readOnly: true },
+  worstAverageValue: { field: "AmountField", readOnly: true },
+  worstPeakDay: { field: "LimitedIntegerField", readOnly: true },
 } satisfies Record<string, DjangoModelField>;
 
 export const AccountIdMap = {
