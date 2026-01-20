@@ -142,6 +142,7 @@ class Account(fields.CustomModel):
         Helper method to calculate the worst daily average.
         For each day from the first transaction to today:
         - Calculate cumulative balance (inflow - outflow from start to that day)
+        - Only considers transactions up to that day (excludes post-dated transactions)
         - Divide by number of days elapsed from first transaction to that day
         - Track the minimum (most negative) average
         """
@@ -166,17 +167,28 @@ class Account(fields.CustomModel):
         all_txns.sort(key=lambda x: x[0])
 
         # Get the first transaction date and today
-        first_txn_date = all_txns[0][0].date()
         today = timezone.now().date()
+
+        # Only consider transactions up to today (exclude post-dated)
+        past_txns = [
+            (dt, amount, direction)
+            for dt, amount, direction in all_txns
+            if dt.date() <= today
+        ]
+
+        if not past_txns:
+            return None
+
+        first_txn_date = past_txns[0][0].date()
 
         # Track running balance and worst average
         running_balance = 0
         worst_average = float("inf")
         worst_date = None
 
-        # Group transactions by date for efficiency
+        # Group transactions by date for efficiency (only past transactions)
         txns_by_date = {}
-        for dt, amount, _ in all_txns:
+        for dt, amount, _ in past_txns:
             date_key = dt.date()
             if date_key not in txns_by_date:
                 txns_by_date[date_key] = 0
