@@ -61,10 +61,8 @@ class Account(fields.CustomModel):
     @property
     def days_til_zero(self):
         """
-        Returns the number of days from the first transaction until
-        the balance LAST crossed zero (became negative or zero).
-        Includes future post-dated transactions.
-        Returns -1 if the balance never crossed zero.
+        Returns the number of days from TODAY until the balance crosses zero.
+        Returns -1 if the balance never crosses zero in the future (or already crossed in the past).
         """
         from collections import defaultdict
         from datetime import timedelta
@@ -90,42 +88,46 @@ class Account(fields.CustomModel):
 
         all_txns.sort(key=lambda x: x[0])
 
+        today = timezone.now().date()
+
         # Get the first transaction date and last transaction date
         first_txn_date = all_txns[0][0].date()
         last_txn_date = all_txns[-1][0].date()
 
-        # Track running balance and last crossing
-        running_balance = Decimal("0")  # Use Decimal instead of 0
-        last_crossing_date = None
-        was_positive = True  # Track previous day's state
+        # Track running balance
+        running_balance = Decimal("0")
+        was_positive = True
 
         # Group transactions by date
-        txns_by_date = defaultdict(lambda: Decimal("0"))  # Use Decimal instead of float
+        txns_by_date = defaultdict(lambda: Decimal("0"))
         for dt, amount, _ in all_txns:
             date_key = dt.date()
             txns_by_date[date_key] += amount
 
-        # Iterate through each day from first transaction to last transaction (including future)
+        # Iterate through each day from first transaction to last transaction
         current_date = first_txn_date
         while current_date <= last_txn_date:
             # Update running balance if there are transactions on this day
             if current_date in txns_by_date:
                 running_balance += txns_by_date[current_date]
 
-            # Check if we crossed from positive to zero/negative
-            is_positive = running_balance > 0
+            # Only check for crossings on or after today
+            if current_date >= today:
+                is_positive = running_balance > 0
 
-            if was_positive and not is_positive:
-                # We just crossed into zero/negative territory
-                last_crossing_date = current_date
+                if was_positive and not is_positive:
+                    # We just crossed into zero/negative territory
+                    # Return days from today to this crossing date
+                    return (current_date - today).days
 
-            was_positive = is_positive
+                was_positive = is_positive
+            else:
+                # Track state even for past dates
+                was_positive = running_balance > 0
+
             current_date += timedelta(days=1)
 
-        # Return days elapsed from first transaction to last crossing
-        if last_crossing_date:
-            return (last_crossing_date - first_txn_date).days
-
+        # Balance never crosses zero in the future
         return -1
 
     @property
