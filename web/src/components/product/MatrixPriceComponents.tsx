@@ -13,17 +13,30 @@ import { Category } from "./CategoryStore";
 import { UnitIdMap } from "./UnitStore";
 
 export function codeToInt(code: string): number {
+  // const mapping: Record<string, string> = {
+  //   L: "1",
+  //   U: "2",
+  //   C: "3",
+  //   K: "4",
+  //   Y: "5",
+  //   S: "6",
+  //   T: "7",
+  //   O: "8",
+  //   R: "9",
+  //   E: "0",
+  // };
+
   const mapping: Record<string, string> = {
-    L: "1",
-    U: "2",
-    C: "3",
-    K: "4",
-    Y: "5",
-    S: "6",
-    T: "7",
-    O: "8",
-    R: "9",
-    E: "0",
+    B: "9",
+    R: "8",
+    I: "7",
+    G: "6",
+    H: "5",
+    T: "4",
+    P: "3",
+    L: "2",
+    A: "1",
+    N: "0",
   };
 
   let digits = "";
@@ -67,7 +80,7 @@ const PriceMatrixItem = observer(
               unit: UnitIdMap["pcs"],
               genericProduct:
                 (productStore.genericProductStore.items.find((s) =>
-                  s.displayName.includes(rowHeader)
+                  s.displayName.includes(rowHeader),
                 )?.id as number) ?? -1,
               brand: colHeader,
               sellingPrice: selling,
@@ -94,7 +107,7 @@ const PriceMatrixItem = observer(
         </div>
       </div>
     );
-  }
+  },
 );
 
 const PriceMatrixTable = observer(({ category }: { category: Category }) => {
@@ -111,7 +124,7 @@ const PriceMatrixTable = observer(({ category }: { category: Category }) => {
   const { productStore } = useStore();
   useEffect(() => {
     productStore.genericProductStore.fetchAll(
-      `page=all&category=${category.id}`
+      `page=all&category=${category.id}`,
     );
   }, []);
   const matrix = [
@@ -125,7 +138,7 @@ const PriceMatrixTable = observer(({ category }: { category: Category }) => {
             rowHeader={row[0]}
             colHeader={category.priceMatrix[0][colIndex]}
           />
-        )
+        ),
       ),
       rowIndex === 0 ? (
         "New"

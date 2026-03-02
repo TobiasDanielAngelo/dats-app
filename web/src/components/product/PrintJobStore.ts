@@ -19,6 +19,7 @@ export const PrintJobFields = {
   quantity: { field: "LimitedIntegerField" },
   dimension: { field: "SetNullOptionalForeignKey", fk: "PrintDimension" },
   isCompleted: { field: "DefaultBooleanField" },
+  isRepeated: { field: "DefaultBooleanField" },
   widthMm: { field: "LimitedIntegerField", readOnly: true },
   heightMm: { field: "LimitedIntegerField", readOnly: true },
   imgWidthMm: { field: "LimitedIntegerField" },

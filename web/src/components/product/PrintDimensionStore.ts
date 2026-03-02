@@ -12,6 +12,7 @@ const { slug } = getPathParts("product", "PrintDimension");
 export const PrintDimensionIdMap = {
   Quantum: -1,
   "Piston Kit": -2,
+  Strips: -3,
 };
 export const PrintDimensionFields = {
   id: { field: "ID" },
@@ -26,6 +27,6 @@ export class PrintDimension extends MyModel(slug, props) {}
 export class PrintDimensionStore extends MyStore(
   PrintDimension,
   BASE_URL,
-  slug
+  slug,
 ) {}
 export type PrintDimensionInterface = PropsToInterface<typeof props>;

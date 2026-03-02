@@ -84,7 +84,7 @@ const LabelsInPage: React.FC<LabelsInPageProps> = ({
             }}
           >
             {allLabels[count]}
-          </div>
+          </div>,
         );
         count++;
       }
@@ -117,7 +117,7 @@ const LabelsInPage: React.FC<LabelsInPageProps> = ({
             >
               {allLabels[count]}
             </div>
-          </div>
+          </div>,
         );
         count++;
       }
@@ -152,7 +152,7 @@ const LabelsInPage: React.FC<LabelsInPageProps> = ({
             >
               {allLabels[count]}
             </div>
-          </div>
+          </div>,
         );
         count++;
       }
@@ -182,7 +182,7 @@ const LabelsInPage: React.FC<LabelsInPageProps> = ({
             }}
           >
             {allLabels[count]}
-          </div>
+          </div>,
         );
         count++;
       }

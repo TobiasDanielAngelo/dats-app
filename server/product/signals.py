@@ -30,6 +30,7 @@ def create_default_accounts(sender, **kwargs):
         (Unit, -4, {"name": "m"}),
         (PrintDimension, -1, {"width_mm": 76, "height_mm": 38, "name": "Quantum"}),
         (PrintDimension, -2, {"width_mm": 60, "height_mm": 60, "name": "Piston Kit"}),
+        (PrintDimension, -3, {"width_mm": 25, "height_mm": 140, "name": "Strips"}),
     ]
 
     for model, id, fields in defaults:

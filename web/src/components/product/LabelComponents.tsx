@@ -25,16 +25,16 @@ import { PrintDimensionIdMap } from "./PrintDimensionStore";
 
 function intToCode(num: number): string {
   const mapping: Record<string, string> = {
-    "1": "L",
-    "2": "U",
-    "3": "C",
-    "4": "K",
-    "5": "Y",
-    "6": "S",
-    "7": "T",
-    "8": "O",
-    "9": "R",
-    "0": "E",
+    "9": "B",
+    "8": "R",
+    "7": "I",
+    "6": "G",
+    "5": "H",
+    "4": "T",
+    "3": "P",
+    "2": "L",
+    "1": "A",
+    "0": "N",
   };
 
   return String(num)
@@ -58,8 +58,8 @@ const LayoutView = ({
     <div ref={pageRef}>
       {Array.from(
         Array(
-          bestCount === 0 ? 1 : Math.ceil(printItems.length / bestCount)
-        ).keys()
+          bestCount === 0 ? 1 : Math.ceil(printItems.length / bestCount),
+        ).keys(),
       ).map((s) => (
         <LabelsInPage
           labelSize={labelSize}
@@ -77,24 +77,54 @@ const LayoutView = ({
 const LayoutCard = ({ item }: { item: PrintJobInterface }) => {
   return (
     <div
-      className="border-2 rounded-md relative bg-white p-1 text-black"
+      className="border-2 rounded-md relative bg-white p-1 text-black overflow-hidden"
       style={{
         width: `${item.widthMm}mm`,
         height: `${item.heightMm}mm`,
         fontFamily: "LoraBold",
       }}
     >
-      {item.description?.split("\n").map((s, ind) => (
+      {item.isRepeated ? (
         <div
-          key={ind}
-          style={{
-            fontSize: `${item.fontSizes ? item.fontSizes[ind + 1] : 10}mm`,
-          }}
           className="leading-none"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: "4px",
+            right: "4px",
+            bottom: 0,
+            overflow: "hidden",
+            maskImage: "none",
+            WebkitMaskImage: "none",
+          }}
         >
-          {s.toUpperCase()}
+          {Array.from({ length: 100 }).map((_, repeatInd) =>
+            item.description?.split("\n").map((s, ind) => (
+              <div
+                key={`${repeatInd}-${ind}`}
+                style={{
+                  fontSize: `${item.fontSizes ? item.fontSizes[ind + 1] : 10}mm`,
+                }}
+                className="leading-none"
+              >
+                {s.toUpperCase()}
+              </div>
+            )),
+          )}
         </div>
-      ))}
+      ) : (
+        item.description?.split("\n").map((s, ind) => (
+          <div
+            key={ind}
+            style={{
+              fontSize: `${item.fontSizes ? item.fontSizes[ind + 1] : 10}mm`,
+            }}
+            className="leading-none"
+          >
+            {s.toUpperCase()}
+          </div>
+        ))
+      )}
       <div className="bottom-1 right-1 absolute text-right justify-center font-semibold p-1 leading-none">
         <div
           style={{
@@ -166,7 +196,7 @@ const StagingView = observer(({ items }: { items: PrintJob[] }) => {
         items={
           value
             ? items.filter((s) =>
-                s.description.toLowerCase().includes(value.toLowerCase())
+                s.description.toLowerCase().includes(value.toLowerCase()),
               )
             : items.filter((s) => !s.isCompleted)
         }
@@ -185,12 +215,13 @@ const defaultDetails = {
   unit: "",
   fontSizes: Array.from(Array(10)).fill(5),
   dimension: -1,
+  isRepeated: false,
 };
 
 type LabelInterface = typeof defaultDetails;
 
 function parseSellingCode(
-  code: string
+  code: string,
 ): { sellingPrice: number; unit?: string } | null {
   const match = code.match(/^\u20b1(\d+(?:\.\d+)?)(?:\/(\w+))?$/);
   if (!match) return null;
@@ -219,7 +250,7 @@ export const transformLabelToPrint = (details: LabelInterface) => {
 export const transformPrintToLabel = (details?: PrintJob): LabelInterface => {
   if (!details) return defaultDetails;
   const { sellingPrice, unit } = parseSellingCode(
-    details.sellingCode ?? ""
+    details.sellingCode ?? "",
   ) ?? { sellingPrice: 0, unit: "" };
   return {
     ...details,
@@ -228,9 +259,10 @@ export const transformPrintToLabel = (details?: PrintJob): LabelInterface => {
     fontSizes: details.fontSizes ?? [],
     dimension: details.dimension ?? -1,
     purchasePrice: codeToInt(
-      details.purchaseCode.replaceAll("(", "").replaceAll(")", "") ?? ""
+      details.purchaseCode.replaceAll("(", "").replaceAll(")", "") ?? "",
     ),
     sellingPrice: sellingPrice,
+    isRepeated: details.isRepeated ?? false,
     unit: unit ?? "",
   };
 };
@@ -253,7 +285,7 @@ export const LabelForm = ({
   });
 
   const { widthMm, heightMm } = productStore.printDimensionStore.allItems.get(
-    details.dimension
+    details.dimension,
   ) ?? { widthMm: 76, heightMm: 38 };
 
   const layoutDetails = {
@@ -269,7 +301,7 @@ export const LabelForm = ({
     } else {
       resp = await productStore.printJobStore.updateItem(
         item.id,
-        layoutDetails
+        layoutDetails,
       );
     }
     if (resp.ok) setDetails(defaultDetails);
@@ -291,9 +323,14 @@ export const LabelForm = ({
         type: "select",
         options: toOptions(
           productStore.printDimensionStore.items,
-          "displayName"
+          "displayName",
         ),
         onClickAdd: () => setVisible2(true),
+      },
+      {
+        name: "isRepeated",
+        label: "Repeated?",
+        type: "check",
       },
     ],
   ] satisfies Field[][];
@@ -327,7 +364,7 @@ export const LabelForm = ({
                     setDetails((prev) => ({
                       ...prev,
                       fontSizes: prev.fontSizes.map((val, i) =>
-                        i === s ? correctNumberInput(t) : val
+                        i === s ? correctNumberInput(t) : val,
                       ),
                     }))
                   }
@@ -340,7 +377,7 @@ export const LabelForm = ({
                     setDetails((prev) => ({
                       ...prev,
                       fontSizes: prev.fontSizes.map((val, i) =>
-                        i === s ? t : val
+                        i === s ? t : val,
                       ),
                     }))
                   }
@@ -374,9 +411,9 @@ export const LabelView = observer(() => {
     value === PrintDimensionIdMap["Piston Kit"]
       ? () =>
           productStore.printJobStore.fetchAll(
-            `page=all&dimension=${PrintDimensionIdMap["Piston Kit"]}`
+            `page=all&dimension=${PrintDimensionIdMap["Piston Kit"]}`,
           )
-      : async () => {}
+      : async () => {},
   );
 
   const onClickPrint = useReactToPrint({
@@ -390,7 +427,7 @@ export const LabelView = observer(() => {
     await productStore.printDimensionStore.fetchAll("page=all");
   };
   const { widthMm, heightMm } = productStore.printDimensionStore.allItems.get(
-    value
+    value,
   ) ?? { widthMm: 76, heightMm: 38 };
 
   useEffect(() => {
@@ -434,7 +471,7 @@ export const LabelView = observer(() => {
             <MyDropdownSelector
               options={toOptions(
                 productStore.printDimensionStore.items,
-                "displayName"
+                "displayName",
               )}
               value={value}
               onChangeValue={setValue}
@@ -450,7 +487,7 @@ export const LabelView = observer(() => {
                 .flatMap((s) =>
                   Array.from({ length: s.quantity }, (_, i) => (
                     <LayoutCard key={`${s.id}-${i}`} item={s} />
-                  ))
+                  )),
                 )}
               labelSize={[widthMm, heightMm]}
               pageRef={pageRef}
